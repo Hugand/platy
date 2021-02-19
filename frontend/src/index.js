@@ -6,18 +6,16 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import * as comp from './components'
+import * as comp from './components/index'
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-      <div>
         <Switch>
           <Route path="/">
             <comp.LoginView />
           </Route>
         </Switch>
-      </div>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

@@ -1,0 +1,23 @@
+@import "../resources/variables.scss";
+
+.btn {
+    border: 0;
+    border-radius: $border-radius-small;
+    background-color: $primary-blue;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 300;
+    box-shadow: $box-shadow;
+    transition: .3s;
+
+    &:hover {
+        box-shadow: $box-shadow-hovered;
+        cursor: pointer;
+    }
+}
+
+.btn-secondary {
+    color: $primary-blue;
+    background-color: white;
+    font-weight: 500;
+}
