@@ -1,17 +1,37 @@
 package com.ugomes.webchat.Controllers;
 
+import com.ugomes.webchat.models.User;
+import com.ugomes.webchat.repositories.UsersRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class Api {
+    @Autowired
+    UsersRepo usersRepo;
+
     @GetMapping("/")
-    public String hello() {
-        return "hello world";
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<User> hello() {
+        List<User> users = usersRepo.findAll();
+        return ResponseEntity.ok(users.get(0));
     }
 
-    @GetMapping("/restricted")
+    @GetMapping("/restricted2")
     public String restricted() {
         return "Restricted hello world";
+    }
+
+    @GetMapping(value = "/getUsers")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<User> getUsers() {
+        List<User> users = usersRepo.findAll();
+        return ResponseEntity.ok(users.get(0));
     }
 }
