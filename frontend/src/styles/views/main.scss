@@ -1,0 +1,8 @@
+@import "../resources/variables.scss";
+
+main {
+    display: grid;
+    grid-template-columns: 56px auto;
+    height: 100%;
+
+}
