@@ -1,12 +1,11 @@
 package com.ugomes.webchat.Controllers;
 
+import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.UsersRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,15 +22,16 @@ public class Api {
         return ResponseEntity.ok(users.get(0));
     }
 
-    @GetMapping("/restricted2")
-    public String restricted() {
-        return "Restricted hello world";
-    }
+    @GetMapping("/getAuthUser")
+    public ResponseEntity<User> getAuthUser(@RequestHeader("Authorization") String token) {
+        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+        token = token.replace("Bearer ", "");
+        String uid = jwtTokenUtil.getUidFromToken(token);
 
-    @GetMapping(value = "/getUsers")
-    @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<User> getUsers() {
-        List<User> users = usersRepo.findAll();
-        return ResponseEntity.ok(users.get(0));
+        List<User> users = usersRepo.findByUid(uid);
+        if(users.isEmpty())
+            return ResponseEntity.ok(null);
+        else
+            return ResponseEntity.ok(users.get(0));
     }
 }

@@ -1,30 +1,33 @@
 import { useState, useEffect } from 'react'
 import '../../styles/views/login.scss'
 import laptopImg from '../../assets/img/laptop.png'
-import Cookies from 'js-cookie';
-
+import { useHistory } from "react-router-dom";
 
 function LoginView() {
+    const history = useHistory();
     const [ authToken, setAuthToken ] = useState("")
 
     useEffect(() => {
         searchGetParameters();
-    }, []);
+
+        if(authToken !== "") {
+            onGoogleLoginClick()
+        }
+    }, [authToken]);
 
     const searchGetParameters = () => {
         let urlParams: URLSearchParams = new URLSearchParams(window.location.search);
         let authTokenParam: string | null = urlParams.get('auth_token');
-        if(authTokenParam === null) {
+        if(authTokenParam === null || authTokenParam === "") {
             authTokenParam = localStorage.getItem('authToken')
         }
         
-        if(authTokenParam !== null) {
+        if(authTokenParam !== null  && authTokenParam !== "") {
             localStorage.setItem('authToken', authTokenParam)
             setAuthToken(authTokenParam)
-        }   
+        }
 
-        console.log(authTokenParam)
-
+        return authTokenParam
     }
 
     const onGoogleLoginClick = async () => {
@@ -33,22 +36,17 @@ function LoginView() {
         console.log("LS", localStorage.getItem('authToken'))
         console.log("AT", authToken)
 
-        fetch("http://localhost:8080/getUsers",
-        {
+        fetch("http://localhost:8080/getAuthUser", {
             headers: {
                 'Authorization': 'Bearer ' + authToken
             }
         })
-            .then(res => {
-                console.log(res)
-                return res
-            })
             .then(res => res.json())
             .then(res => {
-                console.log(res)
+                history.push("/home");
             })
             .catch(err => {
-                window.location.href = "http://localhost:8080/getUsers"
+                window.location.href = "http://localhost:8080/getAuthUser"
             })
     }
 

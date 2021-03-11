@@ -32,13 +32,13 @@ public class CustomOidcUserService extends OidcUserService {
             userInfo = usersByUid.get(0);
         } else {
             userInfo = new User();
+            userInfo.setProfilePic((String) attributes.get("picture"));
         }
 
         userInfo.setEmail((String) attributes.get("email"));
         userInfo.setUid(uid);
         userInfo.setNomeProprio((String) attributes.get("given_name"));
         userInfo.setApelido((String) attributes.get("family_name"));
-        userInfo.setProfilePic((String) attributes.get("picture"));
 
         usersRepo.save(userInfo);
         return oidcUser;

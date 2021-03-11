@@ -1,6 +1,7 @@
 
 // Importing views
 import LoginView from './views/login-view'
+import MainView from './views/main-view'
 
 // Importing blocks
 
@@ -8,5 +9,6 @@ import LoginView from './views/login-view'
 // Importing atoms
 
 export {
-    LoginView
+    LoginView,
+    MainView,
 }

@@ -12,8 +12,11 @@ ReactDOM.render(
   <React.StrictMode>
     <Router>
         <Switch>
-          <Route path="/">
+          <Route path="/" exact={true}>
             <comp.LoginView />
+          </Route>
+          <Route path="/home">
+            <comp.MainView />
           </Route>
         </Switch>
     </Router>
