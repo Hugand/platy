@@ -1,0 +1,12 @@
+@import "../resources/variables.scss";
+
+.text-field {
+    border-radius: $border-radius-small;
+    background-color: $accent-blue;
+    font-size: 1.125rem;
+    font-weight: 300;
+    border: 0;
+    color: $light-grey;
+    padding: 0.625rem 1.75rem;
+    outline: none;
+}

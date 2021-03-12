@@ -6,6 +6,7 @@
     background-color: $primary-blue;
     display: flex;
     flex-direction: column;
+    grid-column: 1;
 
     .logo {
         font-size: 1.5rem;

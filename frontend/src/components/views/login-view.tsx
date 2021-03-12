@@ -36,14 +36,15 @@ function LoginView() {
 
         try {
             const authUser: User = await login(authToken)
-            history.push("/home");
+            history.push("/");
         } catch (e) {
+            localStorage.removeItem('authToken')
             window.location.href = `${process.env.REACT_APP_API_URL}/getAuthUser`;
         }
     }
 
     return (
-        <main className="">
+        <main className="login-main">
             <section className="container">
                 <div className="form-container">
                     <h1>Webchat</h1>
