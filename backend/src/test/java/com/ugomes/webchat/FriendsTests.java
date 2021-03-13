@@ -79,7 +79,7 @@ public class FriendsTests {
 
         ResponseEntity<String> queryResult = friendsController.sendFriendRequest(authUserToken, 3L);
 
-        assertEquals("failed", queryResult.getBody());
+        assertEquals("failed__", queryResult.getBody());
     }
 
     @Test
