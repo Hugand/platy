@@ -42,6 +42,7 @@ public class UsersTests {
         String searchTerm = "zez";
 
         when(usersRepo.findByUserOrName(searchTerm)).thenReturn(usersList);
+        when(usersRepo.findByUid(usersList.get(0).getUid())).thenReturn(java.util.Optional.ofNullable(usersList.get(0)));
 
         ResponseEntity<SearchUserResponse> queryResult = friendsController.searchUser(searchTerm, authUserToken);
         assertEquals(usersList, queryResult.getBody().getSearchedUsers());

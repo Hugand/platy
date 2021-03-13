@@ -9,9 +9,9 @@ public class SearchUserResponse {
     List<Long> friendRequestedUsersId;
     List<Long> friendUsersId;
 
-    public SearchUserResponse(List<User> searchedUserList, List<Long> friendRequestedUsersId,
+    public SearchUserResponse(List<User> searchedUsers, List<Long> friendRequestedUsersId,
                               List<Long> friendUsersId) {
-        this.searchedUsers = searchedUserList;
+        this.searchedUsers = searchedUsers;
         this.friendRequestedUsersId = friendRequestedUsersId;
         this.friendUsersId = friendUsersId;
     }
