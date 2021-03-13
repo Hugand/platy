@@ -1,6 +1,8 @@
 package com.ugomes.webchat.Controllers;
 
+import com.ugomes.webchat.ApiResponses.SearchUserResponse;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
+import com.ugomes.webchat.models.Friends;
 import com.ugomes.webchat.models.FriendsRequests;
 import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
@@ -23,11 +25,34 @@ public class FriendsController {
 
     @GetMapping("/searchUser")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<List<User>> searchUser(@RequestParam String searchTerm) {
-        List<User> users = searchTerm.isBlank() || searchTerm.isEmpty()
-                ? new ArrayList<>()
-                : usersRepo.findByUserOrName(searchTerm.toLowerCase(Locale.ROOT));
-        return ResponseEntity.ok(users);
+    public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String searchTerm,
+                                                         @RequestHeader("Authorization") String token) {
+        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+        token = token.replace("Bearer ", "");
+        String authUserUid = jwtTokenUtil.getUidFromToken(token);
+        User authUser = usersRepo.findByUid(authUserUid).orElse(null);
+
+        List<User> users = new ArrayList<>();
+        List<Long> friendRequestsTargetUserId = new ArrayList<>();
+        List<Long> friendUsersId = new ArrayList<>();
+
+        if(authUser == null || searchTerm.isBlank() || searchTerm.isEmpty())
+            return ResponseEntity.ok(new SearchUserResponse(users, friendRequestsTargetUserId, friendUsersId));
+
+        users = usersRepo.findByUserOrName(searchTerm.toLowerCase(Locale.ROOT));
+
+        List<FriendsRequests> friendsRequestsByAuthUser = friendsRequestRepo.findByOriginOrDestinyId(authUser.getId());
+
+        for(FriendsRequests fr : friendsRequestsByAuthUser) {
+            if(fr.getRequestOriginUser().getId().equals(authUser.getId())) {
+                friendRequestsTargetUserId.add(fr.getRequestDestinyUser().getId());
+            } else {
+                friendRequestsTargetUserId.add(fr.getRequestOriginUser().getId());
+            }
+        }
+
+        return ResponseEntity.ok(new SearchUserResponse(users, friendRequestsTargetUserId, friendUsersId));
+
     }
 
     @GetMapping("/sendFriendRequest")
@@ -47,12 +72,12 @@ public class FriendsController {
             return ResponseEntity.ok(resBody);
         }
 
-        FriendsRequests alreadyCreatedFriendRequestToAuthUser = friendsRequestRepo
-                .findByOriginOrDestinyId(authUser.getId()).orElse(null);
-        FriendsRequests alreadyCreatedFriendRequestToBefriendUser = friendsRequestRepo
-                .findByOriginOrDestinyId(userToBefriend.getId()).orElse(null);
+        List<FriendsRequests> alreadyCreatedFriendRequestToAuthUser = friendsRequestRepo
+                .findByOriginOrDestinyId(authUser.getId());
+        List<FriendsRequests> alreadyCreatedFriendRequestToBefriendUser = friendsRequestRepo
+                .findByOriginOrDestinyId(userToBefriend.getId());
 
-        if(alreadyCreatedFriendRequestToAuthUser != null || alreadyCreatedFriendRequestToBefriendUser != null) {
+        if(alreadyCreatedFriendRequestToAuthUser.size() > 0|| alreadyCreatedFriendRequestToBefriendUser.size() > 0) {
             resBody.put("status", "failed");
             return ResponseEntity.ok(resBody);
         }

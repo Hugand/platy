@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -59,7 +60,7 @@ public class FriendsTests {
 
         when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
         when(usersRepo.findById(userToBefriend.getId())).thenReturn(Optional.of(userToBefriend));
-        when(friendsRequestRepo.findByOriginOrDestinyId(userToBefriend.getId())).thenReturn(Optional.of(existentFriendRequest));
+        when(friendsRequestRepo.findByOriginOrDestinyId(userToBefriend.getId())).thenReturn(Collections.singletonList(existentFriendRequest));
         when(friendsRequestRepo.save(any(FriendsRequests.class))).then(returnsFirstArg());
 
         ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());

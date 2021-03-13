@@ -10,9 +10,9 @@ import java.util.Optional;
 
 public interface FriendsRequestRepo extends JpaRepository<FriendsRequests, Long> {
 
-    default Optional<FriendsRequests> findByOriginOrDestinyId(Long userId) {
+    default List<FriendsRequests> findByOriginOrDestinyId(Long userId) {
         return findFriendsRequestsByRequestOriginUserIdOrRequestDestinyUserId(userId, userId);
     }
 
-    Optional<FriendsRequests> findFriendsRequestsByRequestOriginUserIdOrRequestDestinyUserId(Long requestOriginUser_id, Long requestDestinyUser_id);
+    List<FriendsRequests> findFriendsRequestsByRequestOriginUserIdOrRequestDestinyUserId(Long requestOriginUser_id, Long requestDestinyUser_id);
 }

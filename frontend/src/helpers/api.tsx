@@ -1,3 +1,4 @@
+import { SearchUserResponse } from "../components/models/SearchUserResponse"
 import { User } from "../components/models/User"
 
 const login = (authToken: string): Promise<User> => {
@@ -8,7 +9,7 @@ const login = (authToken: string): Promise<User> => {
     }).then(res => res.json())
 }
 
-const searchUsers = (searchTerm: string, authToken: string | null): Promise<Array<User>> => {
+const searchUsers = (searchTerm: string, authToken: string | null): Promise<SearchUserResponse> => {
     return fetch(`${process.env.REACT_APP_API_URL}/searchUser?searchTerm=${searchTerm}`, {
         headers: {
             'Authorization': 'Bearer ' + authToken
