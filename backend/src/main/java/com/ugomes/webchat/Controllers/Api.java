@@ -12,8 +12,11 @@ import java.util.List;
 //@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class Api {
-    @Autowired
-    UsersRepo usersRepo;
+    final UsersRepo usersRepo;
+
+    public Api(UsersRepo usersRepo) {
+        this.usersRepo = usersRepo;
+    }
 
     @GetMapping("/")
     @CrossOrigin(origins = "http://localhost:3000")
@@ -28,10 +31,7 @@ public class Api {
         token = token.replace("Bearer ", "");
         String uid = jwtTokenUtil.getUidFromToken(token);
 
-        List<User> users = usersRepo.findByUid(uid);
-        if(users.isEmpty())
-            return ResponseEntity.ok(null);
-        else
-            return ResponseEntity.ok(users.get(0));
+        User user = usersRepo.findByUid(uid).orElse(null);
+        return ResponseEntity.ok(user);
     }
 }

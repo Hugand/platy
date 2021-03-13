@@ -11,6 +11,19 @@ public class User {
     private Long id;
     private String nome_proprio, apelido, username, email, profile_pic, uid;
 
+    public User(String nomeProprio, String apelido, String username) {
+        this.nome_proprio = nomeProprio;
+        this.apelido = apelido;
+        this.username = username;
+    }
+
+    public User(Long id, String nomeProprio, String apelido, String username) {
+        this.id = id;
+        this.nome_proprio = nomeProprio;
+        this.apelido = apelido;
+        this.username = username;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }

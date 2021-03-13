@@ -25,12 +25,9 @@ public class CustomOidcUserService extends OidcUserService {
         Map attributes = oidcUser.getAttributes();
         String uid = (String) attributes.get("sub");
 
-        List<User> usersByUid = usersRepo.findByUid(uid);
-        User userInfo;
+        User userInfo = usersRepo.findByUid(uid).orElse(null);
 
-        if(!usersByUid.isEmpty()) {
-            userInfo = usersByUid.get(0);
-        } else {
+        if(userInfo == null) {
             userInfo = new User();
             userInfo.setProfilePic((String) attributes.get("picture"));
         }

@@ -41,17 +41,14 @@ public class CustomAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         Map attributes = oidcUser.getAttributes();
         String uid = (String) attributes.get("sub");
 
-        List<User> usersByUid = usersRepo.findByUid(uid);
+        User user = usersRepo.findByUid(uid).orElse(null);
 
-        if(!usersByUid.isEmpty()) {
-            User user = usersByUid.get(0);
+        if(user != null) {
             System.out.println(user);
             String token = JwtTokenUtil.generateToken(user);
             String redirectionUrl = UriComponentsBuilder.fromUriString(homeUrl)
                     .queryParam("auth_token", token)
                     .build().toUriString();
-
-//            authentication.setAuthenticated(true);
 
             logger.info("authenticated user with uid" + uid + ", setting security context");
             SecurityContextHolder.getContext().setAuthentication(authentication);
