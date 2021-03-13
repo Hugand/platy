@@ -16,7 +16,16 @@ const searchUsers = (searchTerm: string, authToken: string | null): Promise<Arra
     }).then(res => res.json())
 }
 
+const sendFriendRequest = (userToBefriendId: Number, authToken: string): Promise<Map<string, string>> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/sendFriendRequest?newFriendId=${userToBefriendId}`, {
+        headers: {
+            'Authorization': 'Bearer ' + authToken
+        }
+    }).then(res => res.json())
+}
+
 export {
     login,
-    searchUsers
+    searchUsers,
+    sendFriendRequest
 }

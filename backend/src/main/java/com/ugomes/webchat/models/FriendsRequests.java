@@ -22,6 +22,8 @@ public class FriendsRequests {
         this.requestDestinyUser = requestDestinyUser;
     }
 
+    public FriendsRequests() { }
+
     public Long getId() {
         return id;
     }

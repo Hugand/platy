@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,9 +43,9 @@ public class FriendsTests {
         when(usersRepo.findById(userToBefriend.getId())).thenReturn(Optional.of(userToBefriend));
         when(friendsRequestRepo.save(any(FriendsRequests.class))).then(returnsFirstArg());
 
-        ResponseEntity<String> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
+        ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
 
-        assertEquals("success", queryResult.getBody());
+        assertEquals("success", queryResult.getBody().get("status"));
     }
 
     @Test
@@ -61,9 +62,9 @@ public class FriendsTests {
         when(friendsRequestRepo.findByOriginOrDestinyId(userToBefriend.getId())).thenReturn(Optional.of(existentFriendRequest));
         when(friendsRequestRepo.save(any(FriendsRequests.class))).then(returnsFirstArg());
 
-        ResponseEntity<String> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
+        ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
 
-        assertEquals("failed", queryResult.getBody());
+        assertEquals("failed", queryResult.getBody().get("status"));
     }
 
     @Test
@@ -77,9 +78,9 @@ public class FriendsTests {
         when(usersRepo.findById(userToBefriend.getId())).thenReturn(java.util.Optional.of(userToBefriend));
         when(friendsRequestRepo.save(any(FriendsRequests.class))).then(returnsFirstArg());
 
-        ResponseEntity<String> queryResult = friendsController.sendFriendRequest(authUserToken, 3L);
+        ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, 3L);
 
-        assertEquals("failed", queryResult.getBody());
+        assertEquals("failed", queryResult.getBody().get("status"));
     }
 
     @Test
@@ -94,9 +95,9 @@ public class FriendsTests {
         when(usersRepo.findById(userToBefriend.getId())).thenReturn(java.util.Optional.of(userToBefriend));
         when(friendsRequestRepo.save(any(FriendsRequests.class))).then(returnsFirstArg());
 
-        ResponseEntity<String> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
+        ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
 
-        assertEquals("failed", queryResult.getBody());
+        assertEquals("failed", queryResult.getBody().get("status"));
     }
 
 }

@@ -9,9 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Clock;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @RestController
 public class FriendsController {
@@ -34,8 +32,9 @@ public class FriendsController {
 
     @GetMapping("/sendFriendRequest")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<String> sendFriendRequest(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Map<String, String>> sendFriendRequest(@RequestHeader("Authorization") String token,
                                     @RequestParam Long newFriendId) {
+        Map<String, String> resBody = new HashMap<>();
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
         token = token.replace("Bearer ", "");
         String authUserUid = jwtTokenUtil.getUidFromToken(token);
@@ -43,21 +42,28 @@ public class FriendsController {
         User authUser = usersRepo.findByUid(authUserUid).orElse(null);
         User userToBefriend = usersRepo.findById(newFriendId).orElse(null);
 
-        if(userToBefriend == null || authUser == null)
-            return ResponseEntity.ok("failed");
+        if(userToBefriend == null || authUser == null) {
+            resBody.put("status", "failed");
+            return ResponseEntity.ok(resBody);
+        }
 
         FriendsRequests alreadyCreatedFriendRequestToAuthUser = friendsRequestRepo
                 .findByOriginOrDestinyId(authUser.getId()).orElse(null);
         FriendsRequests alreadyCreatedFriendRequestToBefriendUser = friendsRequestRepo
                 .findByOriginOrDestinyId(userToBefriend.getId()).orElse(null);
 
-        if(alreadyCreatedFriendRequestToAuthUser != null || alreadyCreatedFriendRequestToBefriendUser != null)
-            return ResponseEntity.ok("failed");
+        if(alreadyCreatedFriendRequestToAuthUser != null || alreadyCreatedFriendRequestToBefriendUser != null) {
+            resBody.put("status", "failed");
+            return ResponseEntity.ok(resBody);
+        }
 
         FriendsRequests newFriendRequest = new FriendsRequests(authUser, userToBefriend);
         newFriendRequest.setRequestDate(Clock.systemUTC().instant());
 
-        return ResponseEntity.ok("success");
+        friendsRequestRepo.save(newFriendRequest);
+
+        resBody.put("status", "success");
+        return ResponseEntity.ok(resBody);
     }
 
     @GetMapping("/getUsers")
