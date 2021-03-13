@@ -37,7 +37,7 @@ function SearchView() {
             </header>
 
             <div className="users-list">
-                { (searchResults.searchedUsers.length === 0 && searchTerm == "") ? <h2>Search for the first name, last name or username</h2>
+                { (searchResults.searchedUsers.length === 0 && searchTerm == "") ? <h2>Search for the name or username</h2>
                 : searchResults.searchedUsers.length > 0 
                     ? searchResults.searchedUsers.map((user: User) => 
                         <UserAddCard

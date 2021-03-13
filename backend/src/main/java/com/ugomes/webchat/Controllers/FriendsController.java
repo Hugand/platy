@@ -24,14 +24,22 @@ public class FriendsController {
         this.friendsRequestRepo = friendsRequestRepo;
     }
 
+    private User getUserFromToken(String token) {
+        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+        token = token.replace("Bearer ", "");
+        try {
+            String authUserUid = jwtTokenUtil.getUidFromToken(token);
+            return usersRepo.findByUid(authUserUid).orElse(null);
+        } catch(Exception e) {
+            return null;
+        }
+    }
+
     @GetMapping("/searchUser")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String searchTerm,
                                                          @RequestHeader("Authorization") String token) {
-        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
-        token = token.replace("Bearer ", "");
-        String authUserUid = jwtTokenUtil.getUidFromToken(token);
-        User authUser = usersRepo.findByUid(authUserUid).orElse(null);
+        User authUser = this.getUserFromToken(token);
 
         List<User> users = new ArrayList<>();
         List<Long> friendRequestsTargetUserId = new ArrayList<>();
@@ -42,7 +50,7 @@ public class FriendsController {
 
         users = usersRepo.findByUserOrName(searchTerm.toLowerCase(Locale.ROOT));
 
-        users.removeIf(user -> (user != null && user.getUid().equals(authUserUid)));
+        users.removeIf(user -> (user != null && user.getUid().equals(authUser.getUid())));
 
         List<FriendsRequests> friendsRequestsByAuthUser = friendsRequestRepo.findByOriginOrDestinyId(authUser.getId());
 
@@ -63,11 +71,7 @@ public class FriendsController {
     public ResponseEntity<Map<String, String>> sendFriendRequest(@RequestHeader("Authorization") String token,
                                     @RequestParam Long newFriendId) {
         Map<String, String> resBody = new HashMap<>();
-        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
-        token = token.replace("Bearer ", "");
-        String authUserUid = jwtTokenUtil.getUidFromToken(token);
-
-        User authUser = usersRepo.findByUid(authUserUid).orElse(null);
+        User authUser = this.getUserFromToken(token);
         User userToBefriend = usersRepo.findById(newFriendId).orElse(null);
 
         if(userToBefriend == null || authUser == null) {
@@ -99,12 +103,7 @@ public class FriendsController {
     public ResponseEntity<Map<String, String>> cancelFriendRequest(@RequestHeader("Authorization") String token,
                                                       @RequestParam Long destinyUserId) {
         Map<String, String> resp = new HashMap<>();
-
-        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
-        token = token.replace("Bearer ", "");
-        String authUserUid = jwtTokenUtil.getUidFromToken(token);
-
-        User authUser = usersRepo.findByUid(authUserUid).orElse(null);
+        User authUser = this.getUserFromToken(token);
 
         if(authUser == null || Objects.equals(authUser.getId(), destinyUserId)) {
             resp.put("status", "failed");
@@ -124,5 +123,18 @@ public class FriendsController {
         List<User> users = usersRepo.findAll();
         System.out.println(users);
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/getFriendsRequests")
+    public ResponseEntity<List<FriendsRequests>> getFriendsRequestsByDestinyUser(String token) {
+        List<FriendsRequests> friendsRequests = new ArrayList<>();
+        User authenticatedUser = this.getUserFromToken(token);
+
+        if(authenticatedUser == null)
+            return ResponseEntity.ok(friendsRequests);
+
+        friendsRequests = friendsRequestRepo.findByRequestDestinyUser(authenticatedUser);
+
+        return ResponseEntity.ok(friendsRequests);
     }
 }

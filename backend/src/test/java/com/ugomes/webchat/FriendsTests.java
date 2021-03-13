@@ -12,10 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -128,5 +125,49 @@ public class FriendsTests {
         ResponseEntity<Map<String, String>> res = friendsController.cancelFriendRequest(authUserToken, authenticatedUser.getId());
 
         assertEquals("failed", Objects.requireNonNull(res.getBody()).get("status"));
+    }
+
+    @Test
+    void getFriendRequestsByDestinyUser() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        User user2 = new User(2L, "Johny", "Bravo", "strong_blonde");
+        User user3 = new User(3L, "Mano", "Zezoca", "zenabo");
+        User user4 = new User(3L, "Mano", "Bro", "manobro_drenado");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+
+        List<FriendsRequests> friendsRequests = new ArrayList<>();
+        friendsRequests.add(new FriendsRequests(1L, user2, authenticatedUser));
+        friendsRequests.add(new FriendsRequests(2L, user3, authenticatedUser));
+        friendsRequests.add(new FriendsRequests(3L, user4, authenticatedUser));
+
+        when(friendsRequestRepo.findByRequestDestinyUser(authenticatedUser)).thenReturn(friendsRequests);
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+
+        ResponseEntity<List<FriendsRequests>> queryResponse = friendsController.getFriendsRequestsByDestinyUser(authUserToken);
+
+        assertEquals(friendsRequests, queryResponse.getBody());
+    }
+
+    @Test
+    void getFriendRequestsByDestinyUserWithWrongToken() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        User user2 = new User(2L, "Johny", "Bravo", "strong_blonde");
+        User user3 = new User(3L, "Mano", "Zezoca", "zenabo");
+        User user4 = new User(3L, "Mano", "Bro", "manobro_drenado");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser) + "a12b";
+
+        List<FriendsRequests> friendsRequests = new ArrayList<>();
+        friendsRequests.add(new FriendsRequests(1L, user2, authenticatedUser));
+        friendsRequests.add(new FriendsRequests(2L, user3, authenticatedUser));
+        friendsRequests.add(new FriendsRequests(3L, user4, authenticatedUser));
+
+        when(friendsRequestRepo.findByRequestDestinyUser(authenticatedUser)).thenReturn(friendsRequests);
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+
+        ResponseEntity<List<FriendsRequests>> queryResponse = friendsController.getFriendsRequestsByDestinyUser(authUserToken);
+
+        assertEquals(0, queryResponse.getBody().size());
     }
 }

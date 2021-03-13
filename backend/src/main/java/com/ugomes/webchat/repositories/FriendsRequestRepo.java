@@ -16,6 +16,8 @@ public interface FriendsRequestRepo extends JpaRepository<FriendsRequests, Long>
         return findFriendsRequestsByRequestOriginUserIdOrRequestDestinyUserId(userId, userId);
     }
 
+    List<FriendsRequests> findByRequestDestinyUser(User user);
+
     List<FriendsRequests> findFriendsRequestsByRequestOriginUserIdOrRequestDestinyUserId(Long requestOriginUser_id, Long requestDestinyUser_id);
 
     @Modifying
