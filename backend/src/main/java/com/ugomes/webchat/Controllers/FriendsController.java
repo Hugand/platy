@@ -106,7 +106,7 @@ public class FriendsController {
 
         User authUser = usersRepo.findByUid(authUserUid).orElse(null);
 
-        if(authUser == null) {
+        if(authUser == null || Objects.equals(authUser.getId(), destinyUserId)) {
             resp.put("status", "failed");
             return ResponseEntity.ok(resp);
         }

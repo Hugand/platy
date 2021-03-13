@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Service
@@ -101,4 +103,30 @@ public class FriendsTests {
         assertEquals("failed", queryResult.getBody().get("status"));
     }
 
+    @Test
+    void cancelExistingFriendRequest() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        User userToBefriend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        ResponseEntity<Map<String, String>> res = friendsController.cancelFriendRequest(authUserToken, userToBefriend.getId());
+
+        verify(friendsRequestRepo).deleteFriendsRequestsByUsersId(authenticatedUser.getId(), userToBefriend.getId());
+        assertEquals("success", Objects.requireNonNull(res.getBody()).get("status"));
+    }
+
+    @Test
+    void cancelExistingFriendRequestByDestinyUserId() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        User userToBefriend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        ResponseEntity<Map<String, String>> res = friendsController.cancelFriendRequest(authUserToken, authenticatedUser.getId());
+
+        assertEquals("failed", Objects.requireNonNull(res.getBody()).get("status"));
+    }
 }

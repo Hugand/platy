@@ -17,12 +17,19 @@ public class FriendsRequests {
     @ManyToOne(fetch = FetchType.LAZY)
     private User requestDestinyUser;
 
+    public FriendsRequests() { }
+
     public FriendsRequests(User requestOriginUser, User requestDestinyUser) {
         this.requestOriginUser = requestOriginUser;
         this.requestDestinyUser = requestDestinyUser;
     }
 
-    public FriendsRequests() { }
+    public FriendsRequests(Long id, User requestOriginUser, User requestDestinyUser) {
+        this.id = id;
+        this.requestOriginUser = requestOriginUser;
+        this.requestDestinyUser = requestDestinyUser;
+    }
+
 
     public Long getId() {
         return id;
