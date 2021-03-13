@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -55,7 +56,7 @@ public class UsersTests {
         when(usersRepo.findAll()).thenReturn(usersList);
 
         ResponseEntity<List<User>> queryResult = friendsController.searchUser(searchTerm);
-        assertEquals(usersList, queryResult.getBody());
+        assertEquals(0, Objects.requireNonNull(queryResult.getBody()).size());
     }
 
 }

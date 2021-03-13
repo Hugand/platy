@@ -1,23 +1,40 @@
 import { TextField, UserAddCard } from '..'
 import '../../styles/views/search.scss'
 import { User } from '../models/User'
+import { searchUsers } from '../../helpers/api'
+import { useEffect, useState } from 'react'
 
 function SearchView() {
-    const templateUser: User = {
-        profilePic: "https://avatars.githubusercontent.com/u/24555587?s=460&u=60f5d30868fc8148ed0c65b7a863ec53431329b0&v=4",
-        nomeProprio: "Hugo", apelido: "Gomes",
-        email: "", username: "", uid: "", id: 1
+    const [ userList, setUserList ] = useState(Array<User>())
+    const [ searchTerm, setSearchTerm ] = useState("")
+
+    // useEffect(() => {
+    //     onInputChange("")
+    // }, [])
+
+    const onInputChange = async (searchTerm: string): Promise<void> => {
+        setSearchTerm(searchTerm)
+        try {
+            const users: Array<User> = await searchUsers(searchTerm, localStorage.getItem("authToken"))
+            setUserList(users)
+        } catch (e: any) {
+            console.log(e);
+        }
     }
 
     return <section className="search-view-container">
         <div className="content">
             <header>
                 <h2>Find new friends</h2>
-                <TextField placeholder="Search" onInputChange={(s: string) => console.log(s)}/>
+                <TextField placeholder="Search" onInputChange={onInputChange}/>
             </header>
 
             <div className="users-list">
-                 { new Array(15).fill(<UserAddCard userData={templateUser} />)}
+                { (userList.length === 0 && searchTerm == "") ? <h2>Search for the first name, last name or username</h2>
+                : userList.length > 0 
+                    ? userList.map((user: User) => <UserAddCard userData={user} key={ user.uid }/>) 
+                    : <h2>No users found</h2> }
+
             </div>
         </div>
     </section>

@@ -6,12 +6,10 @@ import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,14 +24,16 @@ public class FriendsController {
     }
 
     @GetMapping("/searchUser")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<List<User>> searchUser(@RequestParam String searchTerm) {
         List<User> users = searchTerm.isBlank() || searchTerm.isEmpty()
-                ? usersRepo.findAll()
+                ? new ArrayList<>()
                 : usersRepo.findByUserOrName(searchTerm.toLowerCase(Locale.ROOT));
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/sendFriendRequest")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<String> sendFriendRequest(@RequestHeader("Authorization") String token,
                                     @RequestParam Long newFriendId) {
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
@@ -61,7 +61,8 @@ public class FriendsController {
     }
 
     @GetMapping("/getUsers")
-    public ResponseEntity<List<User>> getUsers() {
+    @CrossOrigin(origins = "http://localhost:3000")
+        public ResponseEntity<List<User>> getUsers() {
         List<User> users = usersRepo.findAll();
         System.out.println(users);
         return ResponseEntity.ok(users);

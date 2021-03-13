@@ -26,6 +26,7 @@ public class Api {
     }
 
     @GetMapping("/getAuthUser")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<User> getAuthUser(@RequestHeader("Authorization") String token) {
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
         token = token.replace("Bearer ", "");

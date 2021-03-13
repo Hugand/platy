@@ -27,6 +27,7 @@ function LoginView() {
         if(authTokenParam !== null  && authTokenParam !== "") {
             localStorage.setItem('authToken', authTokenParam)
             setAuthToken(authTokenParam)
+
         }
     }
 

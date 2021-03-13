@@ -27,7 +27,7 @@ import java.util.Optional;
 public class CustomAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Autowired
     private UsersRepo usersRepo;
-    private String homeUrl = "http://localhost:3000/";
+    private String homeUrl = "http://localhost:3000/signin";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
