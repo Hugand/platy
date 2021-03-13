@@ -38,14 +38,20 @@ public class UsersTests {
         usersList.add(new User(2L, "Ze", "Cotrim", "profjam3"));
         usersList.add(new User(3L, "Mano", "Zezoca>", "zenabo"));
         usersList.get(0).setUid("123456789111");
+        usersList.get(1).setUid("223456789111");
+        usersList.get(2).setUid("323456789111");
         String authUserToken = "Bearer " + JwtTokenUtil.generateToken(usersList.get(0));
         String searchTerm = "zez";
 
         when(usersRepo.findByUserOrName(searchTerm)).thenReturn(usersList);
         when(usersRepo.findByUid(usersList.get(0).getUid())).thenReturn(java.util.Optional.ofNullable(usersList.get(0)));
 
+        List<User> expected = new ArrayList<>();
+        expected.add(usersList.get(1));
+        expected.add(usersList.get(2));
+
         ResponseEntity<SearchUserResponse> queryResult = friendsController.searchUser(searchTerm, authUserToken);
-        assertEquals(usersList, queryResult.getBody().getSearchedUsers());
+        assertEquals(expected, Objects.requireNonNull(queryResult.getBody()).getSearchedUsers());
     }
 
     @Test

@@ -9,6 +9,7 @@
     font-weight: 300;
     box-shadow: $box-shadow;
     transition: .3s;
+    outline: none;
 
     &:hover {
         box-shadow: $box-shadow-hovered;
@@ -18,6 +19,12 @@
 
 .btn-secondary {
     color: $primary-blue;
+    background-color: white;
+    font-weight: 500;
+}
+
+.btn-secondary-red {
+    color: $red;
     background-color: white;
     font-weight: 500;
 }

@@ -17,8 +17,16 @@ const searchUsers = (searchTerm: string, authToken: string | null): Promise<Sear
     }).then(res => res.json())
 }
 
-const sendFriendRequest = (userToBefriendId: Number, authToken: string): Promise<Map<string, string>> => {
+const sendFriendRequest = (userToBefriendId: Number, authToken: string): Promise<Object> => {
     return fetch(`${process.env.REACT_APP_API_URL}/sendFriendRequest?newFriendId=${userToBefriendId}`, {
+        headers: {
+            'Authorization': 'Bearer ' + authToken
+        }
+    }).then(res => res.json())
+}
+
+const cancelFriendRequest = (destinyUserId: Number, authToken: string): Promise<Object> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/cancelFriendRequest?destinyUserId=${destinyUserId}`, {
         headers: {
             'Authorization': 'Bearer ' + authToken
         }
@@ -28,5 +36,6 @@ const sendFriendRequest = (userToBefriendId: Number, authToken: string): Promise
 export {
     login,
     searchUsers,
-    sendFriendRequest
+    sendFriendRequest,
+    cancelFriendRequest
 }
