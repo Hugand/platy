@@ -45,7 +45,7 @@ function UserAddCard({ userData, cardType, refreshList }: UserAddCardProp) {
                 }
 
                 console.log(res)
-                if(res.status == "succe === CardType.STRANGER) {ess") {
+                if(res.status == "success") {
                     refreshList();
                 }
             } catch(e) {
