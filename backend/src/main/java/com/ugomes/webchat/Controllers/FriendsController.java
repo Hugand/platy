@@ -27,12 +27,15 @@ public class FriendsController {
     private User getUserFromToken(String token) {
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
         token = token.replace("Bearer ", "");
+        String authUserUid;
         try {
-            String authUserUid = jwtTokenUtil.getUidFromToken(token);
-            return usersRepo.findByUid(authUserUid).orElse(null);
-        } catch(Exception e) {
+            authUserUid = jwtTokenUtil.getUidFromToken(token);
+            if(authUserUid != null && !authUserUid.isBlank())
+                return usersRepo.findByUid(authUserUid).orElse(null);
+        } catch (Exception e) {
             return null;
         }
+        return null;
     }
 
     @GetMapping("/searchUser")
@@ -125,15 +128,14 @@ public class FriendsController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/getFriendsRequests")
-    public ResponseEntity<List<FriendsRequests>> getFriendsRequestsByDestinyUser(String token) {
+    @GetMapping("/getFriendRequests")
+    @Transactional
+    public ResponseEntity<List<FriendsRequests>> getFriendsRequestsByDestinyUser(@RequestHeader("Authorization") String token) {
         List<FriendsRequests> friendsRequests = new ArrayList<>();
         User authenticatedUser = this.getUserFromToken(token);
 
-        if(authenticatedUser == null)
-            return ResponseEntity.ok(friendsRequests);
-
-        friendsRequests = friendsRequestRepo.findByRequestDestinyUser(authenticatedUser);
+        if(authenticatedUser != null)
+            friendsRequests = friendsRequestRepo.findFriendsRequestsByRequestDestinyUser(authenticatedUser);
 
         return ResponseEntity.ok(friendsRequests);
     }

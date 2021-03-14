@@ -11,10 +11,10 @@ public class FriendsRequests {
     private Long id;
     private Instant requestDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private User requestOriginUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private User requestDestinyUser;
 
     public FriendsRequests() { }

@@ -15,7 +15,7 @@ function NavBar() {
         <Link to="/search">
             <button className="navbar-btn"><img src={searchIcon}/></button>
         </Link>
-        <Link to="/friends">
+        <Link to="/friend_requests">
             <button className="navbar-btn"><img src={friendsIcon}/></button>
         </Link>
         <button className="navbar-btn logout"><img src={logoutIcon}/></button>

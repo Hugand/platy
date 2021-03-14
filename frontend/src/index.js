@@ -21,6 +21,9 @@ ReactDOM.render(
           <Route path="/search">
             <comp.MainView contentComponent={<comp.SearchView/>}/>
           </Route>
+          <Route path="/friend_requests">
+            <comp.MainView contentComponent={<comp.FriendRequestsView/>}/>
+          </Route>
         </Switch>
     </Router>
   </React.StrictMode>,

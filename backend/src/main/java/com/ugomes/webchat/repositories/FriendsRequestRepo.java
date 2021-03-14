@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +17,8 @@ public interface FriendsRequestRepo extends JpaRepository<FriendsRequests, Long>
         return findFriendsRequestsByRequestOriginUserIdOrRequestDestinyUserId(userId, userId);
     }
 
-    List<FriendsRequests> findByRequestDestinyUser(User user);
+    //List<FriendsRequests> findByFriendReRequestDestinyUser(User user);
+    List<FriendsRequests> findFriendsRequestsByRequestDestinyUser(User user);
 
     List<FriendsRequests> findFriendsRequestsByRequestOriginUserIdOrRequestDestinyUserId(Long requestOriginUser_id, Long requestDestinyUser_id);
 

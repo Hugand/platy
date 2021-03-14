@@ -141,7 +141,7 @@ public class FriendsTests {
         friendsRequests.add(new FriendsRequests(2L, user3, authenticatedUser));
         friendsRequests.add(new FriendsRequests(3L, user4, authenticatedUser));
 
-        when(friendsRequestRepo.findByRequestDestinyUser(authenticatedUser)).thenReturn(friendsRequests);
+        when(friendsRequestRepo.findFriendsRequestsByRequestDestinyUser(authenticatedUser)).thenReturn(friendsRequests);
         when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
 
         ResponseEntity<List<FriendsRequests>> queryResponse = friendsController.getFriendsRequestsByDestinyUser(authUserToken);
@@ -163,7 +163,7 @@ public class FriendsTests {
         friendsRequests.add(new FriendsRequests(2L, user3, authenticatedUser));
         friendsRequests.add(new FriendsRequests(3L, user4, authenticatedUser));
 
-        when(friendsRequestRepo.findByRequestDestinyUser(authenticatedUser)).thenReturn(friendsRequests);
+        when(friendsRequestRepo.findFriendsRequestsByRequestDestinyUser(authenticatedUser)).thenReturn(friendsRequests);
         when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
 
         ResponseEntity<List<FriendsRequests>> queryResponse = friendsController.getFriendsRequestsByDestinyUser(authUserToken);

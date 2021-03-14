@@ -1,3 +1,4 @@
+import { FriendRequest } from "../components/models/FriendRequest"
 import { SearchUserResponse } from "../components/models/SearchUserResponse"
 import { User } from "../components/models/User"
 
@@ -33,9 +34,18 @@ const cancelFriendRequest = (destinyUserId: Number, authToken: string): Promise<
     }).then(res => res.json())
 }
 
+const getFriendRequestList = (authToken: string): Promise<Array<FriendRequest>> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/getFriendRequests`, {
+        headers: {
+            'Authorization': 'Bearer ' + authToken
+        }
+    }).then(res => res.json())
+}
+
 export {
     login,
     searchUsers,
     sendFriendRequest,
-    cancelFriendRequest
+    cancelFriendRequest,
+    getFriendRequestList
 }

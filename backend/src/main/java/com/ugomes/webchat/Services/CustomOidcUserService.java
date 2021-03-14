@@ -9,9 +9,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.lang.reflect.Array;
+import java.util.*;
 
 @Service
 public class CustomOidcUserService extends OidcUserService {
@@ -37,7 +36,7 @@ public class CustomOidcUserService extends OidcUserService {
         userInfo.setNomeProprio((String) attributes.get("given_name"));
         userInfo.setApelido((String) attributes.get("family_name"));
 
-        usersRepo.save(userInfo);
+        usersRepo.saveAll(Collections.singletonList(userInfo));
         return oidcUser;
     }
 
