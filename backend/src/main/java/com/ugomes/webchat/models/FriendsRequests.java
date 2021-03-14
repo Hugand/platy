@@ -30,7 +30,6 @@ public class FriendsRequests {
         this.requestDestinyUser = requestDestinyUser;
     }
 
-
     public Long getId() {
         return id;
     }

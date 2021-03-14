@@ -42,10 +42,19 @@ const getFriendRequestList = (authToken: string): Promise<Array<FriendRequest>> 
     }).then(res => res.json())
 }
 
+const acceptFriendRequest = (friendRequestId: Number, authToken: string): Promise<Object> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/acceptFriendRequest?friendRequestId=${friendRequestId}`, {
+        headers: {
+            'Authorization': 'Bearer ' + authToken
+        }
+    }).then(res => res.json())
+}
+
 export {
     login,
     searchUsers,
     sendFriendRequest,
     cancelFriendRequest,
-    getFriendRequestList
+    getFriendRequestList,
+    acceptFriendRequest
 }

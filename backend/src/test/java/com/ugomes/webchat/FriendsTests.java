@@ -2,8 +2,10 @@ package com.ugomes.webchat;
 
 import com.ugomes.webchat.Controllers.FriendsController;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
+import com.ugomes.webchat.models.Friends;
 import com.ugomes.webchat.models.FriendsRequests;
 import com.ugomes.webchat.models.User;
+import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -24,12 +26,13 @@ import static org.mockito.Mockito.when;
 public class FriendsTests {
     private final UsersRepo usersRepo = Mockito.mock(UsersRepo.class);
     private final FriendsRequestRepo friendsRequestRepo = Mockito.mock(FriendsRequestRepo.class);
+    private final FriendsRepo friendsRepo = Mockito.mock(FriendsRepo.class);
 
     private FriendsController friendsController;
 
     @BeforeEach
     void initUseCase() {
-        friendsController = new FriendsController(usersRepo, friendsRequestRepo);
+        friendsController = new FriendsController(usersRepo, friendsRequestRepo, friendsRepo);
     }
 
     @Test
@@ -132,7 +135,7 @@ public class FriendsTests {
         User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
         User user2 = new User(2L, "Johny", "Bravo", "strong_blonde");
         User user3 = new User(3L, "Mano", "Zezoca", "zenabo");
-        User user4 = new User(3L, "Mano", "Bro", "manobro_drenado");
+        User user4 = new User(4L, "Mano", "Bro", "manobro_drenado");
         authenticatedUser.setUid("123456789111");
         String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
 
@@ -154,7 +157,7 @@ public class FriendsTests {
         User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
         User user2 = new User(2L, "Johny", "Bravo", "strong_blonde");
         User user3 = new User(3L, "Mano", "Zezoca", "zenabo");
-        User user4 = new User(3L, "Mano", "Bro", "manobro_drenado");
+        User user4 = new User(4L, "Mano", "Bro", "manobro_drenado");
         authenticatedUser.setUid("123456789111");
         String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser) + "a12b";
 
@@ -168,6 +171,32 @@ public class FriendsTests {
 
         ResponseEntity<List<FriendsRequests>> queryResponse = friendsController.getFriendsRequestsByDestinyUser(authUserToken);
 
-        assertEquals(0, queryResponse.getBody().size());
+        assertEquals(0, Objects.requireNonNull(queryResponse.getBody()).size());
+    }
+
+    @Test
+    void acceptExistingFriendRequest() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        User user2 = new User(2L, "Johny", "Bravo", "strong_blonde");
+        authenticatedUser.setUid("123456789111");
+        FriendsRequests friendsRequests = new FriendsRequests(1L, user2, authenticatedUser);
+
+        when(friendsRequestRepo.findById(1L)).thenReturn(Optional.of(friendsRequests));
+
+        ResponseEntity<Map<String, Object>> resp = friendsController.acceptFriendRequest(1L);
+
+        assertEquals("success", Objects.requireNonNull(resp.getBody()).get("status"));
+        assertTrue(resp.getBody().containsKey("savedFriend"));
+    }
+
+    @Test
+    void acceptNonExistingFriendRequest() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+
+        ResponseEntity<Map<String, Object>> resp = friendsController.acceptFriendRequest(2L);
+
+        assertEquals("failed", Objects.requireNonNull(resp.getBody()).get("status"));
+        assertFalse(resp.getBody().containsKey("savedFriend"));
     }
 }

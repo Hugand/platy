@@ -3,7 +3,9 @@ package com.ugomes.webchat;
 import com.ugomes.webchat.ApiResponses.SearchUserResponse;
 import com.ugomes.webchat.Controllers.FriendsController;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
+import com.ugomes.webchat.models.Friends;
 import com.ugomes.webchat.models.User;
+import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,12 +25,13 @@ import static org.mockito.Mockito.when;
 public class UsersTests {
     private final UsersRepo usersRepo = Mockito.mock(UsersRepo.class);
     private final FriendsRequestRepo friendsRequestRepo = Mockito.mock(FriendsRequestRepo.class);
+    private final FriendsRepo friendsRepo = Mockito.mock(FriendsRepo.class);
 
     private FriendsController friendsController;
 
     @BeforeEach
     void initUseCase() {
-        friendsController = new FriendsController(usersRepo, friendsRequestRepo);
+        friendsController = new FriendsController(usersRepo, friendsRequestRepo, friendsRepo);
     }
 
     @Test

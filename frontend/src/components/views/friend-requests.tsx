@@ -31,7 +31,12 @@ function FriendRequestsView() {
             <div className="users-list">
                 { friendRequests.length === 0
                 ? <h2>No incoming friend requests</h2>
-                : friendRequests.map(fr => <FriendRequestAcceptCard userData={fr.requestOriginUser}/>) }
+                : friendRequests.map(fr => 
+                    <FriendRequestAcceptCard 
+                        key={fr.id}
+                        userData={fr.requestOriginUser}
+                        friendRequestId={fr.id}
+                        refreshList={getFriendRequestsData}/>) }
             </div>
         </div>
     </section>

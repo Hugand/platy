@@ -5,6 +5,7 @@ import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.Friends;
 import com.ugomes.webchat.models.FriendsRequests;
 import com.ugomes.webchat.models.User;
+import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +19,12 @@ import java.util.*;
 public class FriendsController {
     final UsersRepo usersRepo;
     final FriendsRequestRepo friendsRequestRepo;
+    final FriendsRepo friendsRepo;
 
-    public FriendsController(UsersRepo usersRepo, FriendsRequestRepo friendsRequestRepo) {
+    public FriendsController(UsersRepo usersRepo, FriendsRequestRepo friendsRequestRepo, FriendsRepo friendsRepo) {
         this.usersRepo = usersRepo;
         this.friendsRequestRepo = friendsRequestRepo;
+        this.friendsRepo = friendsRepo;
     }
 
     private User getUserFromToken(String token) {
@@ -102,6 +105,7 @@ public class FriendsController {
     }
 
     @GetMapping("/cancelFriendRequest")
+    @CrossOrigin(origins = "http://localhost:3000")
     @Transactional
     public ResponseEntity<Map<String, String>> cancelFriendRequest(@RequestHeader("Authorization") String token,
                                                       @RequestParam Long destinyUserId) {
@@ -129,6 +133,7 @@ public class FriendsController {
     }
 
     @GetMapping("/getFriendRequests")
+    @CrossOrigin(origins = "http://localhost:3000")
     @Transactional
     public ResponseEntity<List<FriendsRequests>> getFriendsRequestsByDestinyUser(@RequestHeader("Authorization") String token) {
         List<FriendsRequests> friendsRequests = new ArrayList<>();
@@ -138,5 +143,30 @@ public class FriendsController {
             friendsRequests = friendsRequestRepo.findFriendsRequestsByRequestDestinyUser(authenticatedUser);
 
         return ResponseEntity.ok(friendsRequests);
+    }
+
+    @GetMapping("/acceptFriendRequest")
+    @CrossOrigin(origins = "http://localhost:3000")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> acceptFriendRequest(@RequestParam Long friendRequestId) {
+        Map<String, Object> response = new HashMap<>();
+        FriendsRequests currFriendsRequests = friendsRequestRepo.findById(friendRequestId).orElse(null);
+
+        if(currFriendsRequests == null)
+            response.put("status", "failed");
+        else {
+            Friends friends = new Friends(
+                    currFriendsRequests.getRequestOriginUser(),
+                    currFriendsRequests.getRequestDestinyUser(),
+                    Clock.systemUTC().instant());
+
+            friendsRequestRepo.delete(currFriendsRequests);
+
+            Friends savedFriend = friendsRepo.save(friends);
+            response.put("status", "success");
+            response.put("savedFriend", savedFriend);
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

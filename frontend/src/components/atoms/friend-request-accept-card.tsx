@@ -1,13 +1,23 @@
 import { User } from "../models/User"
+import { acceptFriendRequest } from '../../helpers/api'
 
 type FRAcceptCardProps = {
     userData: User
+    friendRequestId: number
+    refreshList: Function
 }
 
-function FriendRequestAcceptCard({ userData }: FRAcceptCardProps) {
+function FriendRequestAcceptCard({ userData, friendRequestId, refreshList }: FRAcceptCardProps) {
 
-    const acceptFriendRequest = () => {
+    const acceptFriendRequestHandler = async () => {
+        const authToken: string = localStorage.getItem("authToken")?.toString() 
+            || localStorage.getItem("authToken")!.toString()
+        
+        const resp: any = await acceptFriendRequest(friendRequestId, authToken)
 
+        console.log(resp)
+        if(resp.status === "success")
+            refreshList()
     }
 
     return <article className="user-add-card">
@@ -15,7 +25,7 @@ function FriendRequestAcceptCard({ userData }: FRAcceptCardProps) {
         <label>{ userData.nomeProprio + " " + userData.apelido }</label>
         <button 
             className="btn"
-            onClick={acceptFriendRequest}>Accept</button>
+            onClick={acceptFriendRequestHandler}>Accept</button>
     </article>
 }
 
