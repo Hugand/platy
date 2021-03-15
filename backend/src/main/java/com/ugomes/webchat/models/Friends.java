@@ -1,7 +1,6 @@
 package com.ugomes.webchat.models;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.Instant;
 
 @Entity
@@ -17,6 +16,8 @@ public class Friends {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     private User user2;
+
+    public Friends() { }
 
     public Friends(User user1, User user2, Instant friendshipDate) {
         this.user1 = user1;

@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,11 +49,11 @@ public class FriendsTests {
 
         ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
 
-        assertEquals("success", queryResult.getBody().get("status"));
+        assertEquals("success", Objects.requireNonNull(queryResult.getBody()).get("status"));
     }
 
     @Test
-    void sendAlreadyExistingFriendRequestBySameOriginUser() {
+    void dontSendAlreadyExistingFriendRequestBySameOriginUser() {
         User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
         User userToBefriend = new User(2L, "Johny", "Bravo", "strong_blonde");
         authenticatedUser.setUid("123456789111");
@@ -67,11 +68,11 @@ public class FriendsTests {
 
         ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
 
-        assertEquals("failed", queryResult.getBody().get("status"));
+        assertEquals("failed", Objects.requireNonNull(queryResult.getBody()).get("status"));
     }
 
     @Test
-    void sendFriendRequestByGivingWrongId() {
+    void dontSendFriendRequestByGivingWrongId() {
         User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
         User userToBefriend = new User(2L, "Johny", "Bravo", "strong_blonde");
         authenticatedUser.setUid("123456789111");
@@ -83,11 +84,11 @@ public class FriendsTests {
 
         ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, 3L);
 
-        assertEquals("failed", queryResult.getBody().get("status"));
+        assertEquals("failed", Objects.requireNonNull(queryResult.getBody()).get("status"));
     }
 
     @Test
-    void sendFriendRequestByGivingWrongToken() {
+    void dontSendFriendRequestByGivingWrongToken() {
         User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
         User userToBefriend = new User(2L, "Johny", "Bravo", "strong_blonde");
         authenticatedUser.setUid("123456789111");
@@ -100,7 +101,7 @@ public class FriendsTests {
 
         ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
 
-        assertEquals("failed", queryResult.getBody().get("status"));
+        assertEquals("failed", Objects.requireNonNull(queryResult.getBody()).get("status"));
     }
 
     @Test
@@ -120,7 +121,6 @@ public class FriendsTests {
     @Test
     void cancelExistingFriendRequestByDestinyUserId() {
         User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
-        User userToBefriend = new User(2L, "Johny", "Bravo", "strong_blonde");
         authenticatedUser.setUid("123456789111");
         String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
 
@@ -190,7 +190,7 @@ public class FriendsTests {
     }
 
     @Test
-    void acceptNonExistingFriendRequest() {
+    void dontAcceptNonExistingFriendRequest() {
         User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
         authenticatedUser.setUid("123456789111");
 
@@ -198,5 +198,40 @@ public class FriendsTests {
 
         assertEquals("failed", Objects.requireNonNull(resp.getBody()).get("status"));
         assertFalse(resp.getBody().containsKey("savedFriend"));
+    }
+
+    @Test
+    void dontAcceptFriendRequestIfFriendshipExists() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        User user2 = new User(2L, "Johny", "Bravo", "strong_blonde");
+        FriendsRequests friendsRequests = new FriendsRequests(1L, user2, authenticatedUser);
+        Friends existingFriendship = new Friends(authenticatedUser, user2, Clock.systemUTC().instant());
+
+        when(friendsRepo.findFriendsByUser1AndUser2(any(User.class), any(User.class))).thenReturn(Optional.of(existingFriendship));
+        when(friendsRequestRepo.findById(1L)).thenReturn(Optional.of(friendsRequests));
+
+        ResponseEntity<Map<String, Object>> resp = friendsController.acceptFriendRequest(1L);
+
+        assertEquals("failed", Objects.requireNonNull(resp.getBody()).get("status"));
+        assertFalse(resp.getBody().containsKey("savedFriend"));
+    }
+
+    @Test
+    void failToSendFriendRequestIfFriendshipExists() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        User userToBefriend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+        Friends existingFriendship = new Friends(authenticatedUser, userToBefriend, Clock.systemUTC().instant());
+
+        when(friendsRepo.findFriendsByUser1AndUser2(any(User.class), any(User.class))).thenReturn(Optional.of(existingFriendship));
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(usersRepo.findById(userToBefriend.getId())).thenReturn(Optional.of(userToBefriend));
+        when(friendsRequestRepo.save(any(FriendsRequests.class))).then(returnsFirstArg());
+
+        ResponseEntity<Map<String, String>> queryResult = friendsController.sendFriendRequest(authUserToken, userToBefriend.getId());
+
+        assertEquals("failed", Objects.requireNonNull(queryResult.getBody()).get("status"));
     }
 }

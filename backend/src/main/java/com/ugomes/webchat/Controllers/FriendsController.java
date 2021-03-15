@@ -59,13 +59,20 @@ public class FriendsController {
         users.removeIf(user -> (user != null && user.getUid().equals(authUser.getUid())));
 
         List<FriendsRequests> friendsRequestsByAuthUser = friendsRequestRepo.findByOriginOrDestinyId(authUser.getId());
+        List<Friends> friendsList = friendsRepo.findFriendsByUser(authUser);
 
         for(FriendsRequests fr : friendsRequestsByAuthUser) {
-            if(fr.getRequestOriginUser().getId().equals(authUser.getId())) {
+            if(fr.getRequestOriginUser().getId().equals(authUser.getId()))
                 friendRequestsTargetUserId.add(fr.getRequestDestinyUser().getId());
-            } else {
+            else
                 friendRequestsTargetUserId.add(fr.getRequestOriginUser().getId());
-            }
+        }
+
+        for(Friends f : friendsList) {
+            if(f.getUser1().getId().equals(authUser.getId()))
+                friendUsersId.add(f.getUser2().getId());
+            else if(f.getUser2().getId().equals(authUser.getId()))
+                friendUsersId.add(f.getUser1().getId());
         }
 
         return ResponseEntity.ok(new SearchUserResponse(users, friendRequestsTargetUserId, friendUsersId));
@@ -79,8 +86,10 @@ public class FriendsController {
         Map<String, String> resBody = new HashMap<>();
         User authUser = this.getUserFromToken(token);
         User userToBefriend = usersRepo.findById(newFriendId).orElse(null);
+        Friends existingFriendship = friendsRepo.findFriendsByUser1AndUser2(authUser, userToBefriend).orElse(null);
 
-        if(userToBefriend == null || authUser == null) {
+
+        if(userToBefriend == null || authUser == null || existingFriendship != null) {
             resBody.put("status", "failed");
             return ResponseEntity.ok(resBody);
         }
@@ -155,16 +164,20 @@ public class FriendsController {
         if(currFriendsRequests == null)
             response.put("status", "failed");
         else {
-            Friends friends = new Friends(
-                    currFriendsRequests.getRequestOriginUser(),
-                    currFriendsRequests.getRequestDestinyUser(),
-                    Clock.systemUTC().instant());
+            User userOrigin = currFriendsRequests.getRequestOriginUser();
+            User userDestiny = currFriendsRequests.getRequestDestinyUser();
 
-            friendsRequestRepo.delete(currFriendsRequests);
+            Friends existingFriendship = friendsRepo.findFriendsByUser1AndUser2(userOrigin, userDestiny).orElse(null);
 
-            Friends savedFriend = friendsRepo.save(friends);
-            response.put("status", "success");
-            response.put("savedFriend", savedFriend);
+            if(existingFriendship == null) {
+                Friends friends = new Friends(userOrigin, userDestiny, Clock.systemUTC().instant());
+                friendsRequestRepo.delete(currFriendsRequests);
+
+                Friends savedFriend = friendsRepo.save(friends);
+                response.put("status", "success");
+                response.put("savedFriend", savedFriend);
+            } else
+                response.put("status", "failed");
         }
 
         return ResponseEntity.ok(response);
