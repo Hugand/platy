@@ -234,4 +234,56 @@ public class FriendsTests {
 
         assertEquals("failed", Objects.requireNonNull(queryResult.getBody()).get("status"));
     }
+
+    @Test
+    void succeedToGetFriendsList() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        User user2 = new User(2L, "Johny", "Bravo", "strong_blonde");
+        User user3 = new User(3L, "Mano", "Zezoca", "zenabo");
+        User user4 = new User(4L, "Mano", "Bro", "manobro_drenado");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+        List<Friends> friendsList = new ArrayList<>();
+        friendsList.add(new Friends(1L, authenticatedUser, user2, Clock.systemUTC().instant()));
+        friendsList.add(new Friends(2L, user3, authenticatedUser, Clock.systemUTC().instant()));
+        friendsList.add(new Friends(3L, user4, authenticatedUser, Clock.systemUTC().instant()));
+
+        List<User> friendsUserList = new ArrayList<>();
+        friendsUserList.add(user2);
+        friendsUserList.add(user3);
+        friendsUserList.add(user4);
+
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(friendsRepo.findFriendsByUser(authenticatedUser)).thenReturn(friendsList);
+
+        ResponseEntity<List<User>> queryResult = friendsController.getFriendsList(authUserToken);
+
+        assertEquals(friendsUserList.size(), Objects.requireNonNull(queryResult.getBody()).size());
+        assertEquals(friendsUserList, Objects.requireNonNull(queryResult.getBody()));
+    }
+
+    @Test
+    void failToGetFriendsListByWrongToken() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        User user2 = new User(2L, "Johny", "Bravo", "strong_blonde");
+        User user3 = new User(3L, "Mano", "Zezoca", "zenabo");
+        User user4 = new User(4L, "Mano", "Bro", "manobro_drenado");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser) + "dsada";
+        List<Friends> friendsList = new ArrayList<>();
+        friendsList.add(new Friends(1L, authenticatedUser, user2, Clock.systemUTC().instant()));
+        friendsList.add(new Friends(2L, user3, authenticatedUser, Clock.systemUTC().instant()));
+        friendsList.add(new Friends(3L, user4, authenticatedUser, Clock.systemUTC().instant()));
+
+        List<User> friendsUserList = new ArrayList<>();
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(friendsRepo.findFriendsByUser(authenticatedUser)).thenReturn(friendsList);
+
+        ResponseEntity<List<User>> queryResult = friendsController.getFriendsList(authUserToken);
+
+        assertEquals(0, Objects.requireNonNull(queryResult.getBody()).size());
+        assertEquals(friendsUserList, Objects.requireNonNull(queryResult.getBody()));
+    }
 }

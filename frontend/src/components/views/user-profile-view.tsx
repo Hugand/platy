@@ -16,19 +16,18 @@ const customStyles = {
 function UserProfileView() {
     // const [ userData, setUserData ] = useState(new UserData())
     const [ { userData }, dispatch ] = useStateValue()
-    const [ isModalOpen, setIsModalOpen ] = useState(false)
+    const [ isEditModalOpen, setIsEditModalOpen ] = useState(false)
+    const [ isFriendsModalOpen, setIsFriendsModalOpen ] = useState(false)
 
     useEffect(() => {
         refreshProfile()
     }, [])
     
-    const closeModal = () => {
-        setIsModalOpen(false)
-    }
+    const openEditModal = () => { setIsEditModalOpen(true) }
+    const closeEditModal = () => { setIsEditModalOpen(false) }
 
-    const openModal = () => {
-        setIsModalOpen(true)
-    }
+    const openFriendsModal = () => { setIsFriendsModalOpen(true) }
+    const closeFriendsModal = () => { setIsFriendsModalOpen(false) }
 
     const refreshProfile = async () => {
         const authToken: string = localStorage.getItem("authToken") || ""
@@ -51,22 +50,33 @@ function UserProfileView() {
                 <img src={ `data:image/png;base64, ${userData.user.profilePic}` } alt="profile pic"/>
                 <h1>{ `${userData.user.nomeProprio} ${userData.user.apelido}` }</h1>
                 <h2>{ userData.user.username }</h2>
-                <h3>{ userData.friendsCount } friends</h3>
-                <button className="btn" onClick={openModal}>Edit</button>
+                <button className="text-btn" onClick={openFriendsModal}>{ userData.friendsCount } friends</button>
+                <button className="btn" onClick={openEditModal}>Edit</button>
                 <hr/>
                 <button className="btn btn-secondary">Logout</button>
             </div>
         </section>
 
         <Modal
-            isOpen={isModalOpen}
+            isOpen={isEditModalOpen}
             onAfterClose={refreshProfile}
-            onRequestClose={closeModal}
+            onRequestClose={closeEditModal}
             style={customStyles}
             ariaHideApp={false}>
             <EditProfileModal
                 user={userData.user}
-                closeModal={closeModal}/>
+                closeModal={closeEditModal}/>
+        </Modal>
+
+        <Modal
+            isOpen={isFriendsModalOpen}
+            onAfterClose={refreshProfile}
+            onRequestClose={closeFriendsModal}
+            style={customStyles}
+            ariaHideApp={false}>
+            <EditProfileModal
+                user={userData.user}
+                closeModal={closeFriendsModal}/>
         </Modal>
    </section>
 }

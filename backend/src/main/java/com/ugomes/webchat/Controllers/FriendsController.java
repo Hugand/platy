@@ -8,6 +8,7 @@ import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -181,5 +182,28 @@ public class FriendsController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getFriendsList")
+    public ResponseEntity<List<User>> getFriendsList(@RequestHeader("Authorization") String token) {
+        List<User> friendsList = new ArrayList<>();
+        User authenticatedUser = this.getUserFromToken(token);
+
+        if(authenticatedUser == null)
+            return ResponseEntity.ok(friendsList);
+
+        List<Friends> friendsObjList = friendsRepo.findFriendsByUser(authenticatedUser);
+
+        if(friendsObjList == null)
+            return ResponseEntity.ok(friendsList);
+
+        for(Friends friendship : friendsObjList) {
+            if(friendship.getUser1().equals(authenticatedUser))
+                friendsList.add(friendship.getUser2());
+            else if(friendship.getUser2().equals(authenticatedUser))
+                friendsList.add(friendship.getUser1());
+        }
+
+        return ResponseEntity.ok(friendsList);
     }
 }

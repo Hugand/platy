@@ -53,11 +53,21 @@
                 margin-bottom: 1rem;
             }
     
-            h3 {
+            .text-btn {
                 width: fit-content;
+                display: block;
                 margin: 0 auto;
                 margin-bottom: 2.5rem;
                 color: $grey;
+                background-color: transparent;
+                border: 0;
+                transition: .2s;
+                outline: none;
+
+                &:hover {
+                    text-decoration: underline;
+                    cursor: pointer;
+                }
             }
     
             .btn {

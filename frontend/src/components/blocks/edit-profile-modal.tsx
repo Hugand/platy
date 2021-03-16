@@ -3,7 +3,6 @@ import TextField from "../atoms/text-field"
 import '../../styles/blocks/edit-profile-modal.scss'
 import { useState, useEffect } from "react"
 import { updateUser } from "../../helpers/api"
-import { UserInfo } from "os"
 
 type EditProfileModalProps = {
     user: User;
