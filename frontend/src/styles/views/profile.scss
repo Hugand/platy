@@ -24,7 +24,7 @@
             height: 8.5rem;
             background-color: $primary-blue;
             position: absolute;
-            border-radius: $border-radius-big;
+            border-radius: $border-radius-big $border-radius-big 0 0;
         }
 
         img {

@@ -7,28 +7,32 @@ import {
   Route,
 } from "react-router-dom";
 import * as comp from './components/index'
+import { initialState, reducer } from './globalState'
+import { StateProvider } from './state'
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-        <Switch>
-          <Route path="/signin" exact={true}>
-            <comp.LoginView />
-          </Route>
-          <Route exact path="/">
-            <comp.MainView contentComponent={<comp.HomeView/>}/>
-          </Route>
-          <Route path="/search">
-            <comp.MainView contentComponent={<comp.SearchView/>}/>
-          </Route>
-          <Route path="/friend_requests">
-            <comp.MainView contentComponent={<comp.FriendRequestsView/>}/>
-          </Route>
-          <Route path="/profile">
-            <comp.MainView contentComponent={<comp.UserProfileViewfrom/>}/>
-          </Route>
-        </Switch>
-    </Router>
+    <StateProvider initialState={initialState} reducer={reducer}>
+      <Router>
+          <Switch>
+            <Route path="/signin" exact={true}>
+              <comp.LoginView />
+            </Route>
+            <Route exact path="/">
+              <comp.MainView contentComponent={<comp.HomeView/>}/>
+            </Route>
+            <Route path="/search">
+              <comp.MainView contentComponent={<comp.SearchView/>}/>
+            </Route>
+            <Route path="/friend_requests">
+              <comp.MainView contentComponent={<comp.FriendRequestsView/>}/>
+            </Route>
+            <Route path="/profile">
+              <comp.MainView contentComponent={<comp.UserProfileViewfrom/>}/>
+            </Route>
+          </Switch>
+      </Router>
+    </StateProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

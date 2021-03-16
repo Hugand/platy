@@ -1,7 +1,9 @@
 package com.ugomes.webchat;
 
 import com.ugomes.webchat.ApiResponses.SearchUserResponse;
+import com.ugomes.webchat.ApiResponses.UserData;
 import com.ugomes.webchat.Controllers.FriendsController;
+import com.ugomes.webchat.Controllers.UsersController;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.Friends;
 import com.ugomes.webchat.models.User;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @Service
@@ -28,10 +31,12 @@ public class UsersTests {
     private final FriendsRepo friendsRepo = Mockito.mock(FriendsRepo.class);
 
     private FriendsController friendsController;
+    private UsersController usersController;
 
     @BeforeEach
     void initUseCase() {
         friendsController = new FriendsController(usersRepo, friendsRequestRepo, friendsRepo);
+        usersController = new UsersController(usersRepo, friendsRequestRepo, friendsRepo);
     }
 
     @Test
@@ -73,6 +78,36 @@ public class UsersTests {
 
         ResponseEntity<SearchUserResponse> queryResult = friendsController.searchUser(searchTerm, authUserToken);
         assertEquals(0, Objects.requireNonNull(queryResult.getBody()).getSearchedUsers().size());
+    }
+
+    @Test
+    void getUserDataWithValidAuthToken() {
+        User user = new User(1L,"Hugo", "Gomes", "zezoca11");
+        user.setUid("123123123123");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(user);
+
+        when(usersRepo.findByUid(user.getUid())).thenReturn(java.util.Optional.of(user));
+        when(friendsRepo.countFriendsByUser1OrUser2(user, user)).thenReturn(1);
+
+        ResponseEntity<UserData> queryResult = usersController.getUserData(authUserToken);
+
+        assertEquals(user, Objects.requireNonNull(queryResult.getBody()).getUser());
+        assertEquals(1, queryResult.getBody().getFriendsCount());
+    }
+
+    @Test
+    void dontGetUserDataWithInvalidAuthToken() {
+        User user = new User(1L,"Hugo", "Gomes", "zezoca11");
+        user.setUid("123123123123");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(user) + "das";
+
+        when(usersRepo.findByUid(user.getUid())).thenReturn(java.util.Optional.of(user));
+        when(friendsRepo.countFriendsByUser1OrUser2(user, user)).thenReturn(1);
+
+        ResponseEntity<UserData> queryResult = usersController.getUserData(authUserToken);
+
+        assertNull(Objects.requireNonNull(queryResult.getBody()).getUser());
+        assertEquals(0, queryResult.getBody().getFriendsCount());
     }
 
 }

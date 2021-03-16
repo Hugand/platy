@@ -2,7 +2,7 @@ import { TextField, UserAddCard } from '..'
 import '../../styles/views/search.scss'
 import { User } from '../models/User'
 import { searchUsers } from '../../helpers/api'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { SearchUserResponse } from '../models/SearchUserResponse'
 import { CardType } from '../models/Enums'
 
@@ -37,7 +37,7 @@ function SearchView() {
             </header>
 
             <div className="users-list">
-                { (searchResults.searchedUsers.length === 0 && searchTerm == "") ? <h2>Search for the name or username</h2>
+                { (searchResults.searchedUsers.length === 0 && searchTerm === "") ? <h2>Search for the name or username</h2>
                 : searchResults.searchedUsers.length > 0 
                     ? searchResults.searchedUsers.map((user: User) => 
                         <UserAddCard

@@ -40,8 +40,13 @@ public class UsersController {
     @GetMapping("/getUserData")
     public ResponseEntity<UserData> getUserData(@RequestHeader("Authorization") String token) {
         User user = this.getUserFromToken(token);
-        int friendsCount = friendsRepo.countFriendsByUser1OrUser2(user, user);
-        UserData userData = new UserData(user, friendsCount);
+        UserData userData = new UserData();
+
+        if(user != null) {
+            int friendsCount = friendsRepo.countFriendsByUser1OrUser2(user, user);
+            userData.setUser(user);
+            userData.setFriendsCount(friendsCount);
+        }
 
         return ResponseEntity.ok(userData);
     }
