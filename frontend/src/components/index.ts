@@ -5,6 +5,7 @@ import MainView from './views/main-view'
 import HomeView from './views/home-view'
 import SearchView from './views/search-view'
 import FriendRequestsView from './views/friend-requests'
+import UserProfileViewfrom from './views/user-profile-view'
 
 // Importing blocks
 import NavBar from './blocks/nav-bar'
@@ -23,6 +24,7 @@ export {
     HomeView,
     SearchView,
     FriendRequestsView,
+    UserProfileViewfrom,
 
     // Blocks
     NavBar,

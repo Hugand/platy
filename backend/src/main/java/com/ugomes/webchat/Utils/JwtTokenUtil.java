@@ -21,6 +21,7 @@ public class JwtTokenUtil implements Serializable {
         return (String) getClaimFromToken(token, "SUBJECT");
     }
 
+
     public Date getExpirationDateFromToken(String token) {
         return (Date) getClaimFromToken(token, "EXPIRATION");
     }

@@ -1,0 +1,77 @@
+@import "../resources/variables.scss";
+
+.content-container {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: auto fit-content(100px) auto;
+    grid-template-rows: auto fit-content(100px) auto;
+
+    .profile-container {
+        width: fit-content;
+        height: fit-content;
+        grid-column: 2;
+        grid-row: 2;
+        box-shadow: $box-shadow;
+        background-color: white;
+        border-radius: $border-radius-big;
+        position: relative;
+        // width: 400px;
+        // height: 700px;
+
+        .banner {
+            width: 100%;
+            height: 8.5rem;
+            background-color: $primary-blue;
+            position: absolute;
+            border-radius: $border-radius-big;
+        }
+
+        img {
+            position: absolute;
+            width: 7.75rem;
+            height: 7.75rem;
+            border-radius: 100%;
+            transform: translate(-50%, -50%);
+            top: 8.5rem;
+            left: 50%;
+        }
+
+        .profile-content {
+            margin: 14rem 3.5rem;
+            margin-bottom: 5rem;
+
+            h1 {
+                margin: 0 auto;
+            }
+    
+            h2 {
+                margin: 0 auto;
+                font-size: 1.5rem;
+                font-weight: 300;
+                width: fit-content;
+                margin-bottom: 1rem;
+            }
+    
+            h3 {
+                width: fit-content;
+                margin: 0 auto;
+                margin-bottom: 2.5rem;
+                color: $grey;
+            }
+    
+            .btn {
+                padding: .5rem 1.5rem;
+                min-width: 18.75rem;
+                width: 100%;
+            }
+            
+            hr {
+                width: 80%;
+                border-color: #ccd9e0;
+                margin-top: 3rem;
+                margin-bottom: 2rem;
+            }
+        }
+    }   
+}

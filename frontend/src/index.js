@@ -24,6 +24,9 @@ ReactDOM.render(
           <Route path="/friend_requests">
             <comp.MainView contentComponent={<comp.FriendRequestsView/>}/>
           </Route>
+          <Route path="/profile">
+            <comp.MainView contentComponent={<comp.UserProfileViewfrom/>}/>
+          </Route>
         </Switch>
     </Router>
   </React.StrictMode>,
