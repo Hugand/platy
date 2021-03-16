@@ -1,7 +1,7 @@
 import { useStateValue } from '../../state'
 import '../../styles/views/profile.scss'
 import Modal from 'react-modal';
-import EditProfileModal from '../blocks/edit-profile-modal';
+import { EditProfileModal, FriendsListModal } from '..';
 import { useEffect, useState } from 'react';
 import { GlobalStateAction } from '../../globalState';
 import { getUserData } from '../../helpers/api';
@@ -74,8 +74,7 @@ function UserProfileView() {
             onRequestClose={closeFriendsModal}
             style={customStyles}
             ariaHideApp={false}>
-            <EditProfileModal
-                user={userData.user}
+            <FriendsListModal
                 closeModal={closeFriendsModal}/>
         </Modal>
    </section>

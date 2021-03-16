@@ -60,7 +60,7 @@ const getUserData = (authToken: string): Promise<UserData> => {
 
 }
 
-const updateUser = (user: User, file: File, authToken: string): any => {
+const updateUser = (user: User, file: File, authToken: string): Promise<boolean> => {
     const formData: FormData = new FormData()
     formData.append("file", file);
     formData.append("user", JSON.stringify(user));
@@ -71,6 +71,14 @@ const updateUser = (user: User, file: File, authToken: string): any => {
             'Authorization': 'Bearer ' + authToken
         },
         body: formData
+    }).then(res => res.json())
+}
+
+const getFriendsList = (authToken: string): Promise<Array<User>> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/getFriendsList`, {
+        headers: {
+            'Authorization': 'Bearer ' + authToken
+        }
     }).then(res => res.json())
 }
 
@@ -88,5 +96,6 @@ export {
     acceptFriendRequest,
     getUserData,
     updateUser,
+    getFriendsList,
     logout
 }

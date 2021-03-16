@@ -1,0 +1,26 @@
+@import "../resources/variables.scss";
+
+.friends-list {
+    position: relative;
+    width: 70vw;
+
+    .close-btn {
+        position: absolute;
+        top: .0rem;
+        right: .0rem;
+        width: fit-content;
+        height: fit-content;
+        background-color: transparent;
+        border: 0;
+        font-size: 1.5rem;
+
+        &:hover { 
+            cursor: pointer;
+        }
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+    }
+}

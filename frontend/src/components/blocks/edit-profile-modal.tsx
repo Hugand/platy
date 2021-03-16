@@ -51,7 +51,7 @@ function EditProfileModal({ user, closeModal }: EditProfileModalProps) {
     const saveChanges = async () => {
         const authToken: string = localStorage.getItem("authToken") || ""
 
-        const res: any = await updateUser(userInfo, userProfilePic, authToken)
+        await updateUser(userInfo, userProfilePic, authToken)
         
         closeModal()
     }

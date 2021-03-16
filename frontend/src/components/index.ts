@@ -10,6 +10,8 @@ import UserProfileViewfrom from './views/user-profile-view'
 // Importing blocks
 import NavBar from './blocks/nav-bar'
 import RecentChatsBar from './blocks/recent-chats-bar'
+import FriendsListModal from './blocks/friends-list-modal'
+import EditProfileModal from './blocks/edit-profile-modal'
 
 // Importing atoms
 import TextField from './atoms/text-field'
@@ -29,6 +31,8 @@ export {
     // Blocks
     NavBar,
     RecentChatsBar,
+    FriendsListModal,
+    EditProfileModal,
 
     // Atoms
     TextField,

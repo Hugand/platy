@@ -26,7 +26,7 @@ function UserAddCard({ userData, cardType, refreshList }: UserAddCardProp) {
                 break
             case CardType.FRIEND:
                 setButtonClass("btn-secondary")
-                setButtonText("Already friends")
+                setButtonText("Friends")
                 break
             default:
         }
