@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FriendRequest } from '../models/FriendRequest'
+import { FriendRequest } from '../../models/FriendRequest'
 import { getFriendRequestList } from '../../helpers/api'
 import '../../styles/views/friend-requests.scss'
 import { FriendRequestAcceptCard } from '..'

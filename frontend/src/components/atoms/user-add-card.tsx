@@ -1,7 +1,7 @@
 import '../../styles/atoms/user-add-card.scss'
 import { sendFriendRequest, cancelFriendRequest } from '../../helpers/api'
-import { User } from '../models/User'
-import { CardType } from '../models/Enums'
+import { User } from '../../models/User'
+import { CardType } from '../../models/Enums'
 import { useEffect, useState } from 'react'
 
 type UserAddCardProp = {
@@ -79,7 +79,7 @@ function UserAddCard({ userData, cardType, refreshList }: UserAddCardProp) {
     }
 
     return <article className="user-add-card">
-        <img src={ userData.profilePic } />
+        <img src={ userData.profilePic } alt="profile pic"/>
         <label>{ userData.nomeProprio + " " + userData.apelido }</label>
         <button 
             className={"btn " + buttonClass}

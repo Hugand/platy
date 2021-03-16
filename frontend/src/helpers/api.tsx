@@ -1,7 +1,7 @@
-import { FriendRequest } from "../components/models/FriendRequest"
-import { SearchUserResponse } from "../components/models/SearchUserResponse"
-import { User } from "../components/models/User"
-import { UserData } from "../components/models/UserData"
+import { FriendRequest } from "../models/FriendRequest"
+import { SearchUserResponse } from "../models/SearchUserResponse"
+import { User } from "../models/User"
+import { UserData } from "../models/UserData"
 
 const login = (authToken: string): Promise<User> => {
     return fetch(`${process.env.REACT_APP_API_URL}/getAuthUser`, {

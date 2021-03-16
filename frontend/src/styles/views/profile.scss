@@ -73,5 +73,13 @@
                 margin-bottom: 2rem;
             }
         }
+
     }   
+}
+
+
+div.ReactModal__Content.ReactModal__Content--after-open {
+    width: fit-content !important;
+    height: auto !important;
+    margin: auto;
 }

@@ -8,7 +8,7 @@ import { useStateValue } from "../../state"
 import { useEffect } from "react"
 import { GlobalStateAction } from "../../globalState"
 import { getUserData } from "../../helpers/api"
-import { UserData } from "../models/UserData"
+import { UserData } from "../../models/UserData"
 
 
 function NavBar() {

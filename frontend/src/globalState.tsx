@@ -1,4 +1,4 @@
-import { UserData } from "./components/models/UserData"
+import { UserData } from "./models/UserData"
 
 export class GlobalState {
     userData: UserData = new UserData()

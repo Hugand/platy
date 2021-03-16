@@ -1,9 +1,9 @@
-import { useState, useEffect, Component } from 'react'
+import { useState, useEffect } from 'react'
 import '../../styles/views/login.scss'
 import laptopImg from '../../assets/img/laptop.png'
 import { useHistory } from "react-router-dom";
 import { login } from '../../helpers/api'
-import { User } from '../models/User';
+import { User } from '../../models/User';
 
 function LoginView() {
     const history = useHistory();

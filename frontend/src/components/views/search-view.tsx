@@ -1,10 +1,10 @@
 import { TextField, UserAddCard } from '..'
 import '../../styles/views/search.scss'
-import { User } from '../models/User'
+import { User } from '../../models/User'
 import { searchUsers } from '../../helpers/api'
 import { useState } from 'react'
-import { SearchUserResponse } from '../models/SearchUserResponse'
-import { CardType } from '../models/Enums'
+import { SearchUserResponse } from '../../models/SearchUserResponse'
+import { CardType } from '../../models/Enums'
 
 function SearchView() {
     const [ searchResults, setSearchResults ] = useState(new SearchUserResponse())
