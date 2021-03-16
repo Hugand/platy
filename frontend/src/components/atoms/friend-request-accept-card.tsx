@@ -21,7 +21,7 @@ function FriendRequestAcceptCard({ userData, friendRequestId, refreshList }: FRA
     }
 
     return <article className="user-add-card">
-        <img src={ userData.profilePic } alt="profile pic"/>
+        <img src={ `data:image/png;base64, ${ userData.profilePic}` } alt="profile pic"/>
         <label>{ userData.nomeProprio + " " + userData.apelido }</label>
         <button 
             className="btn"

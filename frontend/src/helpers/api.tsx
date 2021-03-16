@@ -60,6 +60,25 @@ const getUserData = (authToken: string): Promise<UserData> => {
 
 }
 
+const updateUser = (user: User, file: File, authToken: string): any => {
+    const formData: FormData = new FormData()
+    formData.append("file", file);
+    formData.append("user", JSON.stringify(user));
+
+    return fetch(`${process.env.REACT_APP_API_URL}/updateUser`, {
+        method: "PUT",
+        headers: {
+            'Authorization': 'Bearer ' + authToken
+        },
+        body: formData
+    }).then(res => res.json())
+}
+
+const logout = (): void => {
+    localStorage.removeItem("authToken")
+    window.location.href = `/signin`;
+}
+
 export {
     login,
     searchUsers,
@@ -67,5 +86,7 @@ export {
     cancelFriendRequest,
     getFriendRequestList,
     acceptFriendRequest,
-    getUserData
+    getUserData,
+    updateUser,
+    logout
 }

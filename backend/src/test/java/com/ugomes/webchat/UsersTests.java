@@ -1,5 +1,7 @@
 package com.ugomes.webchat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ugomes.webchat.ApiResponses.SearchUserResponse;
 import com.ugomes.webchat.ApiResponses.UserData;
 import com.ugomes.webchat.Controllers.FriendsController;
@@ -14,14 +16,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Multipart;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @Service
@@ -109,5 +113,93 @@ public class UsersTests {
         assertNull(Objects.requireNonNull(queryResult.getBody()).getUser());
         assertEquals(0, queryResult.getBody().getFriendsCount());
     }
+
+    @Test
+    void succeedUpdatingProfileWithImage() throws JsonProcessingException {
+        User realUser = new User(1L,"Hugo", "Gomes", "zezoca11");
+        realUser.setUid("123123123123");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(realUser);
+        User updatedUser = new User(1L, "Hugo", "Gomes", "ugomes11");
+        realUser.setUid("123123123123");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String encodedUser = objectMapper.writeValueAsString(updatedUser);
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+
+        when(usersRepo.findByUid(realUser.getUid())).thenReturn(java.util.Optional.of(realUser));
+
+        ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
+
+        assertTrue(queryResult.getBody());
+    }
+
+    @Test
+    void succeedUpdatingProfileWithoutImage() throws JsonProcessingException {
+        User realUser = new User(1L,"Hugo", "Gomes", "zezoca11");
+        realUser.setUid("123123123123");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(realUser);
+        User updatedUser = new User(1L, "Hugo", "Gomes", "ugomes11");
+        realUser.setUid("123123123123");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String encodedUser = objectMapper.writeValueAsString(updatedUser);
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "".getBytes());
+
+        when(usersRepo.findByUid(realUser.getUid())).thenReturn(java.util.Optional.of(realUser));
+
+        ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
+
+        assertTrue(queryResult.getBody());
+    }
+
+    @Test
+    void failUpdatingProfileByWrongJSONString() {
+        User realUser = new User(1L,"Hugo", "Gomes", "zezoca11");
+        realUser.setUid("123123123123");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(realUser);
+        User updatedUser = new User(1L, "Hugo", "Gomes", "ugomes11");
+        realUser.setUid("123123123123");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String encodedUser = null;
+        try {
+            encodedUser = objectMapper.writeValueAsString(updatedUser);
+            encodedUser = encodedUser.substring(0, encodedUser.length() / 2);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "".getBytes());
+
+        when(usersRepo.findByUid(realUser.getUid())).thenReturn(java.util.Optional.of(realUser));
+
+        ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
+
+        assertFalse(queryResult.getBody());
+    }
+
+    @Test
+    void failUpdatingProfileByWrongToken() {
+        User realUser = new User(1L,"Hugo", "Gomes", "zezoca11");
+        realUser.setUid("123123123123");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(realUser) + "sdada";
+        User updatedUser = new User(1L, "Hugo", "Gomes", "ugomes11");
+        realUser.setUid("123123123123");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String encodedUser = null;
+        try {
+            encodedUser = objectMapper.writeValueAsString(updatedUser);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "".getBytes());
+
+        when(usersRepo.findByUid(realUser.getUid())).thenReturn(java.util.Optional.of(realUser));
+        ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
+
+        assertFalse(queryResult.getBody());
+    }
+
+
 
 }

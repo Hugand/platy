@@ -1,5 +1,7 @@
 package com.ugomes.webchat.Controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ugomes.webchat.ApiResponses.UserData;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.User;
@@ -7,9 +9,15 @@ import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.Base64;
 
 @RestController
 public class UsersController {
@@ -49,5 +57,39 @@ public class UsersController {
         }
 
         return ResponseEntity.ok(userData);
+    }
+    @PutMapping("/updateUser")
+    public ResponseEntity<Boolean> updateUser(@RequestHeader("Authorization") String token,
+                                                 @RequestParam MultipartFile file,
+                                                 @RequestParam("user") String userStringified) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        User updatedUser;
+        try {
+            updatedUser = objectMapper.readValue(userStringified, User.class);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.ok(false);
+        }
+        User user = getUserFromToken(token);
+
+        if(user != null && updatedUser != null) {
+            user.setNomeProprio(updatedUser.getNomeProprio());
+            user.setApelido(updatedUser.getApelido());
+            user.setUsername(updatedUser.getUsername());
+
+            if(file != null) {
+                try {
+                    byte[] bytes = file.getBytes();
+                    if (bytes.length > 0)
+                        user.setProfilePic(bytes);
+                } catch (IOException throwables) {
+                    throwables.printStackTrace();
+                    return ResponseEntity.ok(false);
+                }
+            }
+        } else
+            return ResponseEntity.ok(false);
+
+        usersRepo.save(user);
+        return ResponseEntity.ok(true);
     }
 }

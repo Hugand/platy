@@ -2,6 +2,8 @@ import { User } from "../../models/User"
 import TextField from "../atoms/text-field"
 import '../../styles/blocks/edit-profile-modal.scss'
 import { useState, useEffect } from "react"
+import { updateUser } from "../../helpers/api"
+import { UserInfo } from "os"
 
 type EditProfileModalProps = {
     user: User;
@@ -10,7 +12,7 @@ type EditProfileModalProps = {
 
 function EditProfileModal({ user, closeModal }: EditProfileModalProps) {
     const [ userInfo, setUserInfo ] = useState(user)
-    const [ userProfilePic, setUserProfilePic ]: Array<any> = useState(null)
+    const [ userProfilePic, setUserProfilePic ] = useState(new File([], 'img'))
 
     useEffect(() => {
         setUserInfo(userInfo)
@@ -23,14 +25,36 @@ function EditProfileModal({ user, closeModal }: EditProfileModalProps) {
         }
     }
 
+    const onInputChange = (inputLabel: string, value: string) => {
+        const newUser: User = { ...userInfo }
+        switch (inputLabel) {
+            case 'username':
+                newUser.username = value
+                break
+            case 'first_name':
+                newUser.nomeProprio = value
+                break
+            case 'last_name':
+                newUser.apelido = value
+                break
+            default:
+        }
+        setUserInfo(newUser)
+    }
+
     const getProfilePic = (): string => {
-
-        console.log(userProfilePic, userInfo.profilePic)
-
-        if(userProfilePic === null)
-            return userInfo.profilePic
+        if(userProfilePic.size === 0)
+            return `data:image/png;base64, ${userInfo.profilePic}`
         else
             return window.URL.createObjectURL(userProfilePic)
+    }
+
+    const saveChanges = async () => {
+        const authToken: string = localStorage.getItem("authToken") || ""
+
+        const res: any = await updateUser(userInfo, userProfilePic, authToken)
+        
+        closeModal()
     }
     
 
@@ -47,21 +71,21 @@ function EditProfileModal({ user, closeModal }: EditProfileModalProps) {
         <TextField
             placeholder="First name"
             defaultValue={userInfo.nomeProprio}
-            onInputChange={() => {}} />
+            onInputChange={(v: string) => onInputChange('first_name', v)} />
 
         <label className="inp-label">Last name</label>
         <TextField
             placeholder="Last name"
             defaultValue={userInfo.apelido}
-            onInputChange={() => {}} />
+            onInputChange={(v: string) => onInputChange('last_name', v)} />
 
         <label className="inp-label">Username</label>
         <TextField
             placeholder="Username"
             defaultValue={userInfo.username}
-            onInputChange={() => {}} />
+            onInputChange={(v: string) => onInputChange('username', v)} />
 
-        <button className="btn">Save</button>
+        <button className="btn" onClick={e => saveChanges()}>Save</button>
     </section>
 }
 

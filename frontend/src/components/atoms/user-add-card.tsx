@@ -40,12 +40,12 @@ function UserAddCard({ userData, cardType, refreshList }: UserAddCardProp) {
             try {
                 if(cardType === CardType.FRIEND_REQUEST) {
                     res = await cancelFriendRequest(userData.id, authUserToken)
-                } else { // if(cardType === CardType.STRANGER) {
+                } else if(cardType === CardType.STRANGER) {
                     res = await sendFriendRequest(userData.id, authUserToken)
                 }
 
                 console.log(res)
-                if(res.status == "success") {
+                if(res.status === "success") {
                     refreshList();
                 }
             } catch(e) {
@@ -79,7 +79,7 @@ function UserAddCard({ userData, cardType, refreshList }: UserAddCardProp) {
     }
 
     return <article className="user-add-card">
-        <img src={ userData.profilePic } alt="profile pic"/>
+        <img src={ `data:image/png;base64, ${ userData.profilePic}` } alt="profile pic"/>
         <label>{ userData.nomeProprio + " " + userData.apelido }</label>
         <button 
             className={"btn " + buttonClass}

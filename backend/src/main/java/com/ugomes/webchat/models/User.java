@@ -1,6 +1,12 @@
 package com.ugomes.webchat.models;
 
+import com.nimbusds.jose.util.IOUtils;
+import org.springframework.core.io.InputStreamResource;
+
 import javax.persistence.*;
+import java.sql.Blob;
+import java.util.Base64;
+
 
 @Entity
 @Table
@@ -9,7 +15,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-    private String nome_proprio, apelido, username, email, profile_pic, uid;
+    private String nome_proprio, apelido, username, email, uid;
+
+    @Lob
+    private byte[] profile_pic;
 
     public User(String nomeProprio, String apelido, String username) {
         this.nome_proprio = nomeProprio;
@@ -48,7 +57,7 @@ public class User {
         this.uid = uid;
     }
 
-    public void setProfilePic(String profile_pic) {
+    public void setProfilePic(byte[] profile_pic) {
         this.profile_pic = profile_pic;
     }
 
@@ -76,8 +85,8 @@ public class User {
         return uid;
     }
 
-    public String getProfilePic() {
-        return profile_pic;
+    public byte[] getProfilePic() {
+        return profile_pic;//Base64.getEncoder().encodeToString(profile_pic);
     }
 
     public User() { }
