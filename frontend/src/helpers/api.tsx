@@ -1,4 +1,5 @@
 import { FriendRequest } from "../models/FriendRequest"
+import { Friendship } from "../models/Friendship"
 import { SearchUserResponse } from "../models/SearchUserResponse"
 import { User } from "../models/User"
 import { UserData } from "../models/UserData"
@@ -87,6 +88,19 @@ const logout = (): void => {
     window.location.href = `/signin`;
 }
 
+const getFriendship = (authToken: string, friendId: number): Promise<Friendship> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/getFriendship?friendId=${friendId}`, {
+        headers: {
+            'Authorization': 'Bearer ' + authToken
+        }
+    }).then(res => res.json())
+}
+
+const clearSession = (): void => {
+    localStorage.removeItem('authToken')
+    window.location.href = `${process.env.REACT_APP_API_URL}/getAuthUser`;
+}
+
 export {
     login,
     searchUsers,
@@ -97,5 +111,7 @@ export {
     getUserData,
     updateUser,
     getFriendsList,
-    logout
+    logout,
+    clearSession,
+    getFriendship
 }

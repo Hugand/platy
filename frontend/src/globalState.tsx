@@ -2,6 +2,7 @@ import { UserData } from "./models/UserData"
 
 export class GlobalState {
     userData: UserData = new UserData()
+    socket: any = null;
 }
 
 export class GlobalStateAction {
@@ -17,6 +18,11 @@ export const reducer = (state: UserData, action: GlobalStateAction) => {
             return {
                 ...state,
                 userData: action.value
+            }
+        case 'changeSocket':
+            return {
+                ...state,
+                socket: action.value
             }
         default:
             return state
