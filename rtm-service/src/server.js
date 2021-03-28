@@ -35,8 +35,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var fetch_ = require("node-fetch");
+var sockets_1 = __importDefault(require("./controller/sockets"));
+var DataContainer_1 = require("./model/DataContainer");
 var express = require("express");
 var http = require("http");
 var socketIo = require("socket.io");
@@ -54,75 +58,26 @@ app.use(cors());
 app.get("/", function (req, res) {
     res.send({ response: "I am alive" }).status(200);
 });
-var users = new Map();
-var rooms = new Map();
+var dataContainer = new DataContainer_1.DataContainer();
+var socketController = new sockets_1.default(dataContainer);
 io.on('connection', function (socket) {
     console.log('A new user connected', socket.id);
-    var uid = socket.handshake.query.uid;
-    var newUser = {
-        socketSession: socket,
-        uid: uid,
-        roomId: null
-    };
-    users.set(uid, newUser);
-    socket.on('join_room', function (data) { return __awaiter(void 0, void 0, void 0, function () {
-        var isTokenValid, user, friendshipId, chatsList, e_1;
+    // Users without a room
+    // socket.join('F8')
+    var uid = socket.handshake.query.uid + '';
+    dataContainer.createUser(uid, socket);
+    socket.on('join_room', function (d) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, validateToken(data)];
+                case 0:
+                    console.log("sr", socket.rooms);
+                    console.log(d);
+                    return [4 /*yield*/, socketController.joinRoom(socket, d)];
                 case 1:
-                    isTokenValid = _a.sent();
-                    if (!isTokenValid) return [3 /*break*/, 8];
-                    user = users.get(data.uid);
-                    if (!(user !== undefined)) return [3 /*break*/, 6];
-                    user.roomId = data.roomId;
-                    users.set(user.uid, user);
-                    // Create room
-                    if (!rooms.has(data.roomId)) {
-                        rooms.set(data.roomId, new Array());
-                    }
-                    // Assign user to room
-                    rooms.get(data.roomId).push(user.uid);
-                    friendshipId = parseInt(data.roomId.substring(1));
-                    _a.label = 2;
-                case 2:
-                    _a.trys.push([2, 4, , 5]);
-                    return [4 /*yield*/, fetch_(process.env.REST_SERVICE_URL + "/getChatFromFriendship?friendshipId=" + friendshipId, {
-                            headers: {
-                                'Authorization': 'Bearer ' + data.token
-                            }
-                        }).then(function (res) { return res.json(); })];
-                case 3:
-                    chatsList = _a.sent();
-                    console.log("=> ", chatsList);
-                    socket.emit('message', JSON.stringify({
-                        status: 'ok',
-                        msg: chatsList
-                    }));
-                    return [3 /*break*/, 5];
-                case 4:
-                    e_1 = _a.sent();
-                    console.log(e_1);
-                    socket.emit('message', JSON.stringify({
-                        status: 'error',
-                        msg: 'fetch_chats'
-                    }));
-                    return [3 /*break*/, 5];
-                case 5: return [3 /*break*/, 7];
-                case 6:
-                    socket.emit('message', JSON.stringify({
-                        status: 'error',
-                        msg: 'uid_invalid'
-                    }));
-                    _a.label = 7;
-                case 7: return [3 /*break*/, 9];
-                case 8:
-                    socket.emit('message', JSON.stringify({
-                        status: 'error',
-                        msg: 'token_invalid'
-                    }));
-                    _a.label = 9;
-                case 9: return [2 /*return*/];
+                    _a.sent();
+                    console.log("sr2", socket.rooms);
+                    io.in('F8').emit('chat_data', "ddddd");
+                    return [2 /*return*/];
             }
         });
     }); });
@@ -130,28 +85,4 @@ io.on('connection', function (socket) {
         console.log("User disconnected", socket.id);
     });
 });
-function validateToken(data) {
-    return __awaiter(this, void 0, void 0, function () {
-        var res, e_2;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log("--> ", data);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fetch_(process.env.REST_SERVICE_URL + "/validateToken?token=" + data.token + "&uid=" + data.uid).then(function (r) { return r.json(); })];
-                case 2:
-                    res = _a.sent();
-                    console.log("aa>", res);
-                    return [2 /*return*/, res.status];
-                case 3:
-                    e_2 = _a.sent();
-                    console.log(e_2);
-                    return [2 /*return*/, false];
-                case 4: return [2 /*return*/];
-            }
-        });
-    });
-}
 server.listen(port, function () { return console.log("Listening on port " + port); });

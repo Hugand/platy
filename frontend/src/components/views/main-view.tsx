@@ -25,8 +25,12 @@ function MainView({ contentComponent }: any) {
                     }
                 })
 
-                newSocket.on('message', (data: any) => {
-                    console.log("rtm", data)
+                newSocket.on('chat_data', (data: any) => {
+                    console.log("rtm ok", data)
+                })
+
+                newSocket.on('error', (data: any) => {
+                    console.log("rtm error", data)
                 })
 
                 const dispatchData: GlobalStateAction = {
