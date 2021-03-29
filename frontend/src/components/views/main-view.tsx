@@ -29,6 +29,10 @@ function MainView({ contentComponent }: any) {
                     console.log("rtm ok", data)
                 })
 
+                newSocket.on('msg', (data: any) => {
+                    console.log("rtm msg", data)
+                })
+
                 newSocket.on('error', (data: any) => {
                     console.log("rtm error", data)
                 })

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FriendsRepo extends JpaRepository<Friends, Long> {
-
     @Query("FROM Friends WHERE user1 = :user1 AND user2 = :user2 OR user1 = :user2 AND user2 = :user1")
     Optional<Friends> findFriendsByUser1AndUser2(User user1, User user2);
 

@@ -53,11 +53,9 @@ var SocketController = /** @class */ (function () {
                             socket.emit('error', 'token_invalid');
                             return [2 /*return*/];
                         }
-                        // this.dc.createRoom(data.roomId)
                         // Assign user to room
                         if (this.dc.users.get(data.uid).roomId !== null)
                             socket.leave(this.dc.users.get(data.uid).roomId);
-                        console.log("join", data.roomId);
                         socket.join(data.roomId);
                         friendshipId = parseInt(data.roomId.substring(1));
                         _a.label = 2;
@@ -78,6 +76,9 @@ var SocketController = /** @class */ (function () {
                 }
             });
         });
+    };
+    SocketController.prototype.sendMessage = function (socket, data) {
+        socket.to(data.roomId).emit('msg', data.msg);
     };
     /*
         Helper methods

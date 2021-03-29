@@ -6,6 +6,8 @@ import org.springframework.core.io.InputStreamResource;
 import javax.persistence.*;
 import java.sql.Blob;
 import java.util.Base64;
+import java.util.Comparator;
+import java.util.Objects;
 
 
 @Entity
@@ -19,6 +21,8 @@ public class User {
 
     @Lob
     private byte[] profile_pic;
+
+    public User() { }
 
     public User(String nomeProprio, String apelido, String username) {
         this.nome_proprio = nomeProprio;
@@ -89,7 +93,18 @@ public class User {
         return profile_pic;//Base64.getEncoder().encodeToString(profile_pic);
     }
 
-    public User() { }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
 }
+

@@ -1,13 +1,25 @@
 import { useState, useEffect } from 'react'
 import '../../styles/blocks/recent-chats-bar.scss'
 import { TextField, ChatListCard } from '..'
+import Modal from 'react-modal';
+import SearchUserToChatModal from './search-user-to-chat-modal';
+import { User } from '../../models/User';
 
-function RecentChatsBar() {
-    const [ searchTerm, setSearchTerm ] = useState("")
+function RecentChatsBar({ setUserToChat }: any) {
+    const [ search, setSearchTerm ] = useState('')
+    const [ isModalOpen, setIsModalOpen ] = useState(false)
+    
+    const selectUserHandler = (user: User) => {
+        setUserToChat(user)
+        setIsModalOpen(false)
+    }
 
     return <section className="chats-bar-container">
         <div className="bar-header">
-            <TextField placeholder="Search" onInputChange={setSearchTerm}/>
+            <div>
+                <TextField placeholder="Search" onInputChange={setSearchTerm}/>
+                <button className="btn" onClick={() => setIsModalOpen(true)}>+</button>
+            </div>
         </div>
 
         <div className="chat-list">
@@ -36,6 +48,16 @@ function RecentChatsBar() {
                     msg: "Boas pessoal drenado da drena drenada"
                 }}/>
         </div>
+
+
+
+        <Modal
+            isOpen={isModalOpen}
+            onRequestClose={() => setIsModalOpen(false)}
+            ariaHideApp={false}>
+            
+            <SearchUserToChatModal selectUser={selectUserHandler} />
+        </Modal>
     </section>
 }
 

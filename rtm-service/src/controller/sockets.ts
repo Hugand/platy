@@ -41,6 +41,10 @@ class SocketController {
         console.log("->", this.dc.rooms)
     }
 
+    sendMessage(socket: any, data: any) {
+        socket.to(data.roomId).emit('msg', data.msg)
+    }
+
     /*
         Helper methods
     */

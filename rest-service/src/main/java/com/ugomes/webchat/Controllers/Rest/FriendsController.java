@@ -1,21 +1,17 @@
 package com.ugomes.webchat.Controllers.Rest;
 
 import com.ugomes.webchat.ApiResponses.SearchUserResponse;
+import com.ugomes.webchat.Comparators.UserFirstNameComparator;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
-import com.ugomes.webchat.models.Chat;
-import com.ugomes.webchat.models.Friends;
-import com.ugomes.webchat.models.FriendsRequests;
-import com.ugomes.webchat.models.User;
+import com.ugomes.webchat.models.*;
 import com.ugomes.webchat.repositories.ChatsRepo;
 import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.time.Clock;
 import java.util.*;
 
@@ -231,5 +227,30 @@ public class FriendsController {
         List<Chat> chatsList =  new ArrayList<>(chatsRepo.findByFriendshipOrderByTimestampDesc(new Friends(friendshipId)));
         System.out.println(chatsList);
         return ResponseEntity.ok(chatsList);
+    }
+
+    @GetMapping("/searchFriends")
+    public ResponseEntity<List<User>> searchFriends(@RequestHeader("Authorization") String token,
+                                                    @RequestParam String searchTerm) {
+        List<User> friendsList = new ArrayList<>();
+        User authenticatedUser = this.getUserFromToken(token);
+        List<Friends> friendshipList = friendsRepo.findFriendsByUser(authenticatedUser);
+
+        for(Friends friendship : friendshipList) {
+            User buffUser;
+            if(friendship.getUser1().equals(authenticatedUser))
+                buffUser = friendship.getUser2();
+            else
+                buffUser = friendship.getUser1();
+
+            if(buffUser.getUsername().contains(searchTerm) || buffUser.getNomeProprio().contains(searchTerm) ||
+                buffUser.getApelido().contains(searchTerm) || searchTerm.isBlank())
+                    friendsList.add(buffUser);
+        }
+
+        UserFirstNameComparator userFirstNameComparator = new UserFirstNameComparator();
+        friendsList.sort(userFirstNameComparator);
+
+        return ResponseEntity.ok(friendsList);
     }
 }
