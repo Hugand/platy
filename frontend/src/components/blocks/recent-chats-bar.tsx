@@ -4,10 +4,19 @@ import { TextField, ChatListCard } from '..'
 import Modal from 'react-modal';
 import SearchUserToChatModal from './search-user-to-chat-modal';
 import { User } from '../../models/User';
+import { useStateValue } from '../../state';
 
-function RecentChatsBar({ setUserToChat }: any) {
+function RecentChatsBar() {
     const [ search, setSearchTerm ] = useState('')
     const [ isModalOpen, setIsModalOpen ] = useState(false)
+    const [, dispatch ] = useStateValue()
+
+    const setUserToChat = (user: User) => {
+        dispatch({
+            type: 'changeChatDataUser2Chat',
+            value: user
+        })
+    }
     
     const selectUserHandler = (user: User) => {
         setUserToChat(user)
@@ -23,7 +32,7 @@ function RecentChatsBar({ setUserToChat }: any) {
         </div>
 
         <div className="chat-list">
-            <ChatListCard
+            {/* <ChatListCard
                 chat={{
                     profilePic: "https://avatars.githubusercontent.com/u/24555587?s=460&u=60f5d30868fc8148ed0c65b7a863ec53431329b0&v=4",
                     nomeProprio: "Hugo", apelido: "Gomes",
@@ -46,7 +55,7 @@ function RecentChatsBar({ setUserToChat }: any) {
                     profilePic: "https://avatars.githubusercontent.com/u/24555587?s=460&u=60f5d30868fc8148ed0c65b7a863ec53431329b0&v=4",
                     nomeProprio: "Hugo", apelido: "Gomes",
                     msg: "Boas pessoal drenado da drena drenada"
-                }}/>
+                }}/> */}
         </div>
 
 

@@ -1,0 +1,41 @@
+@import "../resources/variables.scss";
+
+.txt-msg-blob-row {
+    width: 100%;
+    height: fit-content;
+    font-size: 1.125rem;
+    font-weight: 400;
+
+    .align-left {
+        margin-right: auto;
+    }
+
+    .align-right {
+        margin-left: auto;
+    }
+
+    .sender {
+        width: fit-content;
+        padding: .75rem 1rem;
+        max-width: 40%;
+        border-radius: $border-radius-giant;
+        border-top-right-radius: $border-radius-small;
+        border-bottom-right-radius: $border-radius-small;
+        background-color: $primary-blue;
+        color: white
+    }
+
+    .reader {
+        width: fit-content;
+        padding: .75rem 1rem;
+        max-width: 40%;
+        border-radius: $border-radius-giant;
+        border-top-left-radius: $border-radius-small;
+        border-bottom-left-radius: $border-radius-small;
+        background-color: $light-blue;
+        color: $grey;
+        // border: 1px solid $light-blue;
+        // color: whu
+    }
+
+}

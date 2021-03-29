@@ -25,8 +25,12 @@ function MainView({ contentComponent }: any) {
                     }
                 })
 
-                newSocket.on('chat_data', (data: any) => {
+                newSocket.on('chat_data', (data: string) => {
                     console.log("rtm ok", data)
+                    dispatch({
+                        type: 'changeChatDataList',
+                        value: JSON.parse(data)
+                    })
                 })
 
                 newSocket.on('msg', (data: any) => {

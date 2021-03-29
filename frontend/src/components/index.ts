@@ -20,6 +20,7 @@ import ChatListCard from './atoms/chat-list-card'
 import UserAddCard from './atoms/user-add-card'
 import FriendRequestAcceptCard from './atoms/friend-request-accept-card'
 import UserSelectCard from './atoms/user-select-card'
+import TextMessageBlob from './atoms/text-message-blob'
 
 
 
@@ -44,5 +45,6 @@ export {
     ChatListCard,
     UserAddCard,
     FriendRequestAcceptCard,
-    UserSelectCard
+    UserSelectCard,
+    TextMessageBlob
 }

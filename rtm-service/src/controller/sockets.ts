@@ -24,11 +24,6 @@ class SocketController {
 
         socket.join(data.roomId)
 
-        // this.dc.createRoom(data.roomId)
-
-        // this.dc.rooms.get(data.roomId)!.addUser(data.uid)
-        // this.dc.users.get(data.uid)!.roomId = data.roomId
-
         // Get friendship chats
         let friendshipId: number = parseInt(data.roomId.substring(1))
         try {
@@ -56,8 +51,6 @@ class SocketController {
             return false;
         }
     }
-
-
 }
 
 
