@@ -2,6 +2,7 @@ import { validateToken, getFriendshipChats, persistChat } from "./restServiceApi
 import { DataContainer } from "../model/DataContainer";
 import { JoinRoomData } from "../model/JoinRoomData";
 import { Chat } from "../model/Chat";
+import { SendMessageData } from "../model/SendMessageData";
 
 class SocketController {
     dc: DataContainer
@@ -26,26 +27,28 @@ class SocketController {
 
         // Get friendship chats
         let friendshipId: number = parseInt(data.roomId.substring(1))
+        let chatsList: Array<Chat>;
         try {
-            console.log(data.token, friendshipId)
-            let chatsList: Array<Chat> = await getFriendshipChats(data.token, friendshipId);
-            console.log(chatsList)
-            socket.emit('chat_data', JSON.stringify(chatsList))
+            chatsList = await getFriendshipChats(data.token, friendshipId);
         } catch (e) {
             socket.emit('error', 'fetch_chats')
+            return
         }
 
-        console.log("->", this.dc.rooms)
+        socket.emit('chat_data', JSON.stringify(chatsList))
     }
 
-    async sendMessage(io: any, socket: any, data: any) {
+    // TODO: Might still need a little bit more work on error handling
+    async sendMessage(io: any, socket: any, data: SendMessageData) {
+        let persistedChat: Chat
         try {
-            const persistedChat: Chat = await persistChat(data.token, data.newChat)
-            console.log(persistedChat)
-            io.to(data.roomId).emit('new_message', JSON.stringify(persistedChat))
+            persistedChat = await persistChat(data.token, data.newChat)
         } catch (e) {
-            console.log(e)
+            socket.emit('error', 'token_invalid')
+            return
         }
+
+        io.to(data.roomId).emit('new_message', JSON.stringify(persistedChat))
     }
 
     /*

@@ -35,7 +35,7 @@ function useMessagingWebsocket() {
             newSocket.on('error', (data: string) => {
                 console.log("rtm error", data)
                 switch(data) {
-                    case 'wrong_token':
+                    case 'token_invalid':
                         clearSession()
                         break
                     default:

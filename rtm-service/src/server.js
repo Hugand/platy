@@ -19,7 +19,7 @@ var io = socketIo(server, {
     }
 });
 app.use(cors());
-app.get("/", function (req, res) {
+app.get("/", function (_req, res) {
     res.send({ response: "I am alive" }).status(200);
 });
 var dataContainer = new DataContainer_1.DataContainer();

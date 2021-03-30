@@ -61,24 +61,22 @@ var SocketController = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
-                        console.log(data.token, friendshipId);
                         return [4 /*yield*/, restServiceApi_1.getFriendshipChats(data.token, friendshipId)];
                     case 3:
                         chatsList = _a.sent();
-                        console.log(chatsList);
-                        socket.emit('chat_data', JSON.stringify(chatsList));
                         return [3 /*break*/, 5];
                     case 4:
                         e_1 = _a.sent();
                         socket.emit('error', 'fetch_chats');
-                        return [3 /*break*/, 5];
+                        return [2 /*return*/];
                     case 5:
-                        console.log("->", this.dc.rooms);
+                        socket.emit('chat_data', JSON.stringify(chatsList));
                         return [2 /*return*/];
                 }
             });
         });
     };
+    // TODO: Might still need a little bit more work on error handling
     SocketController.prototype.sendMessage = function (io, socket, data) {
         return __awaiter(this, void 0, void 0, function () {
             var persistedChat, e_2;
@@ -89,14 +87,14 @@ var SocketController = /** @class */ (function () {
                         return [4 /*yield*/, restServiceApi_1.persistChat(data.token, data.newChat)];
                     case 1:
                         persistedChat = _a.sent();
-                        console.log(persistedChat);
-                        io.to(data.roomId).emit('new_message', JSON.stringify(persistedChat));
                         return [3 /*break*/, 3];
                     case 2:
                         e_2 = _a.sent();
-                        console.log(e_2);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        socket.emit('error', 'token_invalid');
+                        return [2 /*return*/];
+                    case 3:
+                        io.to(data.roomId).emit('new_message', JSON.stringify(persistedChat));
+                        return [2 /*return*/];
                 }
             });
         });
