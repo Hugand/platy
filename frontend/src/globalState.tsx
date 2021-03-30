@@ -5,6 +5,7 @@ import { UserData } from "./models/UserData"
 export type ChatData = {
     chatList: Array<Chat>
     userToChat: User | null
+    previewChat: Chat | null
 }
 
 export class GlobalState {
@@ -12,7 +13,8 @@ export class GlobalState {
     userData: UserData = new UserData()
     chatData: ChatData = {
         chatList: new Array<Chat>(),
-        userToChat: null
+        userToChat: null,
+        previewChat: null
     }
 }
 
@@ -51,7 +53,20 @@ export const reducer = (state: GlobalState, action: GlobalStateAction) => {
                 newState.chatData.userToChat = action.value
                 return newState
             }
+            case 'changeChatDataPreviewChat': {
+                const newState: GlobalState = { ...state }
+                newState.chatData.previewChat = action.value
+                return newState
+            }
+            case 'addNewChatMessage': {
+                const newState: GlobalState = { ...state }
+                if(!newState.chatData.chatList.includes(action.value)) {
+                    newState.chatData.chatList = [action.value, ...newState.chatData.chatList]
+                }
+                return newState
+            }
+
             default:
-            return state
+                return state
     }
 }

@@ -2,6 +2,7 @@ package com.ugomes.webchat.models;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
@@ -17,7 +18,18 @@ public class Chat {
     private Friends friendship;
 
     private String msg;
-    private Date timestamp;
+    private Timestamp timestamp;
+
+    public Chat(User userOrigin, Friends friendship, String msg, Timestamp timestamp) {
+        this.userOrigin = userOrigin;
+        this.friendship = friendship;
+        this.msg = msg;
+        this.timestamp = timestamp;
+    }
+
+    public Chat() {
+
+    }
 
     public Long getId() {
         return id;
@@ -35,9 +47,9 @@ public class Chat {
         this.userOrigin = userOrigin;
     }
 
-//    public Friends getFriendship() {
-//        return friendship;
-//    }
+    public Long getFriendship() {
+        return friendship.getId();
+    }
 
     public void setFriendship(Friends friendship) {
         this.friendship = friendship;
@@ -51,11 +63,11 @@ public class Chat {
         this.msg = msg;
     }
 
-    public Date getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
 

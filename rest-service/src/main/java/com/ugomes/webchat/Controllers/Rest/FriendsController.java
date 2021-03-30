@@ -222,13 +222,6 @@ public class FriendsController {
         return ResponseEntity.ok(friendship);
     }
 
-    @GetMapping("/getChatFromFriendship")
-    public ResponseEntity<List<Chat>> getChatFromFriendship(@RequestParam Long friendshipId) {
-        List<Chat> chatsList =  new ArrayList<>(chatsRepo.findByFriendshipOrderByTimestampDesc(new Friends(friendshipId)));
-        System.out.println(chatsList);
-        return ResponseEntity.ok(chatsList);
-    }
-
     @GetMapping("/searchFriends")
     public ResponseEntity<List<User>> searchFriends(@RequestHeader("Authorization") String token,
                                                     @RequestParam String searchTerm) {

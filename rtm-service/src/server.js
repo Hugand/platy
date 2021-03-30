@@ -29,7 +29,7 @@ io.on('connection', function (socket) {
     var uid = socket.handshake.query.uid + '';
     dataContainer.createUser(uid, socket);
     socket.on('join_room', function (d) { return socketController.joinRoom(socket, d); });
-    socket.on('send_message', function (d) { return socketController.sendMessage(socket, d); });
+    socket.on('send_message', function (d) { return socketController.sendMessage(io, socket, d); });
     socket.on('disconnect', function () {
         console.log("User disconnected", socket.id);
     });

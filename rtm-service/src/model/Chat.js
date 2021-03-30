@@ -6,6 +6,7 @@ var Chat = /** @class */ (function () {
         this.id = 0;
         this.userOrigin = 0;
         this.msg = '';
+        this.friendshipId = 0;
         this.timestamp = new Date();
     }
     return Chat;

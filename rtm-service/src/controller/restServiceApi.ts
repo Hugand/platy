@@ -1,3 +1,5 @@
+import { Chat } from "../model/Chat";
+
 const _fetch = require("node-fetch");
 
 const validateToken = (data: any) => {
@@ -6,14 +8,25 @@ const validateToken = (data: any) => {
 }
 
 const getFriendshipChats = (token: string, friendshipId: number) => {
-    return _fetch(`${process.env.REST_SERVICE_URL}/getChatFromFriendship?friendshipId=${friendshipId}`, {
+    return _fetch(`${process.env.REST_SERVICE_URL}/getChatsFromFriendship?friendshipId=${friendshipId}`, {
         headers: {
             'Authorization': 'Bearer ' + token
         }
     }).then((res: any) => res.json())
 }
 
+const persistChat = (token: string, newChat: Chat): Promise<Chat> => {
+    return _fetch(`${process.env.REST_SERVICE_URL}/persistChat`, {
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
+        method: 'POST',
+        body: JSON.stringify(newChat)
+    }).then((res: any) => res.json())
+}
+
 export {
     validateToken,
-    getFriendshipChats
+    getFriendshipChats,
+    persistChat
 }

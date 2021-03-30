@@ -7,15 +7,15 @@ import { Friendship } from '../../models/Friendship'
 import { User } from '../../models/User'
 import { useStateValue } from '../../state'
 import '../../styles/blocks/chat-room.scss'
+import TextField from '../atoms/text-field'
 import TextMessageBlob from '../atoms/text-message-blob'
 
 type ChatRoomProps = {
     friend: User
-    chatData: ChatData
 }
 
-function ChatRoom({ friend, chatData }: ChatRoomProps) {
-    const [ { socket, userData } ] = useStateValue()
+function ChatRoom({ friend }: ChatRoomProps) {
+    const [ { socket, userData, chatData }, dispatch ] = useStateValue()
     const [ message, setMessage ] = useState('')
     const [ friendship, setFriendship ]: any = useState(null)
 
@@ -40,10 +40,21 @@ function ChatRoom({ friend, chatData }: ChatRoomProps) {
 
     const sendMessage = () => {
         if(socket !== null) {
+            const previewChat: Chat = new Chat(
+                userData.user.id, friendship.id, message, new Date())
+
+            console.log('SENDING', previewChat)
+
+            dispatch({
+                type: 'changeChatDataPreviewChat',
+                value: previewChat
+            })
             socket.emit('send_message', {
                 roomId: 'F' + friendship.id,
-                msg: message
+                newChat: previewChat,
+                token: localStorage.getItem('authToken') + ''
             })
+            setMessage('')
         }
     }
 
@@ -54,8 +65,16 @@ function ChatRoom({ friend, chatData }: ChatRoomProps) {
         </header>
 
         <div className="chat-display-container">
+            { chatData.previewChat !== null &&
+                <TextMessageBlob
+                    isPreview={true}
+                    chat={chatData.previewChat} 
+                    viewingUser={userData.user} />
+            }
+
             { chatData.chatList.map((chat: Chat) => 
                 <TextMessageBlob
+                    isPreview={false}
                     key={`${chat.id}-${friend.username}`} 
                     chat={chat} 
                     viewingUser={userData.user} />)
@@ -63,8 +82,12 @@ function ChatRoom({ friend, chatData }: ChatRoomProps) {
         </div>
 
         <div className="chat-writer-container">
-            <textarea className="chat-text-field"
-                onChange={(e: any) => setMessage(e.target.value)}></textarea>
+            <TextField
+                classes={'chat-text-field'}
+                type={'textarea'}
+                placeholder=''
+                value={message}
+                onInputChange={setMessage}/>
             <button className="btn" onClick={sendMessage}>Send</button>
         </div>
     </section>

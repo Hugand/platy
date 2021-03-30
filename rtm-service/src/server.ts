@@ -37,7 +37,7 @@ io.on('connection', (socket: Socket) => {
     dataContainer.createUser(uid, socket)
 
     socket.on('join_room', (d: JoinRoomData) => socketController.joinRoom(socket, d))
-    socket.on('send_message', (d: any) => socketController.sendMessage(socket, d))
+    socket.on('send_message', (d: any) => socketController.sendMessage(io, socket, d))
 
     socket.on('disconnect', () => {
         console.log("User disconnected", socket.id)

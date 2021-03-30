@@ -1,4 +1,4 @@
-import { validateToken, getFriendshipChats } from "./restServiceApi";
+import { validateToken, getFriendshipChats, persistChat } from "./restServiceApi";
 import { DataContainer } from "../model/DataContainer";
 import { JoinRoomData } from "../model/JoinRoomData";
 import { Chat } from "../model/Chat";
@@ -27,7 +27,9 @@ class SocketController {
         // Get friendship chats
         let friendshipId: number = parseInt(data.roomId.substring(1))
         try {
+            console.log(data.token, friendshipId)
             let chatsList: Array<Chat> = await getFriendshipChats(data.token, friendshipId);
+            console.log(chatsList)
             socket.emit('chat_data', JSON.stringify(chatsList))
         } catch (e) {
             socket.emit('error', 'fetch_chats')
@@ -36,8 +38,14 @@ class SocketController {
         console.log("->", this.dc.rooms)
     }
 
-    sendMessage(socket: any, data: any) {
-        socket.to(data.roomId).emit('msg', data.msg)
+    async sendMessage(io: any, socket: any, data: any) {
+        try {
+            const persistedChat: Chat = await persistChat(data.token, data.newChat)
+            console.log(persistedChat)
+            io.to(data.roomId).emit('new_message', JSON.stringify(persistedChat))
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     /*

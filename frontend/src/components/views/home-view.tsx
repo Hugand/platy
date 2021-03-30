@@ -16,7 +16,6 @@ function HomeView() {
             { chatData.userToChat === null 
                 ? <p>Choose a chat</p> 
                 : <ChatRoom 
-                    chatData={chatData}
                     friend={chatData.userToChat}/>
             }
         </section>

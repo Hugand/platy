@@ -5,6 +5,9 @@
     height: fit-content;
     font-size: 1.125rem;
     font-weight: 400;
+    margin: .2rem 0;
+    display: flex;
+    flex-direction: column;
 
     .align-left {
         margin-right: auto;
@@ -34,8 +37,24 @@
         border-bottom-left-radius: $border-radius-small;
         background-color: $light-blue;
         color: $grey;
-        // border: 1px solid $light-blue;
-        // color: whu
+    }
+
+    .preview {
+        width: fit-content;
+        padding: .75rem 1rem;
+        max-width: 40%;
+        border-radius: $border-radius-giant;
+        border-top-right-radius: $border-radius-small;
+        border-bottom-right-radius: $border-radius-small;
+        background-color: transparentize($color: $primary-blue, $amount: 0.3);
+        color: transparentize($color: $grey, $amount: 0.3);
+    }
+
+    label {
+        font-size: 0.75rem;
+        font-weight: 300;
+        color: $grey;
+        margin-left: auto;
     }
 
 }

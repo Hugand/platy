@@ -6,6 +6,7 @@ import { GlobalStateAction } from '../../globalState';
 import { io } from 'socket.io-client';
 import { clearSession, getUserData } from '../../helpers/api';
 import { UserData } from '../../models/UserData';
+import { Chat } from '../../models/Chat';
 
 function MainView({ contentComponent }: any) {
     const [ { socket }, dispatch ] = useStateValue()
@@ -33,8 +34,17 @@ function MainView({ contentComponent }: any) {
                     })
                 })
 
-                newSocket.on('msg', (data: any) => {
-                    console.log("rtm msg", data)
+                newSocket.on('new_message', (newMessageStringified: string) => {
+                    const newMessage: Chat = JSON.parse(newMessageStringified)
+                    console.log("rtm msg", newMessage)
+                    dispatch({
+                        type: 'addNewChatMessage',
+                        value: newMessage
+                    })
+                    dispatch({
+                        type: 'changeChatDataPreviewChat',
+                        value: null
+                    })
                 })
 
                 newSocket.on('error', (data: any) => {

@@ -61,9 +61,11 @@ var SocketController = /** @class */ (function () {
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
+                        console.log(data.token, friendshipId);
                         return [4 /*yield*/, restServiceApi_1.getFriendshipChats(data.token, friendshipId)];
                     case 3:
                         chatsList = _a.sent();
+                        console.log(chatsList);
                         socket.emit('chat_data', JSON.stringify(chatsList));
                         return [3 /*break*/, 5];
                     case 4:
@@ -77,15 +79,34 @@ var SocketController = /** @class */ (function () {
             });
         });
     };
-    SocketController.prototype.sendMessage = function (socket, data) {
-        socket.to(data.roomId).emit('msg', data.msg);
+    SocketController.prototype.sendMessage = function (io, socket, data) {
+        return __awaiter(this, void 0, void 0, function () {
+            var persistedChat, e_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, restServiceApi_1.persistChat(data.token, data.newChat)];
+                    case 1:
+                        persistedChat = _a.sent();
+                        console.log(persistedChat);
+                        io.to(data.roomId).emit('new_message', JSON.stringify(persistedChat));
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_2 = _a.sent();
+                        console.log(e_2);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
     };
     /*
         Helper methods
     */
     SocketController.prototype.validateUserToken = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var res, e_2;
+            var res, e_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -95,7 +116,7 @@ var SocketController = /** @class */ (function () {
                         res = _a.sent();
                         return [2 /*return*/, res.status];
                     case 2:
-                        e_2 = _a.sent();
+                        e_3 = _a.sent();
                         return [2 /*return*/, false];
                     case 3: return [2 /*return*/];
                 }
