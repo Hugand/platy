@@ -7,73 +7,21 @@ import { io } from 'socket.io-client';
 import { clearSession, getUserData } from '../../helpers/api';
 import { UserData } from '../../models/UserData';
 import { Chat } from '../../models/Chat';
+import useMessagingWebsocket from '../../hooks/useMessagingWebsocket';
 
 function MainView({ contentComponent }: any) {
-    const [ { socket }, dispatch ] = useStateValue()
+    const [, dispatch ] = useStateValue()
+    const socket = useMessagingWebsocket();
 
     useEffect(() => {
-        console.log(socket)
-        let userData: UserData;
-
-        function initializeSocket(): void {
-            console.log(userData)
-            if(socket === null || socket === undefined || !socket.connected) {
-                console.log(userData)
-                const newSocket = io(`${process.env.REACT_APP_WEBSOCKET_URL}`, {
-                    reconnectionDelayMax: 10000,
-                    query: {
-                        uid: userData.user.uid,
-                    }
-                })
-
-                newSocket.on('chat_data', (data: string) => {
-                    console.log("rtm ok", data)
-                    dispatch({
-                        type: 'changeChatDataList',
-                        value: JSON.parse(data)
-                    })
-                })
-
-                newSocket.on('new_message', (newMessageStringified: string) => {
-                    const newMessage: Chat = JSON.parse(newMessageStringified)
-                    console.log("rtm msg", newMessage)
-                    dispatch({
-                        type: 'addNewChatMessage',
-                        value: newMessage
-                    })
-                    dispatch({
-                        type: 'changeChatDataPreviewChat',
-                        value: null
-                    })
-                })
-
-                newSocket.on('error', (data: any) => {
-                    console.log("rtm error", data)
-                })
-
-                const dispatchData: GlobalStateAction = {
-                    type: 'changeSocket',
-                    value: newSocket
-                }
-        
-                dispatch(dispatchData)
-            }
-        }
-
         async function fetchUserData(): Promise<void> {
             try {
-                userData = await getUserData(localStorage.getItem('authToken') || '')
+                let userData: UserData = await getUserData(localStorage.getItem('authToken') || '')
+                dispatch({ type: 'changeUser', value: userData })
                 console.log(userData)
-                dispatch({
-                    type: 'changeUser',
-                    value: userData
-                })
-
-                initializeSocket()
             } catch(e) {
                 clearSession()
             }
-
         }
         
         fetchUserData()
