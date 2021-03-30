@@ -19,12 +19,14 @@
 
 .btn-secondary {
     color: $primary-blue;
-    background-color: white;
-    font-weight: 500;
+    background-color: transparent;
+    font-weight: 400;
+    box-shadow: none !important;
 }
 
 .btn-secondary-red {
     color: $red;
-    background-color: white;
+    background-color: transparent;
     font-weight: 500;
+    box-shadow: none !important;
 }

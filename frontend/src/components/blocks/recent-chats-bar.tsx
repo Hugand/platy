@@ -1,21 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import '../../styles/blocks/recent-chats-bar.scss'
-import { TextField, ChatListCard } from '..'
+import { TextField } from '..'
 import Modal from 'react-modal';
 import SearchUserToChatModal from './search-user-to-chat-modal';
 import { User } from '../../models/User';
 import { useStateValue } from '../../state';
 
 function RecentChatsBar() {
-    const [ search, setSearchTerm ] = useState('')
+    const [ searchTerm, setSearchTerm ] = useState('')
     const [ isModalOpen, setIsModalOpen ] = useState(false)
     const [, dispatch ] = useStateValue()
 
     const setUserToChat = (user: User) => {
-        dispatch({
-            type: 'changeChatDataUser2Chat',
-            value: user
-        })
+        dispatch({ type: 'changeChatDataUser2Chat', value: user })
     }
     
     const selectUserHandler = (user: User) => {
@@ -26,7 +23,7 @@ function RecentChatsBar() {
     return <section className="chats-bar-container">
         <div className="bar-header">
             <div>
-                <TextField placeholder="Search" onInputChange={setSearchTerm}/>
+                <TextField placeholder="Search" value={ searchTerm } onInputChange={setSearchTerm}/>
                 <button className="btn" onClick={() => setIsModalOpen(true)}>+</button>
             </div>
         </div>
@@ -58,13 +55,10 @@ function RecentChatsBar() {
                 }}/> */}
         </div>
 
-
-
         <Modal
             isOpen={isModalOpen}
             onRequestClose={() => setIsModalOpen(false)}
             ariaHideApp={false}>
-            
             <SearchUserToChatModal selectUser={selectUserHandler} />
         </Modal>
     </section>

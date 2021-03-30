@@ -12,24 +12,23 @@ function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
     const [ searchTerm, setSearchTerm ] = useState('')
     const [ friendsList, setFriendsList ] = useState(new Array<User>())
 
-    const onInputChange = (val: string) => { 
-        setSearchTerm(val)
-        searchFriendsHandler(val)
-    }
-
     useEffect(() => {
         searchFriendsHandler(searchTerm)
     }, [])
 
+    const onInputChange = (val: string) => { 
+        setSearchTerm(val)
+        searchFriendsHandler(val)
+    }
     const searchFriendsHandler = async (searchStr: string) => {
-        const res: Array<User> = await searchFriends(localStorage.getItem('authToken') + '', searchStr)
-        setFriendsList(res)
+        const newFriendsList: Array<User> = await searchFriends(localStorage.getItem('authToken') || '', searchStr)
+        setFriendsList(newFriendsList)
     }
 
     return <div className="content">
         <header>
             <h2>Find new friends</h2>
-            <TextField placeholder="Search" onInputChange={onInputChange}/>
+            <TextField placeholder="Search" value={ searchTerm } onInputChange={onInputChange}/>
         </header>
 
         <div className="users-list-container">
@@ -38,7 +37,7 @@ function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
                 <UserSelectCard
                     key={ user.uid }
                     userData={ user }
-                    selectHandler={ (user: User) => selectUser(user) } /> ) }
+                    selectHandler={ selectUser } /> ) }
         </div>
     </div>
 }

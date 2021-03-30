@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import { ChatData } from '../../globalState'
-import { getFriendship } from '../../helpers/api'
+import { clearSession, getFriendship } from '../../helpers/api'
 import { Chat } from '../../models/Chat'
 import { Friendship } from '../../models/Friendship'
 import { User } from '../../models/User'
@@ -20,35 +19,35 @@ function ChatRoom({ friend }: ChatRoomProps) {
     const [ friendship, setFriendship ]: any = useState(null)
 
     useEffect(() => {
-        if(socket !== null) {
-            getFriendship(localStorage.getItem('authToken') || '', friend.id)
-                .then((friendship: Friendship) => {
-                    console.log(friendship)
-                    const socketData: any = {
-                        token: localStorage.getItem('authToken'),
-                        uid: userData.user.uid,
-                        roomId: 'F' + friendship.id // Mock value, change this later
-                    }
+        async function makeFriendshipRequest() {
+            let friendship: Friendship
 
-                    setFriendship(friendship)
+            try {
+                friendship = await getFriendship(localStorage.getItem('authToken') || '', friend.id)
+            } catch (e) {
+                clearSession()
+                return
+            }
 
-                    console.log("Emmited", socketData)
-                    socket.emit('join_room', socketData)
-                })
+            setFriendship(friendship)
+
+            socket.emit('join_room', {
+                token: localStorage.getItem('authToken') || '',
+                uid: userData.user.uid,
+                roomId: 'F' + friendship.id
+            })
         }
+
+        if(socket !== null)
+            makeFriendshipRequest()
+
     }, [friend.id, socket, userData.user.uid])
 
     const sendMessage = () => {
-        if(socket !== null) {
-            const previewChat: Chat = new Chat(
-                userData.user.id, friendship.id, message, new Date())
+        if(socket !== null && message !== '' && message !== null && message !== undefined) {
+            const previewChat = new Chat(userData.user.id, friendship.id, message, new Date())
 
-            console.log('SENDING', previewChat)
-
-            dispatch({
-                type: 'changeChatDataPreviewChat',
-                value: previewChat
-            })
+            dispatch({ type: 'changeChatDataPreviewChat', value: previewChat })
             socket.emit('send_message', {
                 roomId: 'F' + friendship.id,
                 newChat: previewChat,
@@ -82,13 +81,14 @@ function ChatRoom({ friend }: ChatRoomProps) {
         </div>
 
         <div className="chat-writer-container">
-            <TextField
-                classes={'chat-text-field'}
-                type={'textarea'}
-                placeholder=''
-                value={message}
-                onInputChange={setMessage}/>
-            <button className="btn" onClick={sendMessage}>Send</button>
+            <div className="input-container">
+                <TextField
+                    classes={'no-borders white-bg giant-borders'}
+                    placeholder=''
+                    value={message}
+                    onInputChange={setMessage}/>
+                <button className="btn btn-secondary" onClick={sendMessage}>Send</button>
+            </div>
         </div>
     </section>
 }

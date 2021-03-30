@@ -1,13 +1,10 @@
 import { useEffect } from 'react'
-import "../../styles/views/main.scss"
 import { NavBar } from '..'
 import { useStateValue } from '../../state';
-import { GlobalStateAction } from '../../globalState';
-import { io } from 'socket.io-client';
 import { clearSession, getUserData } from '../../helpers/api';
 import { UserData } from '../../models/UserData';
-import { Chat } from '../../models/Chat';
 import useMessagingWebsocket from '../../hooks/useMessagingWebsocket';
+import "../../styles/views/main.scss"
 
 function MainView({ contentComponent }: any) {
     const [, dispatch ] = useStateValue()

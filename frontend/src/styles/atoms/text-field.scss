@@ -26,3 +26,15 @@
         border: 2px solid #a7aeb1;
     }
 }
+
+.no-borders {
+    border: 0;
+}
+
+.white-bg {
+    background-color: white;
+}
+
+.giant-borders {
+    border-radius: $border-radius-giant;
+}

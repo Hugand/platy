@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { io } from "socket.io-client";
+import { clearSession } from '../helpers/api';
 import { Chat } from '../models/Chat';
 import { useStateValue } from '../state';
 
@@ -9,7 +10,6 @@ function useMessagingWebsocket() {
 
     useEffect(() => {
         if((socket === null || socket === undefined || !socket.connected) && userData.user.uid !== '') {
-            console.log(userData)
             const newSocket = io(`${process.env.REACT_APP_WEBSOCKET_URL}`, {
                 reconnectionDelayMax: 10000,
                 query: {
@@ -32,8 +32,14 @@ function useMessagingWebsocket() {
                 dispatch({ type: 'changeChatDataPreviewChat', value: null })
             })
     
-            newSocket.on('error', (data: any) => {
+            newSocket.on('error', (data: string) => {
                 console.log("rtm error", data)
+                switch(data) {
+                    case 'wrong_token':
+                        clearSession()
+                        break
+                    default:
+                }
             })
     
             dispatch({ type: 'changeSocket', value: newSocket })
