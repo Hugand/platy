@@ -10,14 +10,10 @@ import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.util.Base64;
+import java.util.Optional;
 
 @RestController
 public class UsersController {
@@ -31,28 +27,28 @@ public class UsersController {
         this.friendsRepo = friendsRepo;
     }
 
-    public User getUserFromToken(String token) {
+    public static Optional<User> getUserFromToken(String token, UsersRepo usersRepo) {
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
         token = token.replace("Bearer ", "");
         String authUserUid;
         try {
             authUserUid = jwtTokenUtil.getUidFromToken(token);
             if(authUserUid != null && !authUserUid.isBlank())
-                return usersRepo.findByUid(authUserUid).orElse(null);
+                return usersRepo.findByUid(authUserUid);
         } catch (Exception e) {
-            return null;
+            return Optional.empty();
         }
-        return null;
+        return Optional.empty();
     }
 
     @GetMapping("/getUserData")
     public ResponseEntity<UserData> getUserData(@RequestHeader("Authorization") String token) {
-        User user = this.getUserFromToken(token);
+        Optional<User> user = getUserFromToken(token, this.usersRepo);
         UserData userData = new UserData();
 
-        if(user != null) {
-            int friendsCount = friendsRepo.countFriendsByUser1OrUser2(user, user);
-            userData.setUser(user);
+        if(user.isPresent()) {
+            int friendsCount = friendsRepo.countFriendsByUser1OrUser2(user.get(), user.get());
+            userData.setUser(user.get());
             userData.setFriendsCount(friendsCount);
         }
 
@@ -69,9 +65,11 @@ public class UsersController {
         } catch (JsonProcessingException e) {
             return ResponseEntity.ok(false);
         }
-        User user = getUserFromToken(token);
+        Optional<User> userOptional = getUserFromToken(token, usersRepo);
+        User user;
 
-        if(user != null && updatedUser != null) {
+        if(userOptional.isPresent() && updatedUser != null) {
+            user = userOptional.get();
             user.setNomeProprio(updatedUser.getNomeProprio());
             user.setApelido(updatedUser.getApelido());
             user.setUsername(updatedUser.getUsername());

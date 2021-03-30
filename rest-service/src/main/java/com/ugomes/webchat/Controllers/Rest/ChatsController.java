@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ChatsController {
@@ -31,51 +32,36 @@ public class ChatsController {
         this.chatsRepo = chatsRepo;
     }
 
-    private User getUserFromToken(String token) {
-        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
-        token = token.replace("Bearer ", "");
-        String authUserUid;
-        try {
-            authUserUid = jwtTokenUtil.getUidFromToken(token);
-            if(authUserUid != null && !authUserUid.isBlank())
-                return usersRepo.findByUid(authUserUid).orElse(null);
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
-    }
-
     @GetMapping("/getChatsFromFriendship")
     public ResponseEntity<List<Chat>> getChatFromFriendship(@RequestParam Long friendshipId) {
         List<Chat> chatsList =  new ArrayList<>(chatsRepo.findByFriendshipOrderByTimestampDesc(new Friends(friendshipId)));
-        System.out.println(chatsList);
         return ResponseEntity.ok(chatsList);
     }
 
     @PostMapping("/persistChat")
-    public ResponseEntity<Chat> persistChat(@RequestBody String chatPreviewStringified) {
+    public ResponseEntity<Optional<Chat>> persistChat(@RequestBody String chatPreviewStringified) {
         ObjectMapper objectMapper = new ObjectMapper();
         ChatPreview chatPreview;
-        System.out.println(chatPreviewStringified);
+
         try {
             chatPreview = objectMapper.readValue(chatPreviewStringified, ChatPreview.class);
         } catch (JsonProcessingException e) {
-            return ResponseEntity.ok(null);
+            return ResponseEntity.badRequest().body(Optional.empty());
         }
-        User originUser = usersRepo.findById(chatPreview.getUserOrigin()).orElse(null);
-        Friends friendship = friendsRepo.findById(chatPreview.getFriendshipId()).orElse(null);
 
-        if(originUser == null || friendship == null)
-            ResponseEntity.ok(null);
+        Optional<User> originUser = usersRepo.findById(chatPreview.getUserOrigin());
+        Optional<Friends> friendship = friendsRepo.findById(chatPreview.getFriendshipId());
+
+        if(originUser.isEmpty() || friendship.isEmpty())
+            return ResponseEntity.badRequest().body(Optional.empty());
 
         Chat chatObj = new Chat(
-                originUser,
-                friendship,
+                originUser.get(),
+                friendship.get(),
                 chatPreview.getMsg(),
                 chatPreview.getTimestamp());
-
         Chat savedChat = chatsRepo.save(chatObj);
 
-        return ResponseEntity.ok(savedChat);
+        return ResponseEntity.ok(Optional.of(savedChat));
     }
 }

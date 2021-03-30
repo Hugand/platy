@@ -11,6 +11,7 @@ import javax.websocket.server.PathParam;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 //@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -22,25 +23,18 @@ public class Api {
     }
 
     @GetMapping("/")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<User> hello() {
         List<User> users = usersRepo.findAll();
         return ResponseEntity.ok(users.get(0));
     }
 
     @GetMapping("/getAuthUser")
-    @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<User> getAuthUser(@RequestHeader("Authorization") String token) {
-        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
-        token = token.replace("Bearer ", "");
-        String uid = jwtTokenUtil.getUidFromToken(token);
-
-        User user = usersRepo.findByUid(uid).orElse(null);
+    public ResponseEntity<Optional<User>> getAuthUser(@RequestHeader("Authorization") String token) {
+        Optional<User> user = UsersController.getUserFromToken(token, this.usersRepo);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping("/validateToken")
-    @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
     public ResponseEntity<Map<String, Boolean>> validateToken(@PathParam("token") String token, @PathParam("uid") String uid) {
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
         boolean isValid = jwtTokenUtil.validateToken(token, uid);

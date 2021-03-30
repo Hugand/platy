@@ -1,5 +1,6 @@
 package com.ugomes.webchat.Controllers.Rest;
 
+import com.sun.istack.Nullable;
 import com.ugomes.webchat.ApiResponses.SearchUserResponse;
 import com.ugomes.webchat.Comparators.UserFirstNameComparator;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
@@ -29,35 +30,20 @@ public class FriendsController {
         this.chatsRepo = chatsRepo;
     }
 
-    private User getUserFromToken(String token) {
-        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
-        token = token.replace("Bearer ", "");
-        String authUserUid;
-        try {
-            authUserUid = jwtTokenUtil.getUidFromToken(token);
-            if(authUserUid != null && !authUserUid.isBlank())
-                return usersRepo.findByUid(authUserUid).orElse(null);
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
-    }
-
     @GetMapping("/searchUser")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String searchTerm,
                                                          @RequestHeader("Authorization") String token) {
-        User authUser = this.getUserFromToken(token);
+        Optional<User> authUserOptional = UsersController.getUserFromToken(token, this.usersRepo);
 
         List<User> users = new ArrayList<>();
         List<Long> friendRequestsTargetUserId = new ArrayList<>();
         List<Long> friendUsersId = new ArrayList<>();
 
-        if(authUser == null || searchTerm.isBlank() || searchTerm.isEmpty())
-            return ResponseEntity.ok(new SearchUserResponse(users, friendRequestsTargetUserId, friendUsersId));
+        if(authUserOptional.isEmpty() || searchTerm.isBlank() || searchTerm.isEmpty())
+            return ResponseEntity.badRequest().body(new SearchUserResponse(users, friendRequestsTargetUserId, friendUsersId));
 
+        User authUser = authUserOptional.get();
         users = usersRepo.findByUserOrName(searchTerm.toLowerCase(Locale.ROOT));
-
         users.removeIf(user -> (user != null && user.getUid().equals(authUser.getUid())));
 
         List<FriendsRequests> friendsRequestsByAuthUser = friendsRequestRepo.findByOriginOrDestinyId(authUser.getId());
@@ -78,35 +64,38 @@ public class FriendsController {
         }
 
         return ResponseEntity.ok(new SearchUserResponse(users, friendRequestsTargetUserId, friendUsersId));
-
     }
 
     @GetMapping("/sendFriendRequest")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<Map<String, String>> sendFriendRequest(@RequestHeader("Authorization") String token,
                                     @RequestParam Long newFriendId) {
         Map<String, String> resBody = new HashMap<>();
-        User authUser = this.getUserFromToken(token);
-        User userToBefriend = usersRepo.findById(newFriendId).orElse(null);
-        Friends existingFriendship = friendsRepo.findFriendsByUser1AndUser2(authUser, userToBefriend).orElse(null);
+        Optional<User> authUser = UsersController.getUserFromToken(token, this.usersRepo);
+        Optional<User> userToBefriend = usersRepo.findById(newFriendId);
 
-
-        if(userToBefriend == null || authUser == null || existingFriendship != null) {
+        if(userToBefriend.isEmpty() || authUser.isEmpty()) {
             resBody.put("status", "failed");
-            return ResponseEntity.ok(resBody);
+            return ResponseEntity.badRequest().body(resBody);
+        }
+
+        Optional<Friends> existingFriendship = friendsRepo.findFriendsByUser1AndUser2(authUser.get(), userToBefriend.get());
+
+        if(existingFriendship.isPresent()) {
+            resBody.put("status", "failed");
+            return ResponseEntity.badRequest().body(resBody);
         }
 
         List<FriendsRequests> alreadyCreatedFriendRequestToAuthUser = friendsRequestRepo
-                .findByOriginOrDestinyId(authUser.getId());
+                .findByOriginOrDestinyId(authUser.get().getId());
         List<FriendsRequests> alreadyCreatedFriendRequestToBefriendUser = friendsRequestRepo
-                .findByOriginOrDestinyId(userToBefriend.getId());
+                .findByOriginOrDestinyId(userToBefriend.get().getId());
 
-        if(alreadyCreatedFriendRequestToAuthUser.size() > 0|| alreadyCreatedFriendRequestToBefriendUser.size() > 0) {
+        if(alreadyCreatedFriendRequestToAuthUser.size() > 0 || alreadyCreatedFriendRequestToBefriendUser.size() > 0) {
             resBody.put("status", "failed");
-            return ResponseEntity.ok(resBody);
+            return ResponseEntity.badRequest().body(resBody);
         }
 
-        FriendsRequests newFriendRequest = new FriendsRequests(authUser, userToBefriend);
+        FriendsRequests newFriendRequest = new FriendsRequests(authUser.get(), userToBefriend.get());
         newFriendRequest.setRequestDate(Clock.systemUTC().instant());
 
         friendsRequestRepo.save(newFriendRequest);
@@ -121,17 +110,16 @@ public class FriendsController {
     public ResponseEntity<Map<String, String>> cancelFriendRequest(@RequestHeader("Authorization") String token,
                                                       @RequestParam Long destinyUserId) {
         Map<String, String> resp = new HashMap<>();
-        User authUser = this.getUserFromToken(token);
+        Optional<User> authUser = UsersController.getUserFromToken(token, this.usersRepo);
 
-        if(authUser == null || Objects.equals(authUser.getId(), destinyUserId)) {
+        if(authUser.isEmpty() || Objects.equals(authUser.get().getId(), destinyUserId)) {
             resp.put("status", "failed");
-            return ResponseEntity.ok(resp);
+            return ResponseEntity.badRequest().body(resp);
         }
 
-        friendsRequestRepo.deleteFriendsRequestsByUsersId(authUser.getId(), destinyUserId);
+        friendsRequestRepo.deleteFriendsRequestsByUsersId(authUser.get().getId(), destinyUserId);
 
         resp.put("status", "success");
-
         return ResponseEntity.ok(resp);
     }
 
@@ -139,7 +127,6 @@ public class FriendsController {
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = usersRepo.findAll();
-        System.out.println(users);
         return ResponseEntity.ok(users);
     }
 
@@ -148,10 +135,10 @@ public class FriendsController {
     @Transactional
     public ResponseEntity<List<FriendsRequests>> getFriendsRequestsByDestinyUser(@RequestHeader("Authorization") String token) {
         List<FriendsRequests> friendsRequests = new ArrayList<>();
-        User authenticatedUser = this.getUserFromToken(token);
+        Optional<User> authenticatedUser = UsersController.getUserFromToken(token, this.usersRepo);
 
-        if(authenticatedUser != null)
-            friendsRequests = friendsRequestRepo.findFriendsRequestsByRequestDestinyUser(authenticatedUser);
+        if(authenticatedUser.isPresent())
+            friendsRequests = friendsRequestRepo.findFriendsRequestsByRequestDestinyUser(authenticatedUser.get());
 
         return ResponseEntity.ok(friendsRequests);
     }
@@ -161,47 +148,45 @@ public class FriendsController {
     @Transactional
     public ResponseEntity<Map<String, Object>> acceptFriendRequest(@RequestParam Long friendRequestId) {
         Map<String, Object> response = new HashMap<>();
-        FriendsRequests currFriendsRequests = friendsRequestRepo.findById(friendRequestId).orElse(null);
+        Optional<FriendsRequests> currFriendsRequests = friendsRequestRepo.findById(friendRequestId);
 
-        if(currFriendsRequests == null)
+        if(currFriendsRequests.isEmpty()) {
             response.put("status", "failed");
-        else {
-            User userOrigin = currFriendsRequests.getRequestOriginUser();
-            User userDestiny = currFriendsRequests.getRequestDestinyUser();
-
-            Friends existingFriendship = friendsRepo.findFriendsByUser1AndUser2(userOrigin, userDestiny).orElse(null);
-
-            if(existingFriendship == null) {
-                Friends friends = new Friends(userOrigin, userDestiny, Clock.systemUTC().instant());
-                friendsRequestRepo.delete(currFriendsRequests);
-
-                Friends savedFriend = friendsRepo.save(friends);
-                response.put("status", "success");
-                response.put("savedFriend", savedFriend);
-            } else
-                response.put("status", "failed");
+            return ResponseEntity.badRequest().body(response);
         }
 
-        return ResponseEntity.ok(response);
+        User userOrigin = currFriendsRequests.get().getRequestOriginUser();
+        User userDestiny = currFriendsRequests.get().getRequestDestinyUser();
+        Optional<Friends> existingFriendship = friendsRepo.findFriendsByUser1AndUser2(userOrigin, userDestiny);
+
+        if(existingFriendship.isEmpty()) {
+            Friends friendship = new Friends(userOrigin, userDestiny, Clock.systemUTC().instant());
+            Friends savedFriend = friendsRepo.save(friendship);
+
+            friendsRequestRepo.delete(currFriendsRequests.get());
+            response.put("status", "success");
+            response.put("savedFriend", savedFriend);
+            return ResponseEntity.ok(response);
+        }
+
+        response.put("status", "failed");
+        return ResponseEntity.badRequest().body(response);
     }
 
     @GetMapping("/getFriendsList")
     public ResponseEntity<List<User>> getFriendsList(@RequestHeader("Authorization") String token) {
         List<User> friendsList = new ArrayList<>();
-        User authenticatedUser = this.getUserFromToken(token);
+        Optional<User> authenticatedUser = UsersController.getUserFromToken(token, this.usersRepo);
 
-        if(authenticatedUser == null)
-            return ResponseEntity.ok(friendsList);
+        if(authenticatedUser.isEmpty())
+            return ResponseEntity.badRequest().body(friendsList);
 
-        List<Friends> friendsObjList = friendsRepo.findFriendsByUser(authenticatedUser);
-
-        if(friendsObjList == null)
-            return ResponseEntity.ok(friendsList);
+        List<Friends> friendsObjList = friendsRepo.findFriendsByUser(authenticatedUser.get());
 
         for(Friends friendship : friendsObjList) {
-            if(friendship.getUser1().equals(authenticatedUser))
+            if(friendship.getUser1().equals(authenticatedUser.get()))
                 friendsList.add(friendship.getUser2());
-            else if(friendship.getUser2().equals(authenticatedUser))
+            else if(friendship.getUser2().equals(authenticatedUser.get()))
                 friendsList.add(friendship.getUser1());
         }
 
@@ -209,15 +194,15 @@ public class FriendsController {
     }
 
     @GetMapping("/getFriendship")
-    public ResponseEntity<Friends> getFriendship(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Optional<Friends>> getFriendship(@RequestHeader("Authorization") String token,
                                                  @RequestParam Long friendId) {
-        User authenticatedUser = this.getUserFromToken(token);
-        User friendUser = usersRepo.findById(friendId).orElse(null);
+        Optional<User> authenticatedUser = UsersController.getUserFromToken(token, this.usersRepo);
+        Optional<User> friendUser = usersRepo.findById(friendId);
 
-        if(authenticatedUser == null || friendUser == null)
-            return ResponseEntity.ok(null);
+        if(authenticatedUser.isEmpty() || friendUser.isEmpty())
+            return ResponseEntity.badRequest().body(Optional.empty());
 
-        Friends friendship = friendsRepo.findFriendsByUser1AndUser2(authenticatedUser, friendUser).orElse(null);
+        Optional<Friends> friendship = friendsRepo.findFriendsByUser1AndUser2(authenticatedUser.get(), friendUser.get());
 
         return ResponseEntity.ok(friendship);
     }
@@ -226,12 +211,16 @@ public class FriendsController {
     public ResponseEntity<List<User>> searchFriends(@RequestHeader("Authorization") String token,
                                                     @RequestParam String searchTerm) {
         List<User> friendsList = new ArrayList<>();
-        User authenticatedUser = this.getUserFromToken(token);
-        List<Friends> friendshipList = friendsRepo.findFriendsByUser(authenticatedUser);
+        Optional<User> authenticatedUser = UsersController.getUserFromToken(token, this.usersRepo);
+
+        if(authenticatedUser.isEmpty())
+            return ResponseEntity.badRequest().body(friendsList);
+
+        List<Friends> friendshipList = friendsRepo.findFriendsByUser(authenticatedUser.get());
 
         for(Friends friendship : friendshipList) {
             User buffUser;
-            if(friendship.getUser1().equals(authenticatedUser))
+            if(friendship.getUser1().equals(authenticatedUser.get()))
                 buffUser = friendship.getUser2();
             else
                 buffUser = friendship.getUser1();

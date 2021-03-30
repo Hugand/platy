@@ -24,20 +24,21 @@ import java.util.List;
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    CustomOidcUserService oidcUserService;
+    final CustomOidcUserService oidcUserService;
 
-    @Autowired
-    CustomAuthSuccessHandler customAuthSuccessHandler;
+    final CustomAuthSuccessHandler customAuthSuccessHandler;
+
+    public SecurityConfig(CustomOidcUserService oidcUserService, CustomAuthSuccessHandler customAuthSuccessHandler) {
+        this.oidcUserService = oidcUserService;
+        this.customAuthSuccessHandler = customAuthSuccessHandler;
+    }
 
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .cors().and().csrf().disable()
             .antMatcher("/**").authorizeRequests()
-            .antMatchers("/").permitAll()
             .antMatchers("/validateToken").permitAll()
-            .antMatchers("/getChatFromFriendship").permitAll()
             .anyRequest().authenticated()
             .and()
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class)
@@ -63,8 +64,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         List<String> allowedOrigins = new ArrayList<>();
-        allowedOrigins.add("http://localhost:3000");
-        allowedOrigins.add("http://localhost:3001");
+        allowedOrigins.add("http://localhost:3000"); // Frontend
+        allowedOrigins.add("http://localhost:3001"); // RTM service
 //        allowedOrigins.add("*");
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.addAllowedHeader("*");

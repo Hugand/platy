@@ -288,4 +288,23 @@ public class FriendsTests {
         assertEquals(0, Objects.requireNonNull(queryResult.getBody()).size());
         assertEquals(friendsUserList, Objects.requireNonNull(queryResult.getBody()));
     }
+
+    @Test
+    void getCorrectFriendship() { }
+
+    @Test
+    void failToGetFriendshipByWrongToken() { }
+
+    @Test
+    void failToGetFriendshipByWrongFriendId() { }
+
+    @Test
+    void getCorrectSearchFriends() { }
+
+    @Test
+    void failSearchingFriendsByWrongToken() { }
+
+    @Test
+    void getSearchFriendsByEmptySearchTerm() { }
+
 }
