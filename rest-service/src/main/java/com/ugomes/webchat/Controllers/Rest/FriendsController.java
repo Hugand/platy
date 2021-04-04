@@ -30,42 +30,6 @@ public class FriendsController {
         this.chatsRepo = chatsRepo;
     }
 
-    @GetMapping("/searchUser")
-    public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String searchTerm,
-                                                         @RequestHeader("Authorization") String token) {
-        Optional<User> authUserOptional = UsersController.getUserFromToken(token, this.usersRepo);
-
-        List<User> users = new ArrayList<>();
-        List<Long> friendRequestsTargetUserId = new ArrayList<>();
-        List<Long> friendUsersId = new ArrayList<>();
-
-        if(authUserOptional.isEmpty() || searchTerm.isBlank() || searchTerm.isEmpty())
-            return ResponseEntity.badRequest().body(new SearchUserResponse(users, friendRequestsTargetUserId, friendUsersId));
-
-        User authUser = authUserOptional.get();
-        users = usersRepo.findByUserOrName(searchTerm.toLowerCase(Locale.ROOT));
-        users.removeIf(user -> (user != null && user.getUid().equals(authUser.getUid())));
-
-        List<FriendsRequests> friendsRequestsByAuthUser = friendsRequestRepo.findByOriginOrDestinyId(authUser.getId());
-        List<Friends> friendsList = friendsRepo.findFriendsByUser(authUser);
-
-        for(FriendsRequests fr : friendsRequestsByAuthUser) {
-            if(fr.getRequestOriginUser().getId().equals(authUser.getId()))
-                friendRequestsTargetUserId.add(fr.getRequestDestinyUser().getId());
-            else
-                friendRequestsTargetUserId.add(fr.getRequestOriginUser().getId());
-        }
-
-        for(Friends f : friendsList) {
-            if(f.getUser1().getId().equals(authUser.getId()))
-                friendUsersId.add(f.getUser2().getId());
-            else if(f.getUser2().getId().equals(authUser.getId()))
-                friendUsersId.add(f.getUser1().getId());
-        }
-
-        return ResponseEntity.ok(new SearchUserResponse(users, friendRequestsTargetUserId, friendUsersId));
-    }
-
     @GetMapping("/sendFriendRequest")
     public ResponseEntity<Map<String, String>> sendFriendRequest(@RequestHeader("Authorization") String token,
                                     @RequestParam Long newFriendId) {
@@ -137,8 +101,10 @@ public class FriendsController {
         List<FriendsRequests> friendsRequests = new ArrayList<>();
         Optional<User> authenticatedUser = UsersController.getUserFromToken(token, this.usersRepo);
 
-        if(authenticatedUser.isPresent())
-            friendsRequests = friendsRequestRepo.findFriendsRequestsByRequestDestinyUser(authenticatedUser.get());
+        if(authenticatedUser.isEmpty())
+            return ResponseEntity.badRequest().body(friendsRequests);
+
+        friendsRequests = friendsRequestRepo.findFriendsRequestsByRequestDestinyUser(authenticatedUser.get());
 
         return ResponseEntity.ok(friendsRequests);
     }

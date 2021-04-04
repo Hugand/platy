@@ -15,6 +15,7 @@ import com.ugomes.webchat.repositories.UsersRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,8 @@ public class UsersTests {
         expected.add(usersList.get(1));
         expected.add(usersList.get(2));
 
-        ResponseEntity<SearchUserResponse> queryResult = friendsController.searchUser(searchTerm, authUserToken);
+        ResponseEntity<SearchUserResponse> queryResult = usersController.searchUser(searchTerm, authUserToken);
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
         assertEquals(expected, Objects.requireNonNull(queryResult.getBody()).getSearchedUsers());
     }
 
@@ -79,7 +81,8 @@ public class UsersTests {
         when(usersRepo.findByUserOrName(searchTerm)).thenReturn(usersList);
         when(usersRepo.findAll()).thenReturn(usersList);
 
-        ResponseEntity<SearchUserResponse> queryResult = friendsController.searchUser(searchTerm, authUserToken);
+        ResponseEntity<SearchUserResponse> queryResult = usersController.searchUser(searchTerm, authUserToken);
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
         assertEquals(0, Objects.requireNonNull(queryResult.getBody()).getSearchedUsers().size());
     }
 
@@ -94,6 +97,7 @@ public class UsersTests {
 
         ResponseEntity<UserData> queryResult = usersController.getUserData(authUserToken);
 
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
         assertEquals(user, Objects.requireNonNull(queryResult.getBody()).getUser());
         assertEquals(1, queryResult.getBody().getFriendsCount());
     }
@@ -109,6 +113,7 @@ public class UsersTests {
 
         ResponseEntity<UserData> queryResult = usersController.getUserData(authUserToken);
 
+        assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
         assertNull(Objects.requireNonNull(queryResult.getBody()).getUser());
         assertEquals(0, queryResult.getBody().getFriendsCount());
     }
@@ -129,6 +134,7 @@ public class UsersTests {
 
         ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
 
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
         assertTrue(queryResult.getBody());
     }
 
@@ -148,6 +154,7 @@ public class UsersTests {
 
         ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
 
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
         assertTrue(queryResult.getBody());
     }
 
@@ -173,6 +180,7 @@ public class UsersTests {
 
         ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
 
+        assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
         assertFalse(queryResult.getBody());
     }
 
@@ -196,6 +204,7 @@ public class UsersTests {
         when(usersRepo.findByUid(realUser.getUid())).thenReturn(java.util.Optional.of(realUser));
         ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
 
+        assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
         assertFalse(queryResult.getBody());
     }
 

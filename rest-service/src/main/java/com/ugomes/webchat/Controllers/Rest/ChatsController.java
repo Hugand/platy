@@ -34,6 +34,9 @@ public class ChatsController {
 
     @GetMapping("/getChatsFromFriendship")
     public ResponseEntity<List<Chat>> getChatFromFriendship(@RequestParam Long friendshipId) {
+        if(friendshipId < 0)
+            return ResponseEntity.badRequest().body(new ArrayList<>());
+
         List<Chat> chatsList =  new ArrayList<>(chatsRepo.findByFriendshipOrderByTimestampDesc(new Friends(friendshipId)));
         return ResponseEntity.ok(chatsList);
     }
@@ -60,6 +63,7 @@ public class ChatsController {
                 friendship.get(),
                 chatPreview.getMsg(),
                 chatPreview.getTimestamp());
+
         Chat savedChat = chatsRepo.save(chatObj);
 
         return ResponseEntity.ok(Optional.of(savedChat));

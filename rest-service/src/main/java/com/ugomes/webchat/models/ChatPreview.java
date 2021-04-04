@@ -11,6 +11,12 @@ public class ChatPreview {
     private Timestamp timestamp;
 
     public ChatPreview() {}
+    public ChatPreview(Long userOrigin, Long friendshipId, String msg, Timestamp timestamp) {
+        this.userOrigin = userOrigin;
+        this.friendshipId = friendshipId;
+        this.msg = msg;
+        this.timestamp = timestamp;
+    }
     public ChatPreview(Long id, Long userOrigin, Long friendshipId, String msg, Timestamp timestamp) {
         this.id = id;
         this.userOrigin = userOrigin;
@@ -18,7 +24,6 @@ public class ChatPreview {
         this.msg = msg;
         this.timestamp = timestamp;
     }
-
     public void setId(Long id) {
         this.id = id;
     }

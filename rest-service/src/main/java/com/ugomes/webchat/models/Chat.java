@@ -1,9 +1,12 @@
 package com.ugomes.webchat.models;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Objects;
 
 @Entity
 public class Chat {
@@ -25,6 +28,13 @@ public class Chat {
         this.friendship = friendship;
         this.msg = msg;
         this.timestamp = timestamp;
+    }
+
+    public Chat(Long id, User userOrigin, Friends friendship, String msg) {
+        this.id = id;
+        this.userOrigin = userOrigin;
+        this.friendship = friendship;
+        this.msg = msg;
     }
 
     public Chat() {
@@ -75,11 +85,22 @@ public class Chat {
     public String toString() {
         return "Chat{" +
                 "id=" + id +
-                ", userOrigin=" + userOrigin +
-                ", friendship=" + friendship +
+                ", userOrigin=" + userOrigin.getId() +
+                ", friendship=" + friendship.getId() +
                 ", msg='" + msg + '\'' +
-                ", timestamp=" + timestamp +
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Chat chat = (Chat) o;
+        return Objects.equals(id, chat.id) && userOrigin.equals(chat.userOrigin) && friendship.equals(chat.friendship) && msg.equals(chat.msg);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userOrigin, friendship, msg);
+    }
 }
