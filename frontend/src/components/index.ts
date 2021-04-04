@@ -12,12 +12,17 @@ import NavBar from './blocks/nav-bar'
 import RecentChatsBar from './blocks/recent-chats-bar'
 import FriendsListModal from './blocks/friends-list-modal'
 import EditProfileModal from './blocks/edit-profile-modal'
+import SearchUserToChatModal from './blocks/search-user-to-chat-modal'
 
 // Importing atoms
 import TextField from './atoms/text-field'
 import ChatListCard from './atoms/chat-list-card'
 import UserAddCard from './atoms/user-add-card'
 import FriendRequestAcceptCard from './atoms/friend-request-accept-card'
+import UserSelectCard from './atoms/user-select-card'
+import TextMessageBlob from './atoms/text-message-blob'
+
+
 
 export {
     // Views
@@ -33,10 +38,13 @@ export {
     RecentChatsBar,
     FriendsListModal,
     EditProfileModal,
+    SearchUserToChatModal,
 
     // Atoms
     TextField,
     ChatListCard,
     UserAddCard,
-    FriendRequestAcceptCard
+    FriendRequestAcceptCard,
+    UserSelectCard,
+    TextMessageBlob
 }

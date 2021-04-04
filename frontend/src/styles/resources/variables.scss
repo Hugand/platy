@@ -4,6 +4,7 @@ $primary-blue: #72AAFF;
 $accent-blue: #E9F2FF;
 $light-blue: #E9F2FF;
 $white-blue: #FEFEFF;
+$lighter-grey: #7a7b7c88;
 $light-grey: #7A7B7C;
 $grey: #191a1b;
 $dark-grey: #0a0a0a;
@@ -11,9 +12,11 @@ $red: #d83030;
 
 
 // Box shadow
+$box-shadow-light: 2px 2px 20px #4078b913;
 $box-shadow: 2px 2px 20px #4078b93d;
 $box-shadow-hovered: 2px 2px 20px #4078b967;
 
 // Border radius
+$border-radius-giant: 20px;
 $border-radius-big: 10px;
 $border-radius-small: 5px;

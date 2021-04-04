@@ -1,0 +1,30 @@
+@import "../resources/variables.scss";
+
+.user-select-card {
+    padding: 1.875rem 4.875rem;
+    height: fit-content;
+    display: flex;
+    border-radius: $border-radius-big;
+    transition: .2s;
+
+    img {
+        width: 4.5rem;
+        height: 4.5rem;
+        margin-right: 2.375rem;
+        border-radius: 100%;
+    }
+
+    label {
+        font-weight: 300;
+        font-size: 1.75rem;
+        height: fit-content;
+        margin: auto 0;
+        margin-right: 2rem;
+    }
+
+    &:hover {
+        box-shadow: $box-shadow;
+
+        &, label { cursor: pointer; }
+    }
+}

@@ -1,11 +1,18 @@
 import '../../styles/atoms/text-field.scss'
 
-function TextField({ placeholder, onInputChange, defaultValue }: any) {
-    return <input
+function TextField({ 
+    placeholder,
+    onInputChange,
+    defaultValue,
+    classes='',
+    value
+}: any) {
+     return <input
         type="text"
-        className="text-field"
+        className={"text-field " + classes}
         placeholder={placeholder}
         defaultValue={defaultValue}
+        value={value}
         onChange={(e) => onInputChange(e.target.value)}/>
 }
 

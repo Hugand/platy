@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import '../../styles/views/login.scss'
 import laptopImg from '../../assets/img/laptop.png'
 import { useHistory } from "react-router-dom";
-import { login } from '../../helpers/api'
+import { clearSession, login } from '../../helpers/api'
 import { User } from '../../models/User';
 
 function LoginView() {
@@ -39,8 +39,7 @@ function LoginView() {
             const authUser: User = await login(authToken)
             history.push("/");
         } catch (e) {
-            localStorage.removeItem('authToken')
-            window.location.href = `${process.env.REACT_APP_API_URL}/getAuthUser`;
+            clearSession()
         }
     }
 
