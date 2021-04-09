@@ -118,6 +118,15 @@ const getRecentChatsList = (authToken: string): Promise<Array<RecentChat>> => {
     }).then(res => res.json())
 }
 
+const getFriendshipChats = (token: string, friendshipId: number, signal: any) => {
+    return fetch(`${process.env.REACT_APP_API_URL}/getChatsFromFriendship?friendshipId=${friendshipId}`, {
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
+        signal
+    }).then((res: any) => res.json())
+}
+
 export {
     login,
     searchUsers,
@@ -132,5 +141,6 @@ export {
     clearSession,
     getFriendship,
     searchFriends,
-    getRecentChatsList
+    getRecentChatsList,
+    getFriendshipChats
 }

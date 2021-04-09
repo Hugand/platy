@@ -8,6 +8,12 @@
     grid-template-columns: 80px auto;
     grid-gap: 1.5rem;
     overflow-y: auto;
+    transition: .2s;
+
+    &:hover {
+        cursor: pointer;
+        background-color: #fafafa;
+    }
 
     img {
         grid-column: 1;

@@ -5,29 +5,38 @@ import Modal from 'react-modal';
 import SearchUserToChatModal from './search-user-to-chat-modal';
 import { User } from '../../models/User';
 import { useStateValue } from '../../state';
-import { getRecentChatsList } from '../../helpers/api';
+import { getRecentChatsList, clearSession } from '../../helpers/api';
 import { RecentChat } from '../../models/RecentChat';
 
 function RecentChatsBar() {
     const [ searchTerm, setSearchTerm ] = useState('')
     const [ isModalOpen, setIsModalOpen ] = useState(false)
-    const [ recentChatsList, setRecentChatsList ]: any = useState(null)
-    const [, dispatch ] = useStateValue()
+    const [ { recentChatsList, chatData } , dispatch ] = useStateValue()
 
     const setUserToChat = (user: User) => {
         dispatch({ type: 'changeChatDataUser2Chat', value: user })
     }
     
-    const selectUserHandler = (user: User) => {
-        setUserToChat(user)
+    const selectUserHandler = (user: User, friendshipId: number = -1) => {
+        if(chatData.userToChat === null || (user !== null && user.id !== chatData.userToChat.id)){
+            setUserToChat(user)
+            if(friendshipId !== -1) {
+                const roomId: string = 'F' + friendshipId
+                dispatch({ type: 'changeChatDataCurrRoomId', value: roomId})
+            }
+        }
+
         setIsModalOpen(false)
     }
 
     const fetchRecentChats = async () => {
         const authToken: string = localStorage.getItem('authToken') + ''
-        const res: Array<RecentChat> = await getRecentChatsList(authToken)
-        console.log(res)
-        setRecentChatsList(res)
+        try {
+            const res: Array<RecentChat> = await getRecentChatsList(authToken)
+            dispatch({ type: 'changeRecentChatsList', value: res})
+        } catch(e) {
+            clearSession()
+        }
     }
 
     useEffect(() => {
@@ -43,35 +52,13 @@ function RecentChatsBar() {
         </div>
 
         <div className="chat-list">
-            { recentChatsList === null
+            { recentChatsList.length === 0
                 ? <p>No recent chats. Start a conversation with a friend!</p>
                 : recentChatsList.map((recentChat: RecentChat) => 
-                    <ChatListCard key={recentChat.friendshipId} chat={recentChat}/>)}
-
-            {/* <ChatListCard
-                chat={{
-                    profilePic: "https://avatars.githubusercontent.com/u/24555587?s=460&u=60f5d30868fc8148ed0c65b7a863ec53431329b0&v=4",
-                    nomeProprio: "Hugo", apelido: "Gomes",
-                    msg: "Boas pessoal "
-                }}/>
-            <ChatListCard
-                chat={{
-                    profilePic: "https://avatars.githubusercontent.com/u/24555587?s=460&u=60f5d30868fc8148ed0c65b7a863ec53431329b0&v=4",
-                    nomeProprio: "Hugo", apelido: "Gomes",
-                    msg: "Boas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenadaBoas pessoal drenado da drena drenada"
-                }}/>
-            <ChatListCard
-                chat={{
-                    profilePic: "https://avatars.githubusercontent.com/u/24555587?s=460&u=60f5d30868fc8148ed0c65b7a863ec53431329b0&v=4",
-                    nomeProprio: "Hugo", apelido: "Gomes",
-                    msg: "Boas pessoal drenado da drena drenada"
-                }}/>
-            <ChatListCard
-                chat={{
-                    profilePic: "https://avatars.githubusercontent.com/u/24555587?s=460&u=60f5d30868fc8148ed0c65b7a863ec53431329b0&v=4",
-                    nomeProprio: "Hugo", apelido: "Gomes",
-                    msg: "Boas pessoal drenado da drena drenada"
-                }}/> */}
+                    <ChatListCard
+                        key={recentChat.friendshipId}
+                        chat={recentChat}
+                        selectHandler={selectUserHandler} />) }
         </div>
 
         <Modal

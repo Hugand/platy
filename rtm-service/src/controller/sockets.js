@@ -70,7 +70,7 @@ var SocketController = /** @class */ (function () {
                         socket.emit('error', 'fetch_chats');
                         return [2 /*return*/];
                     case 5:
-                        socket.emit('chat_data', JSON.stringify(chatsList));
+                        socket.emit('chat_data', JSON.stringify({ roomId: data.roomId, chatsList: chatsList }));
                         return [2 /*return*/];
                 }
             });

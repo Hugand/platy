@@ -3,10 +3,11 @@ import { RecentChat } from '../../models/RecentChat';
 
 type ChatListCardProps = {
     chat: RecentChat
+    selectHandler: Function
 }
 
-function ChatListCard({ chat }: ChatListCardProps) {
-    return <div className="chat-list-card">
+function ChatListCard({ chat, selectHandler }: ChatListCardProps) {
+    return <div className="chat-list-card" onClick={() => selectHandler(chat.friend, chat.friendshipId)}>
         <img src={`data:image/png;base64, ${chat.friend.profilePic}`} alt="profile pic"/>
         <article>
             <h4>{ `${chat.friend.nomeProprio} ${chat.friend.apelido}` }</h4>

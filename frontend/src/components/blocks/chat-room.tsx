@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import { clearSession, getFriendship } from '../../helpers/api'
+import { clearSession, getFriendship, getFriendshipChats } from '../../helpers/api'
 import { Chat } from '../../models/Chat'
 import { Friendship } from '../../models/Friendship'
 import { User } from '../../models/User'
@@ -18,30 +18,19 @@ function ChatRoom({ friend }: ChatRoomProps) {
     const [ message, setMessage ] = useState('')
     const [ friendship, setFriendship ]: any = useState(null)
 
-    useEffect(() => {
-        async function makeFriendshipRequest() {
-            let friendship: Friendship
-
-            try {
-                friendship = await getFriendship(localStorage.getItem('authToken') || '', friend.id)
-            } catch (e) {
-                clearSession()
-                return
-            }
-
-            setFriendship(friendship)
-
-            socket.emit('join_room', {
-                token: localStorage.getItem('authToken') || '',
-                uid: userData.user.uid,
-                roomId: 'F' + friendship.id
-            })
+    const makeFriendshipRequest = async () => {
+        let friendship: Friendship
+        try {
+            friendship = await getFriendship(localStorage.getItem('authToken') || '', friend.id)
+        } catch (e) {
+            clearSession()
+            return
         }
+        const roomId: string =  'F' + friendship.id
 
-        if(socket !== null)
-            makeFriendshipRequest()
-
-    }, [friend.id, socket, userData.user.uid])
+        setFriendship(friendship)
+        dispatch({ type: 'changeChatDataCurrRoomId', value: roomId})
+    }
 
     const sendMessage = () => {
         if(socket !== null && message !== '' && message !== null && message !== undefined) {
@@ -49,13 +38,27 @@ function ChatRoom({ friend }: ChatRoomProps) {
 
             dispatch({ type: 'changeChatDataPreviewChat', value: previewChat })
             socket.emit('send_message', {
-                roomId: 'F' + friendship.id,
+                roomId: chatData.currRoomId,
                 newChat: previewChat,
                 token: localStorage.getItem('authToken') + ''
             })
             setMessage('')
         }
     }
+
+    useEffect(() => {
+        if(socket !== null) {
+            makeFriendshipRequest()
+
+            socket.emit('join_room', {
+                token: localStorage.getItem('authToken') || '',
+                uid: userData.user.uid,
+                roomId: chatData.currRoomId
+            })
+        }
+
+    }, [friend.id, socket, userData.user.uid])
+
 
     return <section className="chat-room-container">
         <header className="friend-header">
@@ -64,20 +67,18 @@ function ChatRoom({ friend }: ChatRoomProps) {
         </header>
 
         <div className="chat-display-container">
-            { chatData.previewChat !== null &&
+            { (chatData.chatRooms.get(chatData.currRoomId) !== undefined && chatData.chatRooms.get(chatData.currRoomId)?.previewChat !== null) &&
                 <TextMessageBlob
                     isPreview={true}
-                    chat={chatData.previewChat} 
-                    viewingUser={userData.user} />
-            }
+                    chat={chatData.chatRooms.get(chatData.currRoomId)?.previewChat} 
+                    viewingUser={userData.user} /> }
 
-            { chatData.chatList.map((chat: Chat) => 
+            { chatData.chatRooms.get(chatData.currRoomId)?.chatsList.map((chat: Chat) => 
                 <TextMessageBlob
                     isPreview={false}
                     key={`${chat.id}-${friend.username}`} 
                     chat={chat} 
-                    viewingUser={userData.user} />)
-            }
+                    viewingUser={userData.user} />) }
         </div>
 
         <div className="chat-writer-container">

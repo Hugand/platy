@@ -35,7 +35,7 @@ class SocketController {
             return
         }
 
-        socket.emit('chat_data', JSON.stringify(chatsList))
+        socket.emit('chat_data', JSON.stringify({ roomId: data.roomId, chatsList }))
     }
 
     // TODO: Might still need a little bit more work on error handling
@@ -48,7 +48,7 @@ class SocketController {
             return
         }
 
-        io.to(data.roomId).emit('new_message', JSON.stringify(persistedChat))
+        io.to(data.roomId).emit('new_message', JSON.stringify({ persistedChat, roomId: data.roomId}))
     }
 
     /*
