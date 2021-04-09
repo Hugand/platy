@@ -3,9 +3,10 @@ package com.ugomes.webchat.Controllers.Rest;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.UsersRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.server.PathParam;
 import java.util.HashMap;

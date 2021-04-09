@@ -1,11 +1,7 @@
 package com.ugomes.webchat.models;
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Objects;
 
 @Entity
@@ -37,9 +33,7 @@ public class Chat {
         this.msg = msg;
     }
 
-    public Chat() {
-
-    }
+    public Chat() { }
 
     public Long getId() {
         return id;
@@ -60,6 +54,8 @@ public class Chat {
     public Long getFriendship() {
         return friendship.getId();
     }
+
+    public Friends getFriendshipObj() { return this.friendship; }
 
     public void setFriendship(Friends friendship) {
         this.friendship = friendship;

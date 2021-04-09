@@ -17,9 +17,14 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,6 +62,7 @@ public class ChatsTests {
         ResponseEntity<List<Chat>> queryResult = chatsController.getChatFromFriendship(friendship.getId());
 
         assertEquals(HttpStatus.OK, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
         assertEquals(expectedChatsList, queryResult.getBody());
     }
 
@@ -79,7 +85,8 @@ public class ChatsTests {
         ResponseEntity<List<Chat>> queryResult = chatsController.getChatFromFriendship(-1L);
 
         assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
-        assertEquals(0, Objects.requireNonNull(queryResult.getBody()).size());
+        assertNotNull(queryResult.getBody());
+        assertEquals(0, queryResult.getBody().size());
     }
 
     @Test
@@ -101,7 +108,8 @@ public class ChatsTests {
         ResponseEntity<List<Chat>> queryResult = chatsController.getChatFromFriendship(3L);
 
         assertEquals(HttpStatus.OK, queryResult.getStatusCode());
-        assertEquals(0, Objects.requireNonNull(queryResult.getBody()).size());
+        assertNotNull(queryResult.getBody());
+        assertEquals(0, queryResult.getBody().size());
     }
 
     @Test
@@ -124,7 +132,8 @@ public class ChatsTests {
         ResponseEntity<Optional<Chat>> queryResult = chatsController.persistChat(chatPreviewJsonString);
 
         assertEquals(HttpStatus.OK, queryResult.getStatusCode());
-        assertEquals(expectedChat.toString(), Objects.requireNonNull(queryResult.getBody()).get().toString());
+        assertNotNull(queryResult.getBody());
+        assertEquals(expectedChat.toString(), queryResult.getBody().get().toString());
     }
 
     @Test
@@ -146,7 +155,8 @@ public class ChatsTests {
         ResponseEntity<Optional<Chat>> queryResult = chatsController.persistChat(chatPreviewJsonString);
 
         assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
-        assertTrue(Objects.requireNonNull(queryResult.getBody()).isEmpty());
+        assertNotNull(queryResult.getBody());
+        assertTrue(queryResult.getBody().isEmpty());
     }
 
     @Test
@@ -168,7 +178,8 @@ public class ChatsTests {
         ResponseEntity<Optional<Chat>> queryResult = chatsController.persistChat(chatPreviewJsonString);
 
         assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
-        assertTrue(Objects.requireNonNull(queryResult.getBody()).isEmpty());
+        assertNotNull(queryResult.getBody());
+        assertTrue(queryResult.getBody().isEmpty());
     }
 
     @Test
@@ -190,6 +201,85 @@ public class ChatsTests {
         ResponseEntity<Optional<Chat>> queryResult = chatsController.persistChat(chatPreviewJsonString);
 
         assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
-        assertTrue(Objects.requireNonNull(queryResult.getBody()).isEmpty());
+        assertNotNull(queryResult.getBody());
+        assertTrue(queryResult.getBody().isEmpty());
+    }
+
+    @Test
+    public void getSuccessfulyRecentChatsList() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        User friend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        User friend2 = new User(3L, "Steve", "Rogers", "cap_im_erica");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+
+        Friends friendship1 = new Friends(1L, authenticatedUser, friend, Instant.now());
+        Friends friendship2 = new Friends(2L, friend2, authenticatedUser, Instant.now());
+
+        List<Chat> recentChats = new ArrayList<>();
+        recentChats.add(new Chat(4L, friend2, friendship2, "chat f23"));
+        recentChats.add(new Chat(6L, authenticatedUser, friendship1, "chat f13"));
+
+        List<RecentChatItem> expectedResult = new ArrayList<>();
+        expectedResult.add(new RecentChatItem(friend2, friendship2.getId(), "chat f23", null));
+        expectedResult.add(new RecentChatItem(friend, friendship1.getId(), "chat f13", null));
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(chatsRepo.findChatByUserInFriendshipOrderByDesc(authenticatedUser)).thenReturn(recentChats);
+
+        ResponseEntity<List<RecentChatItem>> queryResult = chatsController.getLatestChats(authUserToken);
+
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
+        assertEquals(expectedResult, queryResult.getBody());
+    }
+
+    @Test
+    public void failToGetRecentChatsListByWrongToken() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        User friend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        User friend2 = new User(3L, "Steve", "Rogers", "cap_im_erica");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser) + "dasdias";
+
+        Friends friendship1 = new Friends(1L, authenticatedUser, friend, Instant.now());
+        Friends friendship2 = new Friends(2L, friend2, authenticatedUser, Instant.now());
+
+        List<Chat> recentChats = new ArrayList<>();
+        recentChats.add(new Chat(4L, friend2, friendship2, "chat f23"));
+        recentChats.add(new Chat(6L, authenticatedUser, friendship1, "chat f13"));
+
+        List<RecentChatItem> expectedResult = new ArrayList<>();
+        expectedResult.add(new RecentChatItem(friend2, friendship2.getId(), "chat f23", null));
+        expectedResult.add(new RecentChatItem(friend, friendship1.getId(), "chat f13", null));
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(chatsRepo.findChatByUserInFriendshipOrderByDesc(authenticatedUser)).thenReturn(recentChats);
+
+        ResponseEntity<List<RecentChatItem>> queryResult = chatsController.getLatestChats(authUserToken);
+
+        assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
+        assertEquals(0, queryResult.getBody().size());
+    }
+
+    @Test
+    public void getSuccessfulyEmptyRecentChatsList() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        User friend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        User friend2 = new User(3L, "Steve", "Rogers", "cap_im_erica");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+
+        List<Chat> recentChats = new ArrayList<>();
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(chatsRepo.findChatByUserInFriendshipOrderByDesc(authenticatedUser)).thenReturn(recentChats);
+
+        ResponseEntity<List<RecentChatItem>> queryResult = chatsController.getLatestChats(authUserToken);
+
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
+        assertEquals(0, queryResult.getBody().size());
     }
 }

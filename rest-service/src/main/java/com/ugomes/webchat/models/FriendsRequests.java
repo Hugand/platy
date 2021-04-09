@@ -1,7 +1,6 @@
 package com.ugomes.webchat.models;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.Instant;
 
 @Entity

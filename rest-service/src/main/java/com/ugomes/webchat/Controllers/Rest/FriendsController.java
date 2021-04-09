@@ -1,10 +1,9 @@
 package com.ugomes.webchat.Controllers.Rest;
 
-import com.sun.istack.Nullable;
-import com.ugomes.webchat.ApiResponses.SearchUserResponse;
 import com.ugomes.webchat.Comparators.UserFirstNameComparator;
-import com.ugomes.webchat.Utils.JwtTokenUtil;
-import com.ugomes.webchat.models.*;
+import com.ugomes.webchat.models.Friends;
+import com.ugomes.webchat.models.FriendsRequests;
+import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.ChatsRepo;
 import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;

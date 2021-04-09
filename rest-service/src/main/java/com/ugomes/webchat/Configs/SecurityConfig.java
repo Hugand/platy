@@ -2,9 +2,7 @@ package com.ugomes.webchat.Configs;
 
 import com.ugomes.webchat.Handlers.CustomAuthSuccessHandler;
 import com.ugomes.webchat.Services.CustomOidcUserService;
-import com.ugomes.webchat.SocketHandler;
 import com.ugomes.webchat.Utils.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,10 +13,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Configuration

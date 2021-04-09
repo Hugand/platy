@@ -14,9 +14,7 @@ require('dotenv').config();
 var app = express();
 var server = http.createServer(app);
 var io = socketIo(server, {
-    cors: {
-        origin: '*',
-    }
+    cors: { origin: '*' }
 });
 app.use(cors());
 app.get("/", function (_req, res) {

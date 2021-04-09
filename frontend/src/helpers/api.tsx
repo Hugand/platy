@@ -1,5 +1,6 @@
 import { FriendRequest } from "../models/FriendRequest"
 import { Friendship } from "../models/Friendship"
+import { RecentChat } from "../models/RecentChat"
 import { SearchUserResponse } from "../models/SearchUserResponse"
 import { User } from "../models/User"
 import { UserData } from "../models/UserData"
@@ -109,6 +110,14 @@ const searchFriends = (authToken: string, searchTerm: string): Promise<Array<Use
     }).then(res => res.json())
 }
 
+const getRecentChatsList = (authToken: string): Promise<Array<RecentChat>> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/getLatestChats`, {
+        headers: {
+            'Authorization': 'Bearer ' + authToken
+        }
+    }).then(res => res.json())
+}
+
 export {
     login,
     searchUsers,
@@ -122,5 +131,6 @@ export {
     logout,
     clearSession,
     getFriendship,
-    searchFriends
+    searchFriends,
+    getRecentChatsList
 }

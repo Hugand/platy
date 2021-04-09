@@ -1,7 +1,6 @@
 package com.ugomes.webchat.repositories;
 
 import com.ugomes.webchat.models.Friends;
-import com.ugomes.webchat.models.FriendsRequests;
 import com.ugomes.webchat.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

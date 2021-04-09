@@ -1,12 +1,6 @@
 package com.ugomes.webchat.models;
 
-import com.nimbusds.jose.util.IOUtils;
-import org.springframework.core.io.InputStreamResource;
-
 import javax.persistence.*;
-import java.sql.Blob;
-import java.util.Base64;
-import java.util.Comparator;
 import java.util.Objects;
 
 

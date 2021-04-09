@@ -2,11 +2,7 @@ package com.ugomes.webchat.Controllers.Rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ugomes.webchat.Utils.JwtTokenUtil;
-import com.ugomes.webchat.models.Chat;
-import com.ugomes.webchat.models.ChatPreview;
-import com.ugomes.webchat.models.Friends;
-import com.ugomes.webchat.models.User;
+import com.ugomes.webchat.models.*;
 import com.ugomes.webchat.repositories.ChatsRepo;
 import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
@@ -67,5 +63,27 @@ public class ChatsController {
         Chat savedChat = chatsRepo.save(chatObj);
 
         return ResponseEntity.ok(Optional.of(savedChat));
+    }
+
+    @GetMapping("/getLatestChats")
+    public ResponseEntity<List<RecentChatItem>> getLatestChats(@RequestHeader("Authorization") String token) {
+        Optional<User> authUser = UsersController.getUserFromToken(token, usersRepo);
+        List<RecentChatItem> recentChatItems = new ArrayList<>();
+
+        if(authUser.isEmpty()) return ResponseEntity.badRequest().body(recentChatItems);
+
+        List<Chat> recentChatsByFriendship = chatsRepo.findChatByUserInFriendshipOrderByDesc(authUser.get());
+
+        for(Chat chat : recentChatsByFriendship) {
+            Friends friendship = chat.getFriendshipObj();
+            User friend = friendship.getUser1().equals(authUser.get()) ? friendship.getUser2() : friendship.getUser1();
+
+            RecentChatItem newRecentChatItem = new RecentChatItem(
+                    friend, friendship.getId(), chat.getMsg(), chat.getTimestamp());
+
+            recentChatItems.add(newRecentChatItem);
+        }
+
+        return ResponseEntity.ok(recentChatItems);
     }
 }

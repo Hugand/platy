@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil implements Serializable {
