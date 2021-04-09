@@ -15,7 +15,7 @@ function UserAddCard({ userData, cardType, refreshList }: UserAddCardProp) {
     const [ buttonText, setButtonText ] = useState("")
 
     useEffect(() => {
-        switch(cardType) {
+        switch(cardType) { 
             case CardType.STRANGER:
                 setButtonClass("btn")
                 setButtonText("Add friend")
