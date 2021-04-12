@@ -93,7 +93,7 @@ var SocketController = /** @class */ (function () {
                         socket.emit('error', 'token_invalid');
                         return [2 /*return*/];
                     case 3:
-                        io.to(data.roomId).emit('new_message', JSON.stringify(persistedChat));
+                        io.to(data.roomId).emit('new_message', JSON.stringify({ message: persistedChat, roomId: data.roomId }));
                         return [2 /*return*/];
                 }
             });

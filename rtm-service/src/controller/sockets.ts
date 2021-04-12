@@ -48,7 +48,7 @@ class SocketController {
             return
         }
 
-        io.to(data.roomId).emit('new_message', JSON.stringify({ persistedChat, roomId: data.roomId}))
+        io.to(data.roomId).emit('new_message', JSON.stringify({ message: persistedChat, roomId: data.roomId}))
     }
 
     /*

@@ -12,10 +12,6 @@ type FriendsListModalProps = {
 function FriendsListModal({ closeModal }: FriendsListModalProps) {
     const [ friendsList, setFriendsList ] = useState(new Array<User>())
 
-    useEffect(() => {
-        requestFriendsList()
-    }, [])
-
     const requestFriendsList = async () => {
         const authToken: string = localStorage.getItem('authToken') || ""
 
@@ -24,6 +20,10 @@ function FriendsListModal({ closeModal }: FriendsListModalProps) {
         if(res.length > 0)
             setFriendsList(res)
     }
+
+    useEffect(() => {
+        requestFriendsList()
+    }, [])
 
     return <section className="friends-list">
         <button className="close-btn" onClick={() => closeModal()}>x</button>

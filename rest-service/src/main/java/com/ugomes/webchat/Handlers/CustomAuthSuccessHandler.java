@@ -4,6 +4,7 @@ import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.UsersRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
@@ -21,7 +22,9 @@ import java.util.Map;
 public class CustomAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Autowired
     private UsersRepo usersRepo;
-    private String homeUrl = "http://localhost:3000/signin";
+
+    @Value("${services.frontend}/signin")
+    private String homeUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,

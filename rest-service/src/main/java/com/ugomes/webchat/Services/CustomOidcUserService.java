@@ -39,16 +39,4 @@ public class CustomOidcUserService extends OidcUserService {
         usersRepo.saveAll(Collections.singletonList(userInfo));
         return oidcUser;
     }
-
-//    private void updateUser(User userInfo) {
-//        User user = usersRepo.findById(userInfo.getId());
-//        if(user == null) {
-//            user = new User();
-//        }
-//        user.setEmail(userInfo.getEmail());
-//        user.setImageUrl(userInfo.getImageUrl());
-//        user.setName(userInfo.getName());
-//        user.setUserType(UserType.google);
-//        userRepository.save(user);
-//    }
 }
