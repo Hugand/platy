@@ -9,7 +9,7 @@ import com.ugomes.webchat.repositories.ChatsRepo;
 import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +19,9 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -33,13 +29,13 @@ import static org.mockito.Mockito.when;
 @Service
 public class ChatsTests {
     private final UsersRepo usersRepo = Mockito.mock(UsersRepo.class);
-    private final FriendsRequestRepo friendsRequestRepo = Mockito.mock(FriendsRequestRepo.class);
     private final FriendsRepo friendsRepo = Mockito.mock(FriendsRepo.class);
     private final ChatsRepo chatsRepo = Mockito.mock(ChatsRepo.class);
 
-    private ChatsController chatsController;
+    private final ChatsController chatsController;
 
     public ChatsTests() {
+        FriendsRequestRepo friendsRequestRepo = Mockito.mock(FriendsRequestRepo.class);
         chatsController = new ChatsController(usersRepo, friendsRequestRepo, friendsRepo, chatsRepo);
     }
 
@@ -51,7 +47,7 @@ public class ChatsTests {
 
         Friends friendship = new Friends(1L, authenticatedUser, friend, Instant.now());
 
-        List<Chat> expectedChatsList = new ArrayList();
+        List<Chat> expectedChatsList = new ArrayList<>();
         expectedChatsList.add(new Chat(1L, authenticatedUser, friendship, "hello"));
         expectedChatsList.add(new Chat(2L, friend, friendship, "hello there"));
         expectedChatsList.add(new Chat(3L, authenticatedUser, friendship, "General Kenobi!"));
@@ -74,7 +70,7 @@ public class ChatsTests {
 
         Friends friendship = new Friends(1L, authenticatedUser, friend, Instant.now());
 
-        List<Chat> expectedChatsList = new ArrayList();
+        List<Chat> expectedChatsList = new ArrayList<>();
         expectedChatsList.add(new Chat(1L, authenticatedUser, friendship, "hello"));
         expectedChatsList.add(new Chat(2L, friend, friendship, "hello there"));
         expectedChatsList.add(new Chat(3L, authenticatedUser, friendship, "General Kenobi!"));
@@ -133,6 +129,7 @@ public class ChatsTests {
 
         assertEquals(HttpStatus.OK, queryResult.getStatusCode());
         assertNotNull(queryResult.getBody());
+        assertTrue(queryResult.getBody().isPresent());
         assertEquals(expectedChat.toString(), queryResult.getBody().get().toString());
     }
 
@@ -249,10 +246,6 @@ public class ChatsTests {
         recentChats.add(new Chat(4L, friend2, friendship2, "chat f23"));
         recentChats.add(new Chat(6L, authenticatedUser, friendship1, "chat f13"));
 
-        List<RecentChatItem> expectedResult = new ArrayList<>();
-        expectedResult.add(new RecentChatItem(friend2, friendship2.getId(), "chat f23", null));
-        expectedResult.add(new RecentChatItem(friend, friendship1.getId(), "chat f13", null));
-
         when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
         when(chatsRepo.findChatByUserInFriendshipOrderByDesc(authenticatedUser)).thenReturn(recentChats);
 
@@ -267,8 +260,6 @@ public class ChatsTests {
     public void getSuccessfulyEmptyRecentChatsList() {
         User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
         authenticatedUser.setUid("123456789111");
-        User friend = new User(2L, "Johny", "Bravo", "strong_blonde");
-        User friend2 = new User(3L, "Steve", "Rogers", "cap_im_erica");
         String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
 
         List<Chat> recentChats = new ArrayList<>();

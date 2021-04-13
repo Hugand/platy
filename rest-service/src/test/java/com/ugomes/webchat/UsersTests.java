@@ -34,12 +34,11 @@ public class UsersTests {
     private final FriendsRepo friendsRepo = Mockito.mock(FriendsRepo.class);
     private final ChatsRepo chatsRepo = Mockito.mock(ChatsRepo.class);
 
-    private FriendsController friendsController;
     private UsersController usersController;
 
     @BeforeEach
     void initUseCase() {
-        friendsController = new FriendsController(usersRepo, friendsRequestRepo, friendsRepo, chatsRepo);
+        FriendsController friendsController = new FriendsController(usersRepo, friendsRequestRepo, friendsRepo, chatsRepo);
         usersController = new UsersController(usersRepo, friendsRequestRepo, friendsRepo);
     }
 
@@ -135,6 +134,7 @@ public class UsersTests {
         ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
 
         assertEquals(HttpStatus.OK, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
         assertTrue(queryResult.getBody());
     }
 
@@ -155,6 +155,7 @@ public class UsersTests {
         ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
 
         assertEquals(HttpStatus.OK, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
         assertTrue(queryResult.getBody());
     }
 
@@ -181,6 +182,7 @@ public class UsersTests {
         ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
 
         assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
         assertFalse(queryResult.getBody());
     }
 
@@ -205,6 +207,7 @@ public class UsersTests {
         ResponseEntity<Boolean> queryResult = usersController.updateUser(authUserToken, file, encodedUser);
 
         assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
         assertFalse(queryResult.getBody());
     }
 
