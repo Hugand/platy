@@ -36,7 +36,10 @@ function ChatRoom({ friend }: ChatRoomProps) {
         if(socket !== null && message !== '' && message !== null && message !== undefined) {
             const previewChat = new Chat(userData.user.id, friendship.id, message, new Date())
 
-            dispatch({ type: 'changeChatDataPreviewChat', value: previewChat })
+            dispatch({
+                type: 'changeChatDataPreviewChat',
+                value: { roomId: chatData.currRoomId, previewChat }
+            })
             socket.emit('send_message', {
                 roomId: chatData.currRoomId,
                 newChat: previewChat,

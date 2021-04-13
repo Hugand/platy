@@ -58,9 +58,10 @@ export const reducer = (state: GlobalState, action: GlobalStateAction) => {
         }
         case 'changeChatDataPreviewChat': {
             const newState: GlobalState = { ...state }
-            const chatRoom: ChatRoom = newState.chatData.chatRooms.get(action.value.roomId) || new ChatRoom()
-            chatRoom.previewChat = action.value.previewChat
-            newState.chatData.chatRooms.set(action.value.roomId, chatRoom)
+            const { roomId, previewChat } = action.value
+            const chatRoom: ChatRoom = newState.chatData.chatRooms.get(roomId) || new ChatRoom()
+            chatRoom.previewChat = previewChat
+            newState.chatData.chatRooms.set(roomId, chatRoom)
 
             return newState
         }
@@ -77,10 +78,10 @@ export const reducer = (state: GlobalState, action: GlobalStateAction) => {
         }
         case 'addNewChatMessage': {
             const newState: GlobalState = { ...state }
-            const roomId: string = newState.chatData.currRoomId
+            const roomId: string = action.value.roomId
             const currChatRoom: ChatRoom | undefined = newState.chatData.chatRooms.get(roomId)
             if(currChatRoom !== undefined && !currChatRoom.chatsList.includes(action.value)) {
-                currChatRoom.chatsList = [action.value, ...currChatRoom.chatsList]
+                currChatRoom.chatsList = [action.value.message, ...currChatRoom.chatsList]
                 newState.chatData.chatRooms.set(roomId, currChatRoom)
             }
 

@@ -9,5 +9,4 @@ public class UserFirstNameComparator implements Comparator<User> {
     public int compare(User firstPlayer, User secondPlayer) {
         return CharSequence.compare(firstPlayer.getNomeProprio(), secondPlayer.getNomeProprio());
     }
-
 }

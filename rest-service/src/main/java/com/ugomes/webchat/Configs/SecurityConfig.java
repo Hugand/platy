@@ -3,7 +3,6 @@ package com.ugomes.webchat.Configs;
 import com.ugomes.webchat.Handlers.CustomAuthSuccessHandler;
 import com.ugomes.webchat.Services.CustomOidcUserService;
 import com.ugomes.webchat.Utils.JwtAuthenticationFilter;
-import org.hibernate.annotations.Cache;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,14 +22,14 @@ import java.util.List;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     final CustomOidcUserService oidcUserService;
-
     final CustomAuthSuccessHandler customAuthSuccessHandler;
 
     @Value("${services.frontend}")
     private String frontendUrl;
-
     @Value("${services.rtm}")
     private String rtmUrl;
+    @Value("${services.rest}")
+    private String restUrl;
 
     public SecurityConfig(CustomOidcUserService oidcUserService, CustomAuthSuccessHandler customAuthSuccessHandler) {
         this.oidcUserService = oidcUserService;
@@ -48,6 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class)
             .oauth2Login()
                 .authorizationEndpoint()
+                //.baseUri(restUrl + "/login/oauth2/code/google")
+                //.baseUri(restUrl + "/login/oauth2/code/google")
+
 //                .baseUri("/oauth2/authorize")
 //                .authorizationRequestRepository(customAuthorizationRequestRepository())
             .and()
@@ -70,10 +72,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         List<String> allowedOrigins = new ArrayList<>();
         allowedOrigins.add(frontendUrl);
         allowedOrigins.add(rtmUrl);
+
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

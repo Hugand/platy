@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
 import '../../styles/views/login.scss'
 import laptopImg from '../../assets/img/laptop.png'
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 import { clearSession, login } from '../../helpers/api'
 import { User } from '../../models/User';
 
 function LoginView() {
     const history = useHistory();
-    const [ authToken, setAuthToken ] = useState("")
+    const [ authToken, setAuthToken ] = useState('')
 
     useEffect(() => {
         searchGetParameters();
 
-        if(authToken !== "") {
+        if(authToken !== '') {
             onGoogleLoginClick()
         }
     }, [authToken]);
