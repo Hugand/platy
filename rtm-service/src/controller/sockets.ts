@@ -33,12 +33,10 @@ class SocketController {
 
         // Get friendship chats
         let friendshipId: number = parseInt(data.roomId.substring(1))
-        console.log(friendshipId, data.roomId)
         let chatsList: Array<Chat>;
         try {
             chatsList = await getFriendshipChats(data.token, friendshipId);
         } catch (e) {
-            console.log(e)
             socket.emit('error', 'fetch_chats')
             return
         }
@@ -55,11 +53,7 @@ class SocketController {
             socket.emit('error', 'token_invalid')
             return
         }
-        console.log(persistedChat)
-        console.log(data)
         io.to(data.roomId).emit('new_message', JSON.stringify({ message: persistedChat, roomId: data.roomId}))
-        console.log("done")
-        console.log( JSON.stringify({ message: persistedChat, roomId: data.roomId}))
     }
 
     /*

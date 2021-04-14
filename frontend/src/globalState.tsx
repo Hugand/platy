@@ -85,16 +85,24 @@ export const reducer = (state: GlobalState, action: GlobalStateAction) => {
                 currChatRoom.chatsList = [message, ...currChatRoom.chatsList]
                 newState.chatData.chatRooms.set(roomId, currChatRoom)
 
-                // Add recent chat to list
-                newState.recentChatsList.forEach((recentChat: RecentChat) => {
+                // Add recent chat to list and put it on top
+                let tmpRecentChatsList = [...newState.recentChatsList]
+                
+                for (let i = 0; i < tmpRecentChatsList.length; i++) {
+                    const recentChat = tmpRecentChatsList[i]
                     if (recentChat.friendshipId === friendshipId) {
                         recentChat.lastMessage = message.msg
                         recentChat.chatTimestamp = message.timestamp
-                    }
-                })
 
-                newState.recentChatsList.sort((a: RecentChat, b: RecentChat) =>
-                    a.chatTimestamp.getUTCMilliseconds() - b.chatTimestamp.getUTCMilliseconds())
+                        // Put recent chat on the top of the list
+                        tmpRecentChatsList = [recentChat, ...tmpRecentChatsList]
+                        tmpRecentChatsList.splice(i + 1, 1)
+                        
+                        break
+                    }
+                }
+
+                newState.recentChatsList = tmpRecentChatsList
             }
             
             return newState
