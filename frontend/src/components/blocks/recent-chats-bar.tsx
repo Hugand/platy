@@ -8,7 +8,7 @@ import { useStateValue } from '../../state';
 import { getRecentChatsList, clearSession } from '../../helpers/api';
 import { RecentChat } from '../../models/RecentChat';
 
-function RecentChatsBar() {
+function RecentChatsBar({ setIsInRoom }: any) {
     const [ searchTerm, setSearchTerm ] = useState('')
     const [ isModalOpen, setIsModalOpen ] = useState(false)
     const [ { recentChatsList, chatData } , dispatch ] = useStateValue()
@@ -20,14 +20,14 @@ function RecentChatsBar() {
     const selectUserHandler = (user: User, friendshipId: number = -1) => {
         const roomId: string = 'F' + friendshipId
       
-        
         if (chatData.userToChat === null || (user !== null && user.id !== chatData.userToChat.id)) {
             setUserToChat(user)
             if(friendshipId !== -1) {
                 dispatch({ type: 'changeChatDataCurrRoomId', value: roomId})
             }
         }
-
+        
+        setIsInRoom(true)
         setIsModalOpen(false)
     }
 

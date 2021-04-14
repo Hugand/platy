@@ -3,6 +3,7 @@ package com.ugomes.webchat.Utils;
 import com.ugomes.webchat.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,7 @@ public class JwtTokenUtil implements Serializable {
         return null;
     }
 
-    private Claims getAllClaimsFromToken(String token) {
+    private Claims getAllClaimsFromToken(String token) throws MalformedJwtException {
         return Jwts.parser()
                 .setSigningKey(SIGNING_KEY)
                 .parseClaimsJws(token)

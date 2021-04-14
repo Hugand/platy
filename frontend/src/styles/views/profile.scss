@@ -16,8 +16,6 @@
         background-color: white;
         border-radius: $border-radius-big;
         position: relative;
-        // width: 400px;
-        // height: 700px;
 
         .banner {
             width: 100%;
@@ -60,6 +58,7 @@
                 margin-bottom: 2.5rem;
                 color: $grey;
                 background-color: transparent;
+                font-size: 1rem;
                 border: 0;
                 transition: .2s;
                 outline: none;
@@ -87,9 +86,39 @@
     }   
 }
 
-
 div.ReactModal__Content.ReactModal__Content--after-open {
-    width: fit-content !important;
-    height: auto !important;
+    width: fit-content;
+    height: 80vh !important;
     margin: auto;
+}
+
+div.ReactModal__Overlay ReactModal__Overlay--after-open {
+    z-index: 999 !important;
+}
+
+@media (max-width: $mobile-breakpoint) {
+    .content-container {
+        .profile-container {
+            width: 100%;
+            height: 100%;
+
+            .profile-content {
+                h1 {
+                    font-size: 1.85rem;
+                }
+    
+                .btn {
+                    width: 60%;
+                    min-width: 15rem;
+                }
+            }
+
+        }   
+    }
+
+    div.ReactModal__Content.ReactModal__Content--after-open {
+        width: 90% !important;
+        margin: 0;
+        left: 0 !important;
+    }
 }

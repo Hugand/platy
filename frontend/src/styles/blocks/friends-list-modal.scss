@@ -24,3 +24,30 @@
         flex-direction: column;
     }
 }
+
+@media (max-width: $mobile-breakpoint) {
+    .friends-list {
+        position: relative;
+        width: 100%;
+    
+        .close-btn {
+            position: absolute;
+            top: .0rem;
+            right: .0rem;
+            width: fit-content;
+            height: fit-content;
+            background-color: transparent;
+            border: 0;
+            font-size: 1.5rem;
+    
+            &:hover { 
+                cursor: pointer;
+            }
+        }
+    
+        .content {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}

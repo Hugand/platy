@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { clearSession, getFriendship, getFriendshipChats } from '../../helpers/api'
+import { useScreenType } from '../../hooks/useScreenType'
 import { Chat } from '../../models/Chat'
 import { Friendship } from '../../models/Friendship'
 import { User } from '../../models/User'
@@ -8,15 +8,19 @@ import { useStateValue } from '../../state'
 import '../../styles/blocks/chat-room.scss'
 import TextField from '../atoms/text-field'
 import TextMessageBlob from '../atoms/text-message-blob'
+import backIcon from '../../assets/img/back_icon.svg'
+
 
 type ChatRoomProps = {
     friend: User
+    setIsInRoom: Function
 }
 
-function ChatRoom({ friend }: ChatRoomProps) {
+function ChatRoom({ friend, setIsInRoom }: ChatRoomProps) {
     const [ { socket, userData, chatData }, dispatch ] = useStateValue()
     const [ message, setMessage ] = useState('')
     const [ friendship, setFriendship ] = useState<Friendship>(new Friendship())
+    const screenType = useScreenType()
 
     const getFriendshipData = async () => {
         let friendship: Friendship
@@ -69,6 +73,12 @@ function ChatRoom({ friend }: ChatRoomProps) {
 
     return <section className="chat-room-container">
         <header className="friend-header">
+            {screenType === 'mobile' &&
+                <button
+                    className="btn btn-secondary"
+                    onClick={() => setIsInRoom(false)}>
+                        <img src={backIcon} alt="back_icn"/>
+                </button> }
             <img src={ `data:image/png;base64, ${ friend.profilePic}` } alt="profile pic"/>
             <label>{ friend.nomeProprio + " " + friend.apelido }</label>
         </header>

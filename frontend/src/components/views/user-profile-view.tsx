@@ -14,7 +14,6 @@ const customStyles = {
   };
 
 function UserProfileView() {
-    // const [ userData, setUserData ] = useState(new UserData())
     const [ { userData }, dispatch ] = useStateValue()
     const [ isEditModalOpen, setIsEditModalOpen ] = useState(false)
     const [ isFriendsModalOpen, setIsFriendsModalOpen ] = useState(false)

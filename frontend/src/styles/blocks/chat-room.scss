@@ -2,7 +2,7 @@
 
 .chat-room-container {
     display: grid;
-    grid-template-rows: 8.75rem calc(100vh - 16.75rem) 8rem;
+    grid-template-rows: 8.75rem calc(100vh - 16.75rem - 56px) 8rem;
     width: 100%;
     height: 100%;
 
@@ -11,9 +11,9 @@
         grid-row: 1;
         width: calc(100% - 7rem);
         height: 100%;
+        border-bottom: 1px solid $lighter-grey;
         padding: 0 3.5rem;
         margin-bottom: 0;
-        border-bottom: 1px solid $lighter-grey;
 
         img {
             width: 4rem;
@@ -58,6 +58,7 @@
 
             .text-field {
                 flex-grow: 1;
+                width: 100%;
             }
 
             .btn {
@@ -67,4 +68,33 @@
             }
         }
     }
+}
+
+@media (max-width: $mobile-breakpoint) {
+    .chat-room-container {
+        grid-template-rows: 6rem calc(100vh - 12rem - 56px) 6rem;
+
+        .friend-header {
+            width: calc(100% - 2rem);
+            padding: 0 1rem;
+
+            .btn {
+                width: fit-content;
+                margin-right: 1.5rem;
+
+                img {
+                    width: 2rem;
+                    height: 2rem;
+                    margin: 0;
+                }
+            }
+
+            img {
+                width: 3rem;
+                height: 3rem;
+                margin-right: 1.75rem;
+            }
+        }
+    }
+    
 }
