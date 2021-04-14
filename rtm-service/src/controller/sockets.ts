@@ -19,6 +19,12 @@ class SocketController {
             return;
         }
 
+        if (data.roomId === undefined || data.roomId === null ||
+            data.roomId === '' || data.roomId.includes('-1')) {
+                socket.emit('error', 'wrong_room_id')
+                return;
+        }
+
         // Assign user to room
         if(this.dc.users.get(data.uid)!.roomId !== null)
             socket.leave(this.dc.users.get(data.uid)!.roomId)
@@ -27,10 +33,12 @@ class SocketController {
 
         // Get friendship chats
         let friendshipId: number = parseInt(data.roomId.substring(1))
+        console.log(friendshipId, data.roomId)
         let chatsList: Array<Chat>;
         try {
             chatsList = await getFriendshipChats(data.token, friendshipId);
         } catch (e) {
+            console.log(e)
             socket.emit('error', 'fetch_chats')
             return
         }
@@ -47,8 +55,11 @@ class SocketController {
             socket.emit('error', 'token_invalid')
             return
         }
-
+        console.log(persistedChat)
+        console.log(data)
         io.to(data.roomId).emit('new_message', JSON.stringify({ message: persistedChat, roomId: data.roomId}))
+        console.log("done")
+        console.log( JSON.stringify({ message: persistedChat, roomId: data.roomId}))
     }
 
     /*

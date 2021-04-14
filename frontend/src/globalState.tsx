@@ -11,7 +11,7 @@ export type ChatData = {
 }
 
 export class ChatRoom {
-    chatsList: Array<Chat> = new Array<Chat>()
+    chatsList: Array<Chat> = []
     previewChat: Chat | null = null
 }
 
@@ -65,7 +65,6 @@ export const reducer = (state: GlobalState, action: GlobalStateAction) => {
 
             return newState
         }
-
         case 'changeChatDataCurrRoomId': {
             const newState: GlobalState = { ...state }
             newState.chatData.currRoomId = action.value
@@ -78,13 +77,33 @@ export const reducer = (state: GlobalState, action: GlobalStateAction) => {
         }
         case 'addNewChatMessage': {
             const newState: GlobalState = { ...state }
-            const roomId: string = action.value.roomId
-            const currChatRoom: ChatRoom | undefined = newState.chatData.chatRooms.get(roomId)
-            if(currChatRoom !== undefined && !currChatRoom.chatsList.includes(action.value)) {
-                currChatRoom.chatsList = [action.value.message, ...currChatRoom.chatsList]
-                newState.chatData.chatRooms.set(roomId, currChatRoom)
-            }
+            const { roomId, message } = action.value
+            const friendshipId: number = parseInt(roomId.substr(1))
+            const currChatRoom: ChatRoom = newState.chatData.chatRooms.get(roomId) || new ChatRoom()
 
+            if(!currChatRoom.chatsList.includes(action.value.message)) {
+                currChatRoom.chatsList = [message, ...currChatRoom.chatsList]
+                newState.chatData.chatRooms.set(roomId, currChatRoom)
+
+                // Add recent chat to list
+                newState.recentChatsList.forEach((recentChat: RecentChat) => {
+                    if (recentChat.friendshipId === friendshipId) {
+                        recentChat.lastMessage = message.msg
+                        recentChat.chatTimestamp = message.timestamp
+                    }
+                })
+
+                newState.recentChatsList.sort((a: RecentChat, b: RecentChat) =>
+                    a.chatTimestamp.getUTCMilliseconds() - b.chatTimestamp.getUTCMilliseconds())
+            }
+            
+            return newState
+        }
+            
+        case 'createChatRoom': {
+            const newChatRoomId: string = action.value
+            const newState = { ...state }
+            newState.chatData.chatRooms.set(newChatRoomId, new ChatRoom())
             return newState
         }
         

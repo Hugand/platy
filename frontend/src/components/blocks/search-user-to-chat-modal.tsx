@@ -20,10 +20,15 @@ function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
         setSearchTerm(val)
         searchFriendsHandler(val)
     }
+
     const searchFriendsHandler = async (searchStr: string) => {
         const newFriendsList: Array<User> = await searchFriends(localStorage.getItem('authToken') || '', searchStr)
         setFriendsList(newFriendsList)
     }
+
+    // const selectUserToChat = (user: User) => {
+    //     searchFriends(user)
+    // }
 
     return <div className="content">
         <header>

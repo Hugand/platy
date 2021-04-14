@@ -16,9 +16,9 @@ type ChatRoomProps = {
 function ChatRoom({ friend }: ChatRoomProps) {
     const [ { socket, userData, chatData }, dispatch ] = useStateValue()
     const [ message, setMessage ] = useState('')
-    const [ friendship, setFriendship ]: any = useState(null)
+    const [ friendship, setFriendship ] = useState<Friendship>(new Friendship())
 
-    const makeFriendshipRequest = async () => {
+    const getFriendshipData = async () => {
         let friendship: Friendship
         try {
             friendship = await getFriendship(localStorage.getItem('authToken') || '', friend.id)
@@ -29,7 +29,10 @@ function ChatRoom({ friend }: ChatRoomProps) {
         const roomId: string =  'F' + friendship.id
 
         setFriendship(friendship)
-        dispatch({ type: 'changeChatDataCurrRoomId', value: roomId})
+        dispatch({ type: 'changeChatDataCurrRoomId', value: roomId })
+        
+        if (chatData.chatRooms.get(roomId) === undefined)
+            dispatch({ type: 'createChatRoom', value: roomId })
     }
 
     const sendMessage = () => {
@@ -51,16 +54,17 @@ function ChatRoom({ friend }: ChatRoomProps) {
 
     useEffect(() => {
         if(socket !== null) {
-            makeFriendshipRequest()
+            getFriendshipData()
 
-            socket.emit('join_room', {
-                token: localStorage.getItem('authToken') || '',
-                uid: userData.user.uid,
-                roomId: chatData.currRoomId
-            })
+            if(friendship !== null && friendship.id > 0)
+                socket.emit('join_room', {
+                    token: localStorage.getItem('authToken') || '',
+                    uid: userData.user.uid,
+                    roomId: chatData.currRoomId
+                })
         }
 
-    }, [friend.id, socket, userData.user.uid])
+    }, [friendship.id, friend.id, socket, userData.user.uid])
 
 
     return <section className="chat-room-container">
@@ -69,20 +73,23 @@ function ChatRoom({ friend }: ChatRoomProps) {
             <label>{ friend.nomeProprio + " " + friend.apelido }</label>
         </header>
 
-        <div className="chat-display-container">
-            { (chatData.chatRooms.get(chatData.currRoomId) !== undefined && chatData.chatRooms.get(chatData.currRoomId)?.previewChat !== null) &&
-                <TextMessageBlob
-                    isPreview={true}
-                    chat={chatData.chatRooms.get(chatData.currRoomId)?.previewChat} 
-                    viewingUser={userData.user} /> }
+        {(chatData.currRoomId !== '' && chatData.currRoomId !== 'F-1') &&
+            <div className="chat-display-container">
+                { (chatData.chatRooms.get(chatData.currRoomId) !== undefined && chatData.chatRooms.get(chatData.currRoomId)?.previewChat !== null) &&
+                    <TextMessageBlob
+                        isPreview={true}
+                        chat={chatData.chatRooms.get(chatData.currRoomId)?.previewChat} 
+                        viewingUser={userData.user} /> }
 
-            { chatData.chatRooms.get(chatData.currRoomId)?.chatsList.map((chat: Chat) => 
-                <TextMessageBlob
-                    isPreview={false}
-                    key={`${chat.id}-${friend.username}`} 
-                    chat={chat} 
-                    viewingUser={userData.user} />) }
-        </div>
+                { chatData.chatRooms.get(chatData.currRoomId) !== undefined &&
+                    chatData.chatRooms.get(chatData.currRoomId).chatsList.map((chat: Chat) =>
+                        <TextMessageBlob
+                            isPreview={false}
+                            key={`${chat.id}-${friend.username}`} 
+                            chat={chat} 
+                            viewingUser={userData.user} />) }
+            </div>
+        }
 
         <div className="chat-writer-container">
             <div className="input-container">

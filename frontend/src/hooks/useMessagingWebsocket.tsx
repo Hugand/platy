@@ -32,6 +32,7 @@ function useMessagingWebsocket() {
             })
     
             newSocket.on('new_message', (newMessageStringified: string) => {
+                console.log("rtm msg str", newMessageStringified)
                 const newMessageData: NewMessageData = JSON.parse(newMessageStringified)
                 console.log("rtm msg", newMessageData)
                 dispatch({ type: 'addNewChatMessage', value: newMessageData })

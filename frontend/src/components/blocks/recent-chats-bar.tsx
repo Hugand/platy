@@ -18,10 +18,12 @@ function RecentChatsBar() {
     }
     
     const selectUserHandler = (user: User, friendshipId: number = -1) => {
-        if(chatData.userToChat === null || (user !== null && user.id !== chatData.userToChat.id)){
+        const roomId: string = 'F' + friendshipId
+      
+        
+        if (chatData.userToChat === null || (user !== null && user.id !== chatData.userToChat.id)) {
             setUserToChat(user)
             if(friendshipId !== -1) {
-                const roomId: string = 'F' + friendshipId
                 dispatch({ type: 'changeChatDataCurrRoomId', value: roomId})
             }
         }
