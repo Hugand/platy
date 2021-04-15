@@ -175,8 +175,8 @@ public class FriendsController {
     @GetMapping("/searchFriends")
     public ResponseEntity<List<User>> searchFriends(@RequestHeader("Authorization") String token,
                                                     @RequestParam String searchTerm) {
-        List<User> friendsList = new ArrayList<>();
         Optional<User> authenticatedUser = UsersController.getUserFromToken(token, this.usersRepo);
+        List<User> friendsList = new ArrayList<>();
 
         if(authenticatedUser.isEmpty())
             return ResponseEntity.badRequest().body(friendsList);
@@ -189,6 +189,9 @@ public class FriendsController {
                 buffUser = friendship.getUser2();
             else
                 buffUser = friendship.getUser1();
+
+            System.out.println(friendship);
+            System.out.println(buffUser);
 
             if(buffUser.getUsername().contains(searchTerm) || buffUser.getNomeProprio().contains(searchTerm) ||
                 buffUser.getApelido().contains(searchTerm) || searchTerm.isBlank())

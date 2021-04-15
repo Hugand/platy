@@ -94,6 +94,7 @@ div.ReactModal__Content.ReactModal__Content--after-open {
 
 div.ReactModal__Overlay ReactModal__Overlay--after-open {
     z-index: 999 !important;
+    height: 80vh !important;
 }
 
 @media (max-width: $mobile-breakpoint) {

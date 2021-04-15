@@ -10,7 +10,7 @@ type SearchUserToChatModalProps = {
 
 function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
     const [ searchTerm, setSearchTerm ] = useState('')
-    const [ friendsList, setFriendsList ] = useState(new Array<User>())
+    const [ friendsList, setFriendsList ] = useState<Array<User>>([])
 
     useEffect(() => {
         searchFriendsHandler(searchTerm)
@@ -22,8 +22,12 @@ function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
     }
 
     const searchFriendsHandler = async (searchStr: string) => {
-        const newFriendsList: Array<User> = await searchFriends(localStorage.getItem('authToken') || '', searchStr)
-        setFriendsList(newFriendsList)
+        try {
+            const newFriendsList: Array<User> = await searchFriends(localStorage.getItem('authToken') || '', searchStr)
+            setFriendsList(newFriendsList)
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     // const selectUserToChat = (user: User) => {

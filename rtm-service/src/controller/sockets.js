@@ -63,7 +63,6 @@ var SocketController = /** @class */ (function () {
                             socket.leave(this.dc.users.get(data.uid).roomId);
                         socket.join(data.roomId);
                         friendshipId = parseInt(data.roomId.substring(1));
-                        console.log(friendshipId, data.roomId);
                         _a.label = 2;
                     case 2:
                         _a.trys.push([2, 4, , 5]);
@@ -73,7 +72,6 @@ var SocketController = /** @class */ (function () {
                         return [3 /*break*/, 5];
                     case 4:
                         e_1 = _a.sent();
-                        console.log(e_1);
                         socket.emit('error', 'fetch_chats');
                         return [2 /*return*/];
                     case 5:
@@ -100,11 +98,7 @@ var SocketController = /** @class */ (function () {
                         socket.emit('error', 'token_invalid');
                         return [2 /*return*/];
                     case 3:
-                        console.log(persistedChat);
-                        console.log(data);
                         io.to(data.roomId).emit('new_message', JSON.stringify({ message: persistedChat, roomId: data.roomId }));
-                        console.log("done");
-                        console.log(JSON.stringify({ message: persistedChat, roomId: data.roomId }));
                         return [2 /*return*/];
                 }
             });

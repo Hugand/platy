@@ -418,8 +418,8 @@ public class FriendsTests {
         String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
         List<Friends> friendshipList = new ArrayList<>();
         friendshipList.add(new Friends(1L, authenticatedUser, user2, Instant.now()));
-        friendshipList.add(new Friends(1L, authenticatedUser, user3, Instant.now()));
-        friendshipList.add(new Friends(1L, authenticatedUser, user4, Instant.now()));
+        friendshipList.add(new Friends(2L, user3, authenticatedUser, Instant.now()));
+        friendshipList.add(new Friends(3L, authenticatedUser, user4, Instant.now()));
 
         when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
         when(friendsRepo.findFriendsByUser(authenticatedUser)).thenReturn(friendshipList);
