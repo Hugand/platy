@@ -31,26 +31,28 @@ public class CustomOidcUserService extends OidcUserService {
         String uid = (String) attributes.get("sub");
 
         User userInfo = usersRepo.findByUid(uid).orElse(null);
+        long savedUserCount = usersRepo.count();
 
         if(userInfo == null) {
             userInfo = new User();
+            userInfo.setNomeProprio((String) attributes.get("given_name"));
+            userInfo.setApelido((String) attributes.get("family_name"));
+            userInfo.setUsername(userInfo.getNomeProprio().toLowerCase(Locale.ROOT) + "_" + savedUserCount);
+
+            try {
+                byte[] imageData = this.loadUsersDefaultProfilePic();
+                userInfo.setProfilePic(imageData);
+            } catch (IOException e) {
+                System.err.println("Failed loading default profile pic");
+                e.printStackTrace();
+            }
         }
 
 //        userInfo.setProfilePic((String) attributes.get("picture"));
         userInfo.setEmail((String) attributes.get("email"));
         userInfo.setUid(uid);
-        userInfo.setNomeProprio((String) attributes.get("given_name"));
-        userInfo.setApelido((String) attributes.get("family_name"));
-        userInfo.setUsername(userInfo.getNomeProprio().toLowerCase(Locale.ROOT) + "_" + userInfo.getUid());
-        try {
-            byte[] imageData = this.loadUsersDefaultProfilePic();
-            userInfo.setProfilePic(imageData);
-        } catch (IOException e) {
-            System.err.println("Failed loading default profile pic");
-            e.printStackTrace();
-        }
 
-        usersRepo.saveAll(Collections.singletonList(userInfo));
+        usersRepo.save(userInfo);
         return oidcUser;
     }
 

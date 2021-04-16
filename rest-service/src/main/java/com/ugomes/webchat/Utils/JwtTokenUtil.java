@@ -27,13 +27,17 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public Object getClaimFromToken(String token, String claimsResolverString) {
-        final Claims claims = getAllClaimsFromToken(token);
-        switch (claimsResolverString) {
-            case "SUBJECT":
-                return claims.getSubject();
-            case "EXPIRATION":
-                return claims.getExpiration();
-            default:
+        try {
+            final Claims claims = getAllClaimsFromToken(token);
+            switch (claimsResolverString) {
+                case "SUBJECT":
+                    return claims.getSubject();
+                case "EXPIRATION":
+                    return claims.getExpiration();
+                default:
+            }
+        } catch (MalformedJwtException e) {
+            System.err.println("Malformed jwt token");
         }
         return null;
     }
