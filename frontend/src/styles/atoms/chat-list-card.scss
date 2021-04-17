@@ -7,7 +7,7 @@
     display: grid;
     grid-template-columns: 80px auto;
     grid-gap: 1.5rem;
-    overflow-y: auto;
+    overflow-y: hidden;
     transition: .2s;
 
     &:hover {

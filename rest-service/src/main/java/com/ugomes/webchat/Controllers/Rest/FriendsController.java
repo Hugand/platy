@@ -213,4 +213,23 @@ public class FriendsController {
 
         return ResponseEntity.ok(friends);
     }
+
+    @GetMapping("/getFriendFromFriendship")
+    public ResponseEntity<Optional<User>> getFriendFromFriendship(@RequestHeader("Authorization") String token,
+                                                                  @RequestParam Long friendshipId) {
+        Optional<User> authenticatedUser = UsersController.getUserFromToken(token, this.usersRepo);
+        Optional<Friends> friendship = friendsRepo.findById(friendshipId);
+        User friend;
+
+        if(authenticatedUser.isEmpty() || friendship.isEmpty())
+            return ResponseEntity.badRequest().body(Optional.empty());
+
+        if(friendship.get().getUser1().equals(authenticatedUser.get()))
+            friend = friendship.get().getUser2();
+        else if(friendship.get().getUser2().equals(authenticatedUser.get()))
+            friend = friendship.get().getUser1();
+        else return ResponseEntity.ok(Optional.empty());
+
+        return ResponseEntity.ok(Optional.of(friend));
+    }
 }

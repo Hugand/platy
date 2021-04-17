@@ -1,5 +1,5 @@
-import { createContext, useContext, useReducer } from 'react'
-import { GlobalState } from './globalState'
+import { createContext, useContext, useReducer, useState } from 'react'
+import { GlobalState, GlobalStateAction } from './globalState'
 
 let d: any;
 export const StateContext = createContext(d)

@@ -108,6 +108,12 @@ const getFriendsIdsList = (token: string): Promise<Array<number>> => {
     }).then((res: any) => res.json())
 }
 
+const getFriendFromFriendship = (token: string, friendshipId: number): Promise<User> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/getFriendFromFriendship?friendshipId=${friendshipId}`, {
+        headers: { 'Authorization': 'Bearer ' + token },
+    }).then((res: any) => res.json())
+}
+
 export {
     login,
     searchUsers,
@@ -124,5 +130,6 @@ export {
     searchFriends,
     getRecentChatsList,
     getFriendshipChats,
-    getFriendsIdsList
+    getFriendsIdsList,
+    getFriendFromFriendship
 }
