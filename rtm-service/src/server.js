@@ -28,8 +28,6 @@ io.on('connection', function (socket) {
     dataContainer.createUser(uid, socket);
     socket.on('join_room', function (d) { return socketController.joinRoom(socket, d); });
     socket.on('send_message', function (d) { return socketController.sendMessage(io, socket, d); });
-    socket.on('disconnect', function () {
-        console.log("User disconnected", socket.id);
-    });
+    socket.on('disconnect', function () { return socketController.disconnect(socket); });
 });
 server.listen(port, function () { return console.log("Listening on port " + port); });

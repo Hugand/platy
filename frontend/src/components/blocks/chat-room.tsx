@@ -9,7 +9,8 @@ import '../../styles/blocks/chat-room.scss'
 import TextField from '../atoms/text-field'
 import TextMessageBlob from '../atoms/text-message-blob'
 import backIcon from '../../assets/img/back_icon.svg'
-
+import Skeleton from "react-loading-skeleton";
+import { ChatLoadingSkeleton } from './chat-loading-skeleton'
 
 type ChatRoomProps = {
     friend: User
@@ -21,6 +22,7 @@ function ChatRoom({ friend, setIsInRoom }: ChatRoomProps) {
     const [ message, setMessage ] = useState('')
     const [ friendship, setFriendship ] = useState<Friendship>(new Friendship())
     const screenType = useScreenType()
+    const [ isLoading, setIsLoading ] = useState(false)
 
     const getFriendshipData = async () => {
         let friendship: Friendship
@@ -39,9 +41,20 @@ function ChatRoom({ friend, setIsInRoom }: ChatRoomProps) {
             dispatch({ type: 'createChatRoom', value: roomId })
     }
 
+    const getMessages = async () => {
+        const friendshipId: number = parseInt(chatData.currRoomId.substring(1))
+        const res = await getFriendshipChats(localStorage.getItem('authToken') || '', friendshipId)
+        console.log(res)
+        dispatch({
+            type: 'changeChatDataList',
+            value: res
+        })
+    }
+
     const sendMessage = () => {
         if(socket !== null && message !== '' && message !== null && message !== undefined) {
-            const previewChat = new Chat(userData.user.id, friendship.id, message, new Date())
+            const friendshipId: number = parseInt(chatData.currRoomId.substring(1))
+            const previewChat = new Chat(userData.user.id, friendshipId, message, new Date())
 
             dispatch({
                 type: 'changeChatDataPreviewChat',
@@ -56,20 +69,24 @@ function ChatRoom({ friend, setIsInRoom }: ChatRoomProps) {
         }
     }
 
-    useEffect(() => {
-        if(socket !== null) {
-            getFriendshipData()
+    async function fetchChatRoomData() {
+        if (socket !== null) {
+            if (chatData.chatRooms.get(chatData.currRoomId) === undefined)
+                setIsLoading(true)
 
-            if(friendship !== null && friendship.id > 0)
-                socket.emit('join_room', {
-                    token: localStorage.getItem('authToken') || '',
-                    uid: userData.user.uid,
-                    roomId: chatData.currRoomId
-                })
+            if (chatData.currRoomId === '')
+                await getFriendshipData()
+
+            await getMessages()
+
+            setIsLoading(false)
         }
+    }
 
-    }, [friendship.id, friend.id, socket, userData.user.uid])
+    useEffect(() => {
+        fetchChatRoomData()
 
+    }, [friendship.id, friend.id, socket, userData.user.uid, chatData.currRoomId])
 
     return <section className="chat-room-container">
         <header className="friend-header">
@@ -85,19 +102,25 @@ function ChatRoom({ friend, setIsInRoom }: ChatRoomProps) {
 
         {(chatData.currRoomId !== '' && chatData.currRoomId !== 'F-1') &&
             <div className="chat-display-container">
-                { (chatData.chatRooms.get(chatData.currRoomId) !== undefined && chatData.chatRooms.get(chatData.currRoomId)?.previewChat !== null) &&
-                    <TextMessageBlob
-                        isPreview={true}
-                        chat={chatData.chatRooms.get(chatData.currRoomId)?.previewChat} 
-                        viewingUser={userData.user} /> }
-
-                { chatData.chatRooms.get(chatData.currRoomId) !== undefined &&
-                    chatData.chatRooms.get(chatData.currRoomId).chatsList.map((chat: Chat) =>
-                        <TextMessageBlob
-                            isPreview={false}
-                            key={`${chat.id}-${friend.username}`} 
-                            chat={chat} 
-                            viewingUser={userData.user} />) }
+                { isLoading 
+                    ? <>
+                        <ChatLoadingSkeleton />
+                    </>
+                    : <>
+                        { (chatData.chatRooms.get(chatData.currRoomId) !== undefined && chatData.chatRooms.get(chatData.currRoomId)?.previewChat !== null) &&
+                            <TextMessageBlob
+                                isPreview={true}
+                                chat={chatData.chatRooms.get(chatData.currRoomId)?.previewChat} 
+                                viewingUser={userData.user} /> }
+        
+                        { chatData.chatRooms.get(chatData.currRoomId) !== undefined &&
+                            chatData.chatRooms.get(chatData.currRoomId).chatsList.map((chat: Chat) =>
+                                <TextMessageBlob
+                                    isPreview={false}
+                                    key={`${chat.id}-${friend.username}`} 
+                                    chat={chat} 
+                                    viewingUser={userData.user} />) }
+                    </> }
             </div>
         }
 

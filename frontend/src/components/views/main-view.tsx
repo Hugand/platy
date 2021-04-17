@@ -24,7 +24,8 @@ function MainView({ contentComponent }: any) {
         fetchUserData()
 
         return () => {
-            socket.disconnect()
+            if(socket !== null)
+                socket.disconnect()
         }
     }, [])
     

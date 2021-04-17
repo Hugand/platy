@@ -37,7 +37,7 @@ function RecentChatsBar({ setIsInRoom }: any) {
             const res: Array<RecentChat> = await getRecentChatsList(authToken)
             dispatch({ type: 'changeRecentChatsList', value: res})
         } catch(e) {
-            clearSession()
+            // clearSession()
         }
     }
 

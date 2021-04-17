@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { TextField, UserSelectCard } from ".."
 import { searchFriends } from "../../helpers/api"
 import { User } from "../../models/User"
+import { useStateValue } from "../../state"
 import '../../styles/blocks/search-user-to-chat-modal.scss'
 
 type SearchUserToChatModalProps = {
@@ -10,7 +11,8 @@ type SearchUserToChatModalProps = {
 
 function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
     const [ searchTerm, setSearchTerm ] = useState('')
-    const [ friendsList, setFriendsList ] = useState<Array<User>>([])
+    const [friendsList, setFriendsList] = useState<Array<User>>([])
+    const [, dispatch ] = useStateValue()
 
     useEffect(() => {
         searchFriendsHandler(searchTerm)
@@ -30,9 +32,10 @@ function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
         }
     }
 
-    // const selectUserToChat = (user: User) => {
-    //     searchFriends(user)
-    // }
+    const selectUserToChat = (user: User) => {
+        selectUser(user)
+        dispatch({ type: 'changeChatDataCurrRoomId', value: '' })
+    }
 
     return <div className="content">
         <header>
@@ -46,7 +49,7 @@ function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
                 <UserSelectCard
                     key={ user.uid }
                     userData={ user }
-                    selectHandler={ selectUser } /> ) }
+                    selectHandler={ selectUserToChat } /> ) }
         </div>
     </div>
 }

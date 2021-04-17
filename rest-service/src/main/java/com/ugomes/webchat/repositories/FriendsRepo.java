@@ -15,5 +15,8 @@ public interface FriendsRepo extends JpaRepository<Friends, Long> {
     @Query("FROM Friends WHERE user1 = :user OR user2 = :user")
     List<Friends> findFriendsByUser(User user);
 
+    @Query("SELECT id FROM Friends WHERE user1 = :user OR user2 = :user")
+    List<Long> findFriendsIdsByUser(User user);
+
     Integer countFriendsByUser1OrUser2(User user1, User user2);
 }

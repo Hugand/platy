@@ -42,40 +42,44 @@ var SocketController = /** @class */ (function () {
         this.dc = dc;
     }
     SocketController.prototype.joinRoom = function (socket, data) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            var isTokenValid, friendshipId, chatsList, e_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var isTokenValid;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0: return [4 /*yield*/, this.validateUserToken(data)];
                     case 1:
-                        isTokenValid = _a.sent();
+                        isTokenValid = _b.sent();
                         if (!isTokenValid) {
                             socket.emit('error', 'token_invalid');
                             return [2 /*return*/];
                         }
-                        if (data.roomId === undefined || data.roomId === null ||
-                            data.roomId === '' || data.roomId.includes('-1')) {
+                        if (data.roomIds === undefined || data.roomIds === null) {
                             socket.emit('error', 'wrong_room_id');
                             return [2 /*return*/];
                         }
                         // Assign user to room
-                        if (this.dc.users.get(data.uid).roomId !== null)
-                            socket.leave(this.dc.users.get(data.uid).roomId);
-                        socket.join(data.roomId);
-                        friendshipId = parseInt(data.roomId.substring(1));
-                        _a.label = 2;
-                    case 2:
-                        _a.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, restServiceApi_1.getFriendshipChats(data.token, friendshipId)];
-                    case 3:
-                        chatsList = _a.sent();
-                        return [3 /*break*/, 5];
-                    case 4:
-                        e_1 = _a.sent();
-                        socket.emit('error', 'fetch_chats');
-                        return [2 /*return*/];
-                    case 5:
-                        socket.emit('chat_data', JSON.stringify({ roomId: data.roomId, chatsList: chatsList }));
+                        // if(this.dc.users.get(data.uid)!.roomIds !== null)
+                        //     socket.leave(this.dc.users.get(data.uid)!.roomId)
+                        // Leave current rooms
+                        (_a = this.dc.users.get(data.uid)) === null || _a === void 0 ? void 0 : _a.roomIds.forEach(function (roomId) {
+                            socket.leave(roomId);
+                        });
+                        // socket.join(data.roomIds)
+                        data.roomIds.forEach(function (roomId) {
+                            socket.join(roomId);
+                            console.log("JOINING ROOM", roomId);
+                            // Get friendship chats
+                            // let friendshipId: number = parseInt(data.roomIds.substring(1))
+                            // let chatsList: Array<Chat>;
+                            // try {
+                            //     chatsList = await getFriendshipChats(data.token, friendshipId);
+                            // } catch (e) {
+                            //     socket.emit('error', 'fetch_chats')
+                            //     return
+                            // }
+                        });
+                        console.log(socket.rooms);
                         return [2 /*return*/];
                 }
             });
@@ -84,32 +88,47 @@ var SocketController = /** @class */ (function () {
     // TODO: Might still need a little bit more work on error handling
     SocketController.prototype.sendMessage = function (io, socket, data) {
         return __awaiter(this, void 0, void 0, function () {
-            var persistedChat, e_2;
+            var persistedChat, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, restServiceApi_1.persistChat(data.token, data.newChat)];
+                        console.log(io.sockets.adapter.rooms);
+                        _a.label = 1;
                     case 1:
-                        persistedChat = _a.sent();
-                        return [3 /*break*/, 3];
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, restServiceApi_1.persistChat(data.token, data.newChat)
+                            // console.log(io.sockets.clients(data.roomId))
+                        ];
                     case 2:
-                        e_2 = _a.sent();
-                        socket.emit('error', 'token_invalid');
-                        return [2 /*return*/];
-                    case 3:
+                        persistedChat = _a.sent();
+                        // console.log(io.sockets.clients(data.roomId))
                         io.to(data.roomId).emit('new_message', JSON.stringify({ message: persistedChat, roomId: data.roomId }));
-                        return [2 /*return*/];
+                        return [3 /*break*/, 4];
+                    case 3:
+                        e_1 = _a.sent();
+                        socket.emit('error', 'token_invalid');
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
+    };
+    SocketController.prototype.disconnect = function (socket) {
+        console.log("User disconnected", socket.id);
+        // socket.rooms.forEach((room: any) => {
+        //     console.log("DISCONNECTING FROM", room)
+        //     socket.leave(room)
+        // });
+        // this.dc.users.get(data.uid)?.roomIds.forEach((roomId: string) => {
+        //     socket.leave(roomId)
+        // })
     };
     /*
         Helper methods
     */
     SocketController.prototype.validateUserToken = function (data) {
         return __awaiter(this, void 0, void 0, function () {
-            var res, e_3;
+            var res, e_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -119,7 +138,7 @@ var SocketController = /** @class */ (function () {
                         res = _a.sent();
                         return [2 /*return*/, res.status];
                     case 2:
-                        e_3 = _a.sent();
+                        e_2 = _a.sent();
                         return [2 /*return*/, false];
                     case 3: return [2 /*return*/];
                 }

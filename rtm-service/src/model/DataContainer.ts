@@ -8,7 +8,7 @@ export class DataContainer {
         const newUser: User = {
             socketSession: socket,
             uid,
-            roomId: null
+            roomIds: []
         }
 
         this.users.set(uid, newUser)

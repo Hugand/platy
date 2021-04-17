@@ -13,13 +13,14 @@ function useMessagingWebsocket() {
     const [ { socket, userData, chatData }, dispatch ] = useStateValue()
 
     useEffect(() => {
-        if((socket === null || socket === undefined || !socket.connected) && userData.user.uid !== '') {
+        if((socket === null || socket === undefined) && userData.user.uid !== '') {
             const newSocket = io(`${process.env.REACT_APP_WEBSOCKET_URL}`, {
                 reconnectionDelayMax: 10000,
                 query: {
                     uid: userData.user.uid,
                 }
             })
+            // console.log(socket, newSocket)
     
             newSocket.on('chat_data', (data: string) => {
                 console.log("rtm ok", data)

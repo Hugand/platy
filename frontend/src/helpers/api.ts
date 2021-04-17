@@ -78,6 +78,8 @@ const getFriendship = (authToken: string, friendId: number): Promise<Friendship>
 }
 
 const clearSession = (): void => {
+    console.log("REMOVING")
+    fetch("https://google.com")
     localStorage.removeItem('authToken')
     window.location.href = `${process.env.REACT_APP_API_URL}/getAuthUser`;
 }
@@ -94,10 +96,15 @@ const getRecentChatsList = (authToken: string): Promise<Array<RecentChat>> => {
     }).then(res => res.json())
 }
 
-const getFriendshipChats = (token: string, friendshipId: number, signal: any) => {
+const getFriendshipChats = (token: string, friendshipId: number) => {
     return fetch(`${process.env.REACT_APP_API_URL}/getChatsFromFriendship?friendshipId=${friendshipId}`, {
         headers: { 'Authorization': 'Bearer ' + token },
-        signal
+    }).then((res: any) => res.json())
+}
+
+const getFriendsIdsList = (token: string): Promise<Array<number>> => {
+    return fetch(`${process.env.REACT_APP_API_URL}/getFriendsIdsList`, {
+        headers: { 'Authorization': 'Bearer ' + token },
     }).then((res: any) => res.json())
 }
 
@@ -116,5 +123,6 @@ export {
     getFriendship,
     searchFriends,
     getRecentChatsList,
-    getFriendshipChats
+    getFriendshipChats,
+    getFriendsIdsList
 }

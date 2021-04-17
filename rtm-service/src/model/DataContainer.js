@@ -9,7 +9,7 @@ var DataContainer = /** @class */ (function () {
         var newUser = {
             socketSession: socket,
             uid: uid,
-            roomId: null
+            roomIds: []
         };
         this.users.set(uid, newUser);
     };

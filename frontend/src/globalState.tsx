@@ -18,6 +18,7 @@ export class ChatRoom {
 export class GlobalState {
     socket: any = null;
     userData: UserData = new UserData()
+    friendsIds: Array<number> = []
     chatData: ChatData = {
         chatRooms: new Map<string, ChatRoom>(), // implement the reducers and othe logic necessary
         userToChat: null,
@@ -119,6 +120,12 @@ export const reducer = (state: GlobalState, action: GlobalStateAction) => {
             return {
                 ...state,
                 recentChatsList: action.value
+            }
+        
+        case 'changeFriendsIds':
+            return {
+                ...state,
+                friendsIds: action.value
             }
 
         default:

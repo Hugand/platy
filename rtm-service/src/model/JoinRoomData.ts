@@ -1,6 +1,6 @@
 
-export type JoinRoomData = {
+export interface JoinRoomData {
     token: string
     uid: string
-    roomId: string
+    roomIds: Array<string>
 }

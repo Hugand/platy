@@ -203,4 +203,14 @@ public class FriendsController {
 
         return ResponseEntity.ok(friendsList);
     }
+
+    @GetMapping("/getFriendsIdsList")
+    public ResponseEntity<List<Long>> getFriendsIdsList(@RequestHeader("Authorization") String token) {
+        Optional<User> authenticatedUser = UsersController.getUserFromToken(token, this.usersRepo);
+        if(authenticatedUser.isEmpty()) return ResponseEntity.badRequest().body(null);
+
+        List<Long> friends = friendsRepo.findFriendsIdsByUser(authenticatedUser.get());
+
+        return ResponseEntity.ok(friends);
+    }
 }
