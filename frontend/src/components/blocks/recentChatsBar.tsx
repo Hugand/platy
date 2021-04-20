@@ -1,17 +1,26 @@
 import { useState, useEffect } from 'react'
-import '../../styles/blocks/recent-chats-bar.scss'
-import { TextField, ChatListCard } from '..'
+import '@styles/blocks/recent-chats-bar.scss'
+import { TextField } from '@atoms/textField'
+import { ChatListCard } from '@atoms/chatListCard'
 import Modal from 'react-modal';
-import SearchUserToChatModal from './search-user-to-chat-modal';
-import { User } from '../../models/User';
+import { SearchUserToChatModal } from '@blocks/searchUserToChatModal';
+import { User } from '@models/User';
 import { useStateValue } from '../../state';
-import { getRecentChatsList, clearSession } from '../../helpers/api';
-import { RecentChat } from '../../models/RecentChat';
+import { getRecentChatsList, clearSession, getFriendFromFriendship } from '@helpers/api';
+import { RecentChat } from '@models/RecentChat';
 
-function RecentChatsBar({ setIsInRoom }: any) {
-    const [ searchTerm, setSearchTerm ] = useState('')
-    const [ isModalOpen, setIsModalOpen ] = useState(false)
+interface Props {
+    setIsInRoom: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const RecentChatsBar: React.FC<Props> = ({ setIsInRoom }) => {
     const [ { recentChatsList, chatData } , dispatch ] = useStateValue()
+    const [ isModalOpen, setIsModalOpen ] = useState(false)
+    const [ searchTerm, setSearchTerm ] = useState('')
+
+    useEffect(() => {
+        fetchRecentChats()
+    }, [])
 
     const setUserToChat = (user: User) => {
         dispatch({ type: 'changeChatDataUser2Chat', value: user })
@@ -22,9 +31,8 @@ function RecentChatsBar({ setIsInRoom }: any) {
       
         if (chatData.userToChat === null || (user !== null && user.id !== chatData.userToChat.id)) {
             setUserToChat(user)
-            if(friendshipId !== -1) {
+            if(friendshipId !== -1)
                 dispatch({ type: 'changeChatDataCurrRoomId', value: roomId})
-            }
         }
         
         setIsInRoom(true)
@@ -32,19 +40,31 @@ function RecentChatsBar({ setIsInRoom }: any) {
     }
 
     const fetchRecentChats = async () => {
-        const authToken: string = localStorage.getItem('authToken') + ''
+        const authToken: string = localStorage.getItem('authToken') || ''
         try {
             const res: Array<RecentChat> = await getRecentChatsList(authToken)
             dispatch({ type: 'changeRecentChatsList', value: res})
         } catch(e) {
-            // clearSession()
+            clearSession()
         }
     }
 
-    useEffect(() => {
-        fetchRecentChats()
-    }, [])
-
+    const getFriend = async (chat: RecentChat) => {
+        try {
+            const friend = await getFriendFromFriendship(localStorage.getItem('authToken') || '', chat.friendshipId)
+            chat.friend = friend
+            dispatch({
+                type: 'changeRecentChatItem',
+                value: {
+                    friendshipId: chat.friendshipId,
+                    recentChatItem: chat
+                }
+            })
+        } catch (e) {
+            clearSession()
+        }
+    }
+    
     return <section className="chats-bar-container">
         <div className="bar-header">
             <div>
@@ -56,11 +76,15 @@ function RecentChatsBar({ setIsInRoom }: any) {
         <div className="chat-list">
             { recentChatsList.length === 0
                 ? <p>No recent chats. Start a conversation with a friend!</p>
-                : recentChatsList.map((recentChat: RecentChat) => 
-                    <ChatListCard
+                : recentChatsList.map((recentChat: RecentChat) => {
+                    if(recentChat.friend === null)
+                        getFriend(recentChat)
+                    
+                    return <ChatListCard
                         key={recentChat.friendshipId}
                         chat={recentChat}
-                        selectHandler={selectUserHandler} />) }
+                        selectHandler={selectUserHandler} />
+                }) }
         </div>
 
         <Modal
@@ -71,5 +95,3 @@ function RecentChatsBar({ setIsInRoom }: any) {
         </Modal>
     </section>
 }
-
-export default RecentChatsBar

@@ -1,7 +1,7 @@
-import { User } from "./User";
+import { User } from "@models/User";
 
 export class FriendRequest {
-    id: number = 0;
+    id: number = -1;
     requestDate: Date = new Date();
     requestOriginUser: User = new User();
     requestDestinyUser: User = new User();

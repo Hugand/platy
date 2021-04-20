@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react"
-import { Chat } from "../../models/Chat"
-import { User } from "../../models/User"
-import '../../styles/atoms/txt-message-blob.scss'
+import { Chat } from "@models/Chat"
+import { User } from "@models/User"
+import '@styles/atoms/txt-message-blob.scss'
 
-type TextMessageBlobProps = {
+interface Props {
     chat: Chat
     viewingUser: User
     isPreview: boolean
 }
 
-function TextMessageBlob({ chat, viewingUser, isPreview }: TextMessageBlobProps) {
+export const TextMessageBlob: React.FC<Props> = ({ chat, viewingUser, isPreview }) => {
     const [ blobClasses, setBlobClasses ] = useState(new Array<string>('txt-msg-blob-container'))
     const [ bottomLabelClasses, setBottomLabelClasses ] = useState(new Array<string>())
 
     useEffect(() => {
+        assignClasses()
+    }, [chat, isPreview, viewingUser.id])
+
+    const assignClasses = () => {
         const tmpBlobClasses = [...blobClasses]
         const tmpBottomLabelClasses = [...bottomLabelClasses]
 
@@ -28,10 +32,9 @@ function TextMessageBlob({ chat, viewingUser, isPreview }: TextMessageBlobProps)
             tmpBottomLabelClasses.push('align-left')
         }
 
-
         setBlobClasses(tmpBlobClasses)
         setBottomLabelClasses(tmpBottomLabelClasses)
-    }, [chat, isPreview, viewingUser.id])
+    }
 
     const getFormattedSentDate = (): string => {
         if(chat.timestamp === null && chat.timestamp === undefined) return ''

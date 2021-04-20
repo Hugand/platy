@@ -1,15 +1,15 @@
-import { User } from "../../models/User"
-import TextField from "../atoms/text-field"
-import '../../styles/blocks/edit-profile-modal.scss'
+import { User } from "@models/User"
+import TextField from "@atoms/textField"
+import '@styles/blocks/edit-profile-modal.scss'
 import { useState, useEffect } from "react"
-import { updateUser } from "../../helpers/api"
+import { updateUser } from "@helpers/api"
 
-type EditProfileModalProps = {
+interface Props {
     user: User;
     closeModal: Function;
 }
 
-function EditProfileModal({ user, closeModal }: EditProfileModalProps) {
+export const EditProfileModal: React.FC<Props> = ({ user, closeModal }) => {
     const [ userInfo, setUserInfo ] = useState(user)
     const [ userProfilePic, setUserProfilePic ] = useState(new File([], 'img'))
 
@@ -87,5 +87,3 @@ function EditProfileModal({ user, closeModal }: EditProfileModalProps) {
         <button className="btn" onClick={e => saveChanges()}>Save</button>
     </section>
 }
-
-export default EditProfileModal

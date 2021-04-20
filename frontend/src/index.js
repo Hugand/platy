@@ -1,14 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles/index.scss';
+import '@styles/index.scss';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from "react-router-dom";
-import * as comp from './components/index'
 import { initialState, reducer } from './globalState'
 import { StateProvider } from './state'
+import { LoginView } from '@views/loginView'
+import { MainView } from '@views/mainView'
+import { FriendRequestsView } from '@views/friendRequests'
+import { UserProfileView } from '@views/userProfileView'
+import { HomeView } from '@views/homeView'
 
 ReactDOM.render(
   <React.StrictMode>
@@ -16,19 +20,19 @@ ReactDOM.render(
       <Router>
           <Switch>
             <Route path="/signin" exact={true}>
-              <comp.LoginView />
+              <LoginView />
             </Route>
             <Route exact path="/">
-              <comp.MainView contentComponent={<comp.HomeView/>}/>
+              <MainView contentComponent={<HomeView/>}/>
             </Route>
             <Route path="/search">
-              <comp.MainView contentComponent={<comp.SearchView/>}/>
+              <MainView contentComponent={<SearchView/>}/>
             </Route>
             <Route path="/friend_requests">
-              <comp.MainView contentComponent={<comp.FriendRequestsView/>}/>
+              <MainView contentComponent={<FriendRequestsView/>}/>
             </Route>
             <Route path="/profile">
-              <comp.MainView contentComponent={<comp.UserProfileViewfrom/>}/>
+              <MainView contentComponent={<UserProfileView/>}/>
             </Route>
           </Switch>
       </Router>

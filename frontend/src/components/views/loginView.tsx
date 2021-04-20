@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-import '../../styles/views/login.scss'
-import laptopImg from '../../assets/img/laptop.png'
+import '@styles/views/login.scss'
+import laptopImg from '@assets/img/laptop.png'
 import { useHistory } from 'react-router-dom';
-import { clearSession, login } from '../../helpers/api'
-import { User } from '../../models/User';
-import { useScreenType } from '../../hooks/useScreenType';
+import { clearSession, login } from '@helpers/api'
+import { useScreenType } from '@hooks/useScreenType';
 
-function LoginView() {
+export const LoginView: React.FC = () => {
     const history = useHistory();
     const screenType = useScreenType();
     const [ authToken, setAuthToken ] = useState('')
@@ -21,29 +20,23 @@ function LoginView() {
 
     const searchGetParameters = (): void => {
         let urlParams: URLSearchParams = new URLSearchParams(window.location.search);
-        let authTokenParam: string | null = urlParams.get('auth_token');
-        if(authTokenParam === null || authTokenParam === "") {
-            authTokenParam = localStorage.getItem('authToken')
-        }
-        
-        if(authTokenParam !== null  && authTokenParam !== "") {
+        let authTokenParam: string = urlParams.get('auth_token') || ''
+
+        if(authTokenParam !== '') {
             localStorage.setItem('authToken', authTokenParam)
             setAuthToken(authTokenParam)
-
         }
     }
 
     const onGoogleLoginClick = async (): Promise<void> => {
-        console.log("LS", localStorage.getItem('authToken'))
-        console.log("AT", authToken)
-
         try {
-            const authUser: User = await login(authToken)
+            await login(authToken)
             history.push("/");
         } catch (e) {
             clearSession()
         }
     }
+
     if (screenType === 'mobile')
         return (
             <main className="login-main login-mobile">
@@ -64,11 +57,6 @@ function LoginView() {
                     <div className="form-container">
                         <h1>Webchat</h1>
                         <button className="btn" onClick={onGoogleLoginClick}>Sign in with Google</button>
-                        {/* <button className="btn">Sign in with Facebook</button> */}
-
-                        {/* <hr/>
-
-                        <button className="btn btn-secondary">Sign in with Facebook</button> */}
                     </div>
                 </section>
                 <section className="banner">
@@ -80,5 +68,3 @@ function LoginView() {
             </main>
         )
 }
-
-export default LoginView;

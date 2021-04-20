@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@atoms/*": ["components/atoms/*"],
+      "@blocks/*": ["components/blocks/*"],
+      "@views/*": ["components/views/*"],
+      "@skeletons/*": ["components/skeletons/*"],
+      "@hooks/*": ["hooks/*"],
+      "@models/*": ["models/*"],
+      "@helpers/*": ["helpers/*"],
+      "@styles/*": ["styles/*"],
+      "@assets/*": ["assets/*"]
+    }
+  }
+}

@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react"
-import { TextField, UserSelectCard } from ".."
-import { searchFriends } from "../../helpers/api"
-import { User } from "../../models/User"
+import { TextField } from "@atoms/textField"
+import { clearSession, searchFriends } from "@helpers/api"
+import { User } from "@models/User"
 import { useStateValue } from "../../state"
-import '../../styles/blocks/search-user-to-chat-modal.scss'
+import '@styles/blocks/search-user-to-chat-modal.scss'
+import { UserCard } from "../atoms/userCard"
 
-type SearchUserToChatModalProps = {
+interface Props {
     selectUser: Function
 }
 
-function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
-    const [ searchTerm, setSearchTerm ] = useState('')
-    const [friendsList, setFriendsList] = useState<Array<User>>([])
+export const SearchUserToChatModal: React.FC<Props> = ({ selectUser }) => {
     const [, dispatch ] = useStateValue()
+    const [friendsList, setFriendsList] = useState<Array<User>>([])
+    const [ searchTerm, setSearchTerm ] = useState('')
 
     useEffect(() => {
         searchFriendsHandler(searchTerm)
@@ -28,7 +29,7 @@ function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
             const newFriendsList: Array<User> = await searchFriends(localStorage.getItem('authToken') || '', searchStr)
             setFriendsList(newFriendsList)
         } catch (e) {
-            console.log(e)
+            clearSession()
         }
     }
 
@@ -45,13 +46,12 @@ function SearchUserToChatModal({ selectUser }: SearchUserToChatModalProps) {
 
         <div className="users-list-container">
             { (friendsList.length === 0) ? <h2>No friends to show</h2>
-            : friendsList.map((user: User) => 
-                <UserSelectCard
-                    key={ user.uid }
-                    userData={ user }
-                    selectHandler={ selectUserToChat } /> ) }
+                : friendsList.map((user: User) =>
+                    <UserCard
+                        key={ user.uid }
+                        user={user}
+                        clickHandler={ selectUserToChat } />
+            )}
         </div>
     </div>
 }
-
-export default SearchUserToChatModal

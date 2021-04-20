@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useState } from 'react'
-import { GlobalState, GlobalStateAction } from './globalState'
+import { GlobalState } from '@models/GlobalStateData';
 
 let d: any;
 export const StateContext = createContext(d)
@@ -10,8 +10,10 @@ export class StateProviderParams {
     children: any
 }
 
-export const StateProvider = ({reducer, initialState, children}: StateProviderParams) => {
-    return <StateContext.Provider value={useReducer(reducer, initialState)}>
+export const StateProvider = ({ reducer, initialState, children }: StateProviderParams) => {
+    const globalState = useReducer(reducer, initialState)
+
+    return <StateContext.Provider value={globalState}>
         { children }
     </StateContext.Provider>
 }

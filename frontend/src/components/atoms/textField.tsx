@@ -1,12 +1,20 @@
-import '../../styles/atoms/text-field.scss'
+import '@styles/atoms/text-field.scss'
 
-function TextField({ 
+interface Props {
+    placeholder?: string
+    onInputChange: Function
+    defaultValue?: string,
+    classes?: string,
+    value?: string
+}
+
+export const TextField: React.FC<Props> = ({ 
     placeholder,
     onInputChange,
     defaultValue,
-    classes='',
+    classes,
     value
-}: any) {
+}: any) => {
      return <input
         type="text"
         className={"text-field " + classes}

@@ -1,17 +1,21 @@
-import { useState } from 'react'
-import { RecentChatsBar } from '..'
+import { useState, useEffect } from 'react'
+import { RecentChatsBar } from '@blocks/recentChatsBar'
 import { useStateValue } from '../../state'
-import ChatRoom from '../blocks/chat-room'
-import '../../styles/views/home.scss'
-import { useScreenType } from '../../hooks/useScreenType'
-import { clearSession, getFriendsIdsList } from '../../helpers/api'
-import { useEffect } from 'react'
+import '@styles/views/home.scss'
+import { useScreenType } from '@hooks/useScreenType'
+import { clearSession, getFriendsIdsList } from '@helpers/api'
+import { ChatRoom } from '@blocks/chatRoom'
 
-function HomeView() {
+export const HomeView: React.FC = () => {
     const [{ chatData, socket, userData }, dispatch] = useStateValue()
     const screenType = useScreenType()
-    const [isInRoom, setIsInRoom] = useState(false)
-    
+    const [ isInRoom, setIsInRoom ] = useState(false)
+
+    useEffect(() => {
+        if(socket !== null)
+            fetchFriendsIds()
+    }, [socket])
+
     const fetchFriendsIds = async () => {
         try {
             const res: Array<number> = await getFriendsIdsList(localStorage.getItem('authToken') || '')
@@ -19,8 +23,7 @@ function HomeView() {
             joinRooms(res)
             return res
         } catch (e) {
-            console.log(e)
-            // clearSession()
+            clearSession()
         }
     }
 
@@ -33,14 +36,9 @@ function HomeView() {
             })
     }
 
-    useEffect(() => {
-        if(socket !== null)
-            fetchFriendsIds()
-    }, [socket])
-
     if(screenType === 'mobile')
         return <section className="home-view-container">
-            {!isInRoom
+            { !isInRoom
                 ? <RecentChatsBar setIsInRoom={setIsInRoom} />
                 : <section className="place">
                     { chatData.userToChat === null 
@@ -67,5 +65,3 @@ function HomeView() {
 
         </section>
 }
-
-export default HomeView

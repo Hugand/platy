@@ -1,9 +1,9 @@
-import { FriendRequest } from "../models/FriendRequest"
-import { Friendship } from "../models/Friendship"
-import { RecentChat } from "../models/RecentChat"
-import { SearchUserResponse } from "../models/SearchUserResponse"
-import { User } from "../models/User"
-import { UserData } from "../models/UserData"
+import { FriendRequest } from "@models/FriendRequest"
+import { Friendship } from "@models/Friendship"
+import { RecentChat } from "@models/RecentChat"
+import { SearchUserResponse } from "@models/SearchUserResponse"
+import { User } from "@models/User"
+import { UserData } from "@models/UserData"
 
 const login = (authToken: string): Promise<User> => {
     return fetch(`${process.env.REACT_APP_API_URL}/getAuthUser`, {
@@ -115,21 +115,30 @@ const getFriendFromFriendship = (token: string, friendshipId: number): Promise<U
 }
 
 export {
-    login,
+    // Users
     searchUsers,
+    getUserData,
+    updateUser,
+
+    // Friend requests
     sendFriendRequest,
     cancelFriendRequest,
     getFriendRequestList,
     acceptFriendRequest,
-    getUserData,
-    updateUser,
+
+    // Friendships
     getFriendsList,
-    logout,
-    clearSession,
     getFriendship,
     searchFriends,
+    getFriendsIdsList,
+    getFriendFromFriendship,
+
+    // Chats
     getRecentChatsList,
     getFriendshipChats,
-    getFriendsIdsList,
-    getFriendFromFriendship
+
+    // Session
+    login,
+    logout,
+    clearSession,
 }

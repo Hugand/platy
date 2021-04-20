@@ -1,0 +1,60 @@
+@import "../resources/variables.scss";
+
+.user-card {
+    width: calc(100% - 2.5rem);
+    height: 60px;
+    padding: 0.875rem 1.25rem;
+    overflow-y: hidden;
+    transition: .2s;
+
+    display: flex;
+    flex-direction: row;
+
+
+    &:hover {
+        cursor: pointer;
+        background-color: #fafafa;
+    }
+
+    img {
+        grid-column: 1;
+        width: 60px;
+        height: 100%;
+        border-radius: 100%;
+        margin-right: 1.5rem;
+    }
+    
+    article {
+        grid-column: 2;
+        display: flex;
+        flex-direction: column;
+        margin: auto 0;
+
+        h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: $dark-grey;
+        }
+
+        label {
+            font-size: 1.125rem;
+            font-weight: 300;
+            color: $grey;
+            width: 100%;
+            margin-top: 0.75rem;
+            max-height: 2.25rem;
+        }
+    }
+
+    .action-btn {
+        width: fit;
+        height: 100%;
+        margin-left: auto;
+
+        .btn {
+            margin: auto 0;
+            justify-content: center;
+        }
+    }
+
+}

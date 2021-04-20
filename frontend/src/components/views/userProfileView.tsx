@@ -1,19 +1,19 @@
 import { useStateValue } from '../../state'
-import '../../styles/views/profile.scss'
+import '@styles/views/profile.scss'
 import Modal from 'react-modal';
-import { EditProfileModal, FriendsListModal } from '..';
+import { EditProfileModal } from '@blocks/editProfileModal';
+import { FriendsListModal } from '@blocks/friendsListModal';
 import { useEffect, useState } from 'react';
-import { GlobalStateAction } from '../../globalState';
-import { getUserData } from '../../helpers/api';
-import { UserData } from '../../models/UserData';
+import { clearSession, getUserData } from '@helpers/api';
+import { UserData } from '@models/UserData';
 
 const customStyles = {
     content : {
         width: "fitContent"
     }
-  };
+};
 
-function UserProfileView() {
+export const UserProfileView: React.FC = () => {
     const [ { userData }, dispatch ] = useStateValue()
     const [ isEditModalOpen, setIsEditModalOpen ] = useState(false)
     const [ isFriendsModalOpen, setIsFriendsModalOpen ] = useState(false)
@@ -29,16 +29,14 @@ function UserProfileView() {
     const closeFriendsModal = () => { setIsFriendsModalOpen(false) }
 
     const refreshProfile = async () => {
-        const authToken: string = localStorage.getItem("authToken") || ""
+        const authToken: string = localStorage.getItem("authToken") || ''
     
-        const res: UserData = await getUserData(authToken)
-
-        const dispatchData: GlobalStateAction = {
-            type: 'changeUser',
-            value: res
+        try {
+            const res: UserData = await getUserData(authToken)
+            dispatch({ type: 'changeUser', value: res })
+        } catch (e) {
+            clearSession()
         }
-
-        dispatch(dispatchData)
     }
 
     return <section className="content-container">
@@ -78,5 +76,3 @@ function UserProfileView() {
         </Modal>
    </section>
 }
-
-export default UserProfileView
