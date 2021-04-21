@@ -22,7 +22,7 @@ export const SearchView: React.FC = () => {
         try {
             const users: SearchUserResponse = await searchUsers(searchTerm, localStorage.getItem("authToken"))
             setSearchResults(users)
-        } catch (e: any) {
+        } catch (e) {
             console.log(e);
         }
     }

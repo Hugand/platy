@@ -1,11 +1,11 @@
 import '@styles/atoms/text-field.scss'
 
 interface Props {
-    placeholder?: string
-    onInputChange: Function
-    defaultValue?: string,
-    classes?: string,
-    value?: string
+    placeholder?: string;
+    onInputChange: Function;
+    defaultValue?: string;
+    classes?: string;
+    value?: string;
 }
 
 export const TextField: React.FC<Props> = ({ 

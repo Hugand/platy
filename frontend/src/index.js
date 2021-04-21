@@ -13,6 +13,7 @@ import { MainView } from '@views/mainView'
 import { FriendRequestsView } from '@views/friendRequests'
 import { UserProfileView } from '@views/userProfileView'
 import { HomeView } from '@views/homeView'
+import { SearchView } from '@views/searchView'
 
 ReactDOM.render(
   <React.StrictMode>

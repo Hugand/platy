@@ -4,9 +4,9 @@ import { User } from "@models/User"
 import '@styles/atoms/txt-message-blob.scss'
 
 interface Props {
-    chat: Chat
-    viewingUser: User
-    isPreview: boolean
+    chat: Chat;
+    viewingUser: User;
+    isPreview: boolean;
 }
 
 export const TextMessageBlob: React.FC<Props> = ({ chat, viewingUser, isPreview }) => {

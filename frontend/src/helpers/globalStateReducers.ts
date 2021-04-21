@@ -76,11 +76,11 @@ class ReducerActions {
   }
 
   changeRecentChatItem = (state: GlobalState, action: GlobalStateAction) => {
-    const newState = { ...state }
+    const newState = { ...state }
     const { friendshipId, recentChatItem } = action.value
     
     for (let i = 0; i < newState.recentChatsList.length; i++) {
-      const recentChat = newState.recentChatsList[i]      
+      const recentChat = newState.recentChatsList[i]
 
       if (recentChat.friendshipId === friendshipId) {
         newState.recentChatsList[i] = recentChatItem
@@ -89,13 +89,13 @@ class ReducerActions {
     }
 
     return newState
-  }
+  };
 
   /*
     HELPER FUNCTIONS
   */
 
-  private addRecentChatItemToList = (state: GlobalState, roomId: string, message: Chat) => {
+  addRecentChatItemToList = (state: GlobalState, roomId: string, message: Chat) => {
     const friendshipId: number = parseInt(roomId.substr(1))
     let tmpRecentChatsList = [...state.recentChatsList]
 

@@ -4,7 +4,7 @@ import React from 'react';
 import { ChatListCardSkeleton } from '@skeletons/chatListCardSkeleton';
 
 interface Props {
-    chat: RecentChat
+    chat: RecentChat;
     selectHandler: Function
 }
 

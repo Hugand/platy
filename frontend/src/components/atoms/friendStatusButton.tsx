@@ -3,7 +3,7 @@ import { CardType } from '@models/Enums'
 import '@styles/atoms/friend-status-button.scss'
 
 interface Props {
-	cardType: CardType
+	cardType: CardType;
 	clickHandler?: () => void
 }
 

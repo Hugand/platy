@@ -3,9 +3,9 @@ import { User } from '@models/User'
 import '@styles/atoms/user-card.scss'
 
 interface Props {
-  user: User
-  actionButton?: JSX.Element
-  clickHandler?: (_: User) => void 
+  user: User;
+  actionButton?: JSX.Element;
+  clickHandler?: (_: User) => void;
 }
 
 export const UserCard: React.FC<Props> = ({ user, actionButton, clickHandler = (_: User) => {} }) => {

@@ -5,9 +5,9 @@ import { UserData } from "@models/UserData";
 
 export interface ChatData {
   // chatRooms: Map<string, ChatRoom>
-  userToChat: User | null
-  previewChat: Chat | null
-  currRoomId: string
+  userToChat: User | null;
+  previewChat: Chat | null;
+  currRoomId: string;
 }
 
 export class ChatRoom {

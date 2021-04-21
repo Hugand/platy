@@ -12,8 +12,8 @@ import backIcon from '@assets/img/back_icon.svg'
 import { ChatLoadingSkeleton } from '@skeletons/chatLoadingSkeleton'
 
 interface Props {
-    friend: User
-    setIsInRoom: Function
+    friend: User;
+    setIsInRoom: Function;
 }
 
 export const ChatRoom: React.FC<Props> = ({ friend, setIsInRoom }) => {
