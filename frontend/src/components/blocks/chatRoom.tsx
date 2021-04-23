@@ -13,7 +13,7 @@ import { ChatLoadingSkeleton } from '@skeletons/chatLoadingSkeleton';
 
 interface Props {
     friend: User;
-    setIsInRoom: any; //React.Dispatch<React.SetStateAction<boolean>>;
+    setIsInRoom: Function; //React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const ChatRoom: React.FC<Props> = ({ friend, setIsInRoom }) => {
