@@ -11,18 +11,13 @@ on:
       - master
       - /*
 
-defaults:
-  test-rest-service:
-    shell: bash
-    working-directory: rest-service
-
-  verify-eslint-frontend:
-    shell: bash
-    worling-directory: frontend
-
 jobs:
-  build:
+  test-rest-service:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: rest-service
 
     steps:
       - uses: actions/checkout@v2
@@ -30,9 +25,29 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Test REST service
-        test-rest-service: mvn test
-      - name: Run eslint on frontend
-        verify-eslint-frontend: npm run lint
+      - name: Test Spring boot app
+        run: mvn test
+
+  verify-eslint-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
+
+    strategy:
+      matrix:
+        node-version: [15.x]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use NodeJs ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Installing packages
+        run: npm install
+      - name: Running eslint
+        run: npm run lint
 #    - name: Build with Maven
 #      run: mvn -B package --file pom.xml
