@@ -1,10 +1,11 @@
+import { GlobalState } from "@/models/globalStateData/GlobalState";
+import { GlobalStateAction } from "@/models/globalStateData/GlobalStateAction";
 import reducers from "./helpers/globalStateReducers";
-import { GlobalState, GlobalStateAction } from "./models/GlobalStateData";
 
-export const initialState = new GlobalState()
+export const initialState = new GlobalState();
 
-export const reducer = (state: GlobalState, action: GlobalStateAction) => {
-    const actionFunction = reducers.get(action.type)
-    if (actionFunction !== undefined) return actionFunction(state, action)
-    else return state
-}
+export const globalStateReducer = (state: GlobalState, action: GlobalStateAction): GlobalState => {
+    const actionFunction = reducers.get(action.type);
+    if (actionFunction !== undefined)return actionFunction(state, action);
+    else return state;
+};

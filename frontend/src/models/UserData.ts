@@ -1,6 +1,7 @@
 import { User } from "@models/User";
 
 export class UserData {
-    user: User = new User()
-    friendsCount: number = 0
+    user: User = new User();
+
+    friendsCount = 0;
 }

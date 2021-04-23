@@ -1,8 +1,8 @@
-import { useMediaQuery } from 'react-responsive'
+import { useMediaQuery } from 'react-responsive';
 
 export const useScreenType = () => {
-  const isMobile = useMediaQuery({ maxWidth: 874})
+  const isMobile = useMediaQuery({ maxWidth: 874 });
 
-  if (isMobile) return 'mobile'
-  else return 'desktop'
-}
+  if (isMobile) return 'mobile';
+  else return 'desktop';
+};

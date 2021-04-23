@@ -1,4 +1,4 @@
-import Skeleton from "react-loading-skeleton"
+import Skeleton from "react-loading-skeleton";
 
 export const ChatListCardSkeleton = () => {
   return (
@@ -8,5 +8,5 @@ export const ChatListCardSkeleton = () => {
           <h4><Skeleton width={'100%'} height={30}/></h4>
           <p><Skeleton width={'60%'} height={16}/></p>
       </article>
-    </>)
-}
+    </>);
+};
