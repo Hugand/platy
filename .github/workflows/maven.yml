@@ -5,29 +5,34 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
     branches:
       - master
       - /*
-      
+
 defaults:
-  run:
+  test-rest-service:
     shell: bash
     working-directory: rest-service
 
+  verify-eslint-frontend:
+    shell: bash
+    worling-directory: frontend
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11
-    - name: Test Spring boot app
-      run: mvn test
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Test REST service
+        test-rest-service: mvn test
+      - name: Run eslint on frontend
+        verify-eslint-frontend: npm run lint
 #    - name: Build with Maven
 #      run: mvn -B package --file pom.xml

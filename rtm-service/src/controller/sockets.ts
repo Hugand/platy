@@ -21,8 +21,8 @@ class SocketController {
         }
 
         if (data.roomIds === undefined || data.roomIds === null) {
-                socket.emit('error', 'wrong_room_id')
-                return;
+            socket.emit('error', 'wrong_room_id')
+            return;
         }
 
         // Leave current rooms
