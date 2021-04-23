@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ugomes.webchat.ApiResponses.SearchUserResponse;
 import com.ugomes.webchat.ApiResponses.UserData;
-import com.ugomes.webchat.Controllers.Rest.FriendsController;
-import com.ugomes.webchat.Controllers.Rest.UsersController;
+import com.ugomes.webchat.Controllers.FriendsController;
+import com.ugomes.webchat.Controllers.UsersController;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.ChatsRepo;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -211,6 +212,33 @@ public class UsersTests {
         assertFalse(queryResult.getBody());
     }
 
+    // GetUserFromtoken
+    @Test
+    void successGetUserFromToken() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+
+        Optional<User> userFromToken = UsersController.getUserFromToken(authUserToken, usersRepo);
+
+        assertTrue(userFromToken.isPresent());
+        assertEquals(authenticatedUser, userFromToken.get());
+    }
+
+    @Test
+    void failGetUserFromTokenByInvalidToken() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser) + "ndasidja";
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+
+        Optional<User> userFromToken = UsersController.getUserFromToken(authUserToken, usersRepo);
+
+        assertTrue(userFromToken.isEmpty());
+    }
 
 
 }

@@ -1,4 +1,4 @@
-package com.ugomes.webchat.Controllers.Rest;
+package com.ugomes.webchat.Controllers;
 
 import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.User;

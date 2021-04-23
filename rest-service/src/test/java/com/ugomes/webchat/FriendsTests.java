@@ -1,6 +1,6 @@
 package com.ugomes.webchat;
 
-import com.ugomes.webchat.Controllers.Rest.FriendsController;
+import com.ugomes.webchat.Controllers.FriendsController;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.Friends;
 import com.ugomes.webchat.models.FriendsRequests;
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.*;
@@ -428,6 +429,116 @@ public class FriendsTests {
 
         assertEquals(HttpStatus.OK, queryResult.getStatusCode());
         assertEquals(friendshipList.size(), Objects.requireNonNull(queryResult.getBody()).size());
+    }
+
+    // getFriendsIdsList
+    @Test
+    void successGetFriendsIdsList() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+        List<Long> friendsIds = new ArrayList<>(List.of(1L, 3L, 2L));
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(friendsRepo.findFriendsIdsByUser(authenticatedUser)).thenReturn(friendsIds);
+
+        ResponseEntity<List<Long>> queryResult = friendsController.getFriendsIdsList(authUserToken);
+
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
+        assertEquals(friendsIds, queryResult.getBody());
+    }
+
+    @Test
+    void failGetFriendsIdsListByWrongToken() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser) + "dsada";
+        List<Long> friendsIds = new ArrayList<>(List.of(1L, 3L, 2L));
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(friendsRepo.findFriendsIdsByUser(authenticatedUser)).thenReturn(friendsIds);
+
+        ResponseEntity<List<Long>> queryResult = friendsController.getFriendsIdsList(authUserToken);
+
+        assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
+        assertNull(queryResult.getBody());
+    }
+
+    @Test
+    void successGetEmptyFriendsIdsList() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+        List<Long> friendsIds = new ArrayList<>();
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(friendsRepo.findFriendsIdsByUser(authenticatedUser)).thenReturn(friendsIds);
+
+        ResponseEntity<List<Long>> queryResult = friendsController.getFriendsIdsList(authUserToken);
+
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
+        assertEquals(friendsIds, queryResult.getBody());
+    }
+
+    // getFriendFromFriendship
+    @Test
+    void successGetFriendFromFriendship() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser);
+        User friend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        Friends friendship = new Friends(1L, authenticatedUser, friend, Instant.now());
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(friendsRepo.findById(friendship.getId())).thenReturn(Optional.of(friendship));
+
+        ResponseEntity<Optional<User>> queryResult = friendsController.getFriendFromFriendship(
+                authUserToken, friendship.getId());
+
+        assertEquals(HttpStatus.OK, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
+        assertTrue(queryResult.getBody().isPresent());
+        assertEquals(friend, queryResult.getBody().get());
+    }
+
+    @Test
+    void failGetFriendFromFriendshipByWrongToken() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser) + "dasdasd";
+        User friend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        Friends friendship = new Friends(1L, authenticatedUser, friend, Instant.now());
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(friendsRepo.findById(friendship.getId())).thenReturn(Optional.of(friendship));
+
+        ResponseEntity<Optional<User>> queryResult = friendsController.getFriendFromFriendship(
+                authUserToken, friendship.getId());
+
+        assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
+        assertTrue(queryResult.getBody().isEmpty());
+    }
+
+    @Test
+    void failGetFriendFromFriendshipByWrongFriendshipId() {
+        User authenticatedUser = new User(1L, "Hugo", "Gomes", "ugomes");
+        authenticatedUser.setUid("123456789111");
+        String authUserToken = "Bearer " + JwtTokenUtil.generateToken(authenticatedUser) + "dasdasd";
+        User friend = new User(2L, "Johny", "Bravo", "strong_blonde");
+        Friends friendship = new Friends(1L, authenticatedUser, friend, Instant.now());
+
+        when(usersRepo.findByUid(authenticatedUser.getUid())).thenReturn(Optional.of(authenticatedUser));
+        when(friendsRepo.findById(friendship.getId())).thenReturn(Optional.of(friendship));
+
+        ResponseEntity<Optional<User>> queryResult = friendsController.getFriendFromFriendship(
+                authUserToken, 23L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, queryResult.getStatusCode());
+        assertNotNull(queryResult.getBody());
+        assertTrue(queryResult.getBody().isEmpty());
     }
 
 }

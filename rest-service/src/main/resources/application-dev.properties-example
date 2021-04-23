@@ -1,0 +1,9 @@
+spring.datasource.url=jdbc:mysql://host/db_name
+spring.datasource.username=user_name
+spring.datasource.password=pwd123123
+spring.security.oauth2.client.registration.google.client-id=
+spring.security.oauth2.client.registration.google.client-secret=
+spring.security.oauth2.client.registration.google.redirect-uri=http://rest_host/login/oauth2/code/google
+services.frontend=http://frontend.com
+services.rtm=http://rtm.com
+services.rest=http://rest.com

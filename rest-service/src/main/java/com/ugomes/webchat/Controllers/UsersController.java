@@ -1,4 +1,4 @@
-package com.ugomes.webchat.Controllers.Rest;
+package com.ugomes.webchat.Controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +11,7 @@ import com.ugomes.webchat.models.User;
 import com.ugomes.webchat.repositories.FriendsRepo;
 import com.ugomes.webchat.repositories.FriendsRequestRepo;
 import com.ugomes.webchat.repositories.UsersRepo;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,12 +37,11 @@ public class UsersController {
     public static Optional<User> getUserFromToken(String token, UsersRepo usersRepo) {
         JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
         token = token.replace("Bearer ", "");
-        String authUserUid;
         try {
-            authUserUid = jwtTokenUtil.getUidFromToken(token);
+            String authUserUid = jwtTokenUtil.getUidFromToken(token);
             if(authUserUid != null && !authUserUid.isBlank())
                 return usersRepo.findByUid(authUserUid);
-        } catch (Exception e) {
+        } catch (SignatureException e) {
             return Optional.empty();
         }
         return Optional.empty();
@@ -96,6 +96,7 @@ public class UsersController {
         } else
             return ResponseEntity.badRequest().body(userData);
     }
+
     @PutMapping("/updateUser")
     public ResponseEntity<Boolean> updateUser(@RequestHeader("Authorization") String token,
                                                  @RequestParam MultipartFile file,

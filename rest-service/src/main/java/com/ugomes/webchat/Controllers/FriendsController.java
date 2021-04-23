@@ -1,4 +1,4 @@
-package com.ugomes.webchat.Controllers.Rest;
+package com.ugomes.webchat.Controllers;
 
 import com.ugomes.webchat.Comparators.UserFirstNameComparator;
 import com.ugomes.webchat.models.Friends;
@@ -68,7 +68,6 @@ public class FriendsController {
     }
 
     @GetMapping("/cancelFriendRequest")
-    @CrossOrigin(origins = "http://localhost:3000")
     @Transactional
     public ResponseEntity<Map<String, String>> cancelFriendRequest(@RequestHeader("Authorization") String token,
                                                       @RequestParam Long destinyUserId) {
@@ -84,13 +83,6 @@ public class FriendsController {
 
         resp.put("status", "success");
         return ResponseEntity.ok(resp);
-    }
-
-    @GetMapping("/getUsers")
-    @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<List<User>> getUsers() {
-        List<User> users = usersRepo.findAll();
-        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/getFriendRequests")

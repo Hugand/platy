@@ -2,7 +2,7 @@ package com.ugomes.webchat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ugomes.webchat.Controllers.Rest.ChatsController;
+import com.ugomes.webchat.Controllers.ChatsController;
 import com.ugomes.webchat.Utils.JwtTokenUtil;
 import com.ugomes.webchat.models.*;
 import com.ugomes.webchat.repositories.ChatsRepo;
