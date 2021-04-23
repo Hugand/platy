@@ -27,7 +27,7 @@ const dataContainer: DataContainer = new DataContainer()
 const socketController = new SocketController(dataContainer);
 
 io.on('connection', (socket: Socket) => {
-    console.log('A new user connected', socket.id);
+    console.log("[ CONNECT ]: ", socket.id)
 
     const uid: string = socket.handshake.query.uid + ''
     dataContainer.createUser(uid, socket)

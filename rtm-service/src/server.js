@@ -23,7 +23,7 @@ app.get("/", function (_req, res) {
 var dataContainer = new DataContainer_1.DataContainer();
 var socketController = new sockets_1.default(dataContainer);
 io.on('connection', function (socket) {
-    console.log('A new user connected', socket.id);
+    console.log("[ CONNECT ]: ", socket.id);
     var uid = socket.handshake.query.uid + '';
     dataContainer.createUser(uid, socket);
     socket.on('join_room', function (d) { return socketController.joinRoom(socket, d); });

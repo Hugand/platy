@@ -47,9 +47,13 @@ var SocketController = /** @class */ (function () {
             var isTokenValid;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.validateUserToken(data)];
+                    case 0:
+                        console.log("[ JOIN ROOM ]: ", socket.id);
+                        console.log(data);
+                        return [4 /*yield*/, this.validateUserToken(data)];
                     case 1:
                         isTokenValid = _b.sent();
+                        console.log(isTokenValid);
                         if (!isTokenValid) {
                             socket.emit('error', 'token_invalid');
                             return [2 /*return*/];
@@ -92,7 +96,7 @@ var SocketController = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log(io.sockets.adapter.rooms);
+                        console.log("[ SEND MSG ]: ", socket.id);
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -114,7 +118,7 @@ var SocketController = /** @class */ (function () {
         });
     };
     SocketController.prototype.disconnect = function (socket) {
-        console.log("User disconnected", socket.id);
+        console.log("[ DISCONNECT ]: ", socket.id);
         // socket.rooms.forEach((room: any) => {
         //     console.log("DISCONNECTING FROM", room)
         //     socket.leave(room)
@@ -139,6 +143,7 @@ var SocketController = /** @class */ (function () {
                         return [2 /*return*/, res.status];
                     case 2:
                         e_2 = _a.sent();
+                        console.log(e_2);
                         return [2 /*return*/, false];
                     case 3: return [2 /*return*/];
                 }

@@ -1,8 +1,9 @@
 import { Chat } from "../model/Chat";
+import { JoinRoomData } from "../model/JoinRoomData";
 
 const _fetch = require("node-fetch");
 
-const validateToken = (data: any) => {
+const validateToken = (data: JoinRoomData) => {
     return _fetch(`${process.env.REST_SERVICE_URL}/validateToken?token=${data.token}&uid=${data.uid}`)
         .then((r: any) => r.json())
 }
