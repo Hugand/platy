@@ -1,8 +1,8 @@
 
-export class Chat {
-    id: number = 0
-    userOrigin: number = 0
-    msg: string = ''
-    friendshipId: number = 0
-    timestamp: Date = new Date()
+export interface Chat {
+    id: number
+    userOrigin: number
+    msg: string
+    friendshipId: number
+    timestamp: Date
 }

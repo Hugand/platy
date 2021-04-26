@@ -1,19 +1,37 @@
-import { validateToken, getFriendshipChats, persistChat } from "./restServiceApi";
+import { validateToken, persistChat } from "./restServiceApi";
 import { DataContainer } from "../model/DataContainer";
 import { JoinRoomData } from "../model/JoinRoomData";
 import { Chat } from "../model/Chat";
 import { SendMessageData } from "../model/SendMessageData";
+import { Socket } from "socket.io";
+import { SKT_EVT } from "../model/SocketEventEnum";
+import { NewMessageData } from "../model/NewMessageData";
 
 class SocketController {
-    dc: DataContainer
+    dc: DataContainer;
 
     constructor(dc: DataContainer) {
-        this.dc = dc
+        this.dc = dc;
     }
 
+    onConnect(io: any, socket: Socket) {
+        console.log("[ CONNECT ]: ", socket.id)
+    
+        const uid: string = socket.handshake.query.uid + ''
+        this.dc.createUser(uid, socket)
+    
+        socket.on(SKT_EVT.JOIN_ROOM, (d: JoinRoomData) => this.joinRoom(socket, d))
+        socket.on(SKT_EVT.SEND_MESSAGE, (d: SendMessageData) => this.sendMessage(io, socket, d))
+    
+        socket.on('disconnect', () => this.disconnect(socket))
+    }
+    
     async joinRoom(socket: any, data: JoinRoomData) {
         console.log("[ JOIN ROOM ]: ", socket.id)
+
         const isTokenValid: boolean = await this.validateUserToken(data)
+
+        this.leaveRoomsBySocket(socket, data.uid);
 
         if(!isTokenValid) {
             socket.emit('error', 'token_invalid')
@@ -21,35 +39,44 @@ class SocketController {
         }
 
         if (data.roomIds === undefined || data.roomIds === null) {
-            socket.emit('error', 'wrong_room_id')
+            socket.emit('error', 'invalid_room_id')
             return;
         }
-
-        // Leave current rooms
-        this.dc.users.get(data.uid)?.roomIds.forEach((roomId: string) => {
-            socket.leave(roomId)
-        })
 
         data.roomIds.forEach((roomId: string) => {
             socket.join(roomId)
         })
+
+        console.log("SENDING VALIDATION")
+
+        socket.emit('join_room_validate', true)
+        return;
     }
 
-    // TODO: Might still need a little bit more work on error handling
     async sendMessage(io: any, socket: any, data: SendMessageData) {
         console.log("[ SEND MSG ]: ", socket.id)
-        let persistedChat: Chat
         try {
-            persistedChat = await persistChat(data.token, data.newChat)
-            io.to(data.roomId).emit('new_message', JSON.stringify({ message: persistedChat, roomId: data.roomId }))
+            let persistedChat: Chat = await persistChat(data.token, data.newChat)
+            if (!io.sockets.adapter.rooms.has(data.roomId)) {
+                socket.emit('error', 'invalid_room_id')
+                return;
+            }
+
+            const newMessageData: NewMessageData = {
+                message: persistedChat,
+                roomId: data.roomId
+            }
+
+            io.to(data.roomId).emit('new_message', JSON.stringify(newMessageData))
         } catch (e) {
             socket.emit('error', 'token_invalid')
         }
-
+        return;
     }
 
     disconnect(socket: any) {
         console.log("[ DISCONNECT ]: ", socket.id)
+        return;
     }
 
     /*
@@ -63,6 +90,13 @@ class SocketController {
             console.log(e)
             return false;
         }
+    }
+
+    private leaveRoomsBySocket(socket: Socket, uid: string) {
+        // Leave current rooms
+        this.dc.users.get(uid)?.roomIds.forEach((roomId: string) => {
+            socket.leave(roomId)
+        })
     }
 }
 

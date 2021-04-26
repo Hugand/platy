@@ -1,8 +1,8 @@
 import { Socket } from "socket.io";
 import SocketController from "./controller/sockets";
 import { DataContainer } from "./model/DataContainer";
-import { JoinRoomData } from "./model/JoinRoomData";
-import { SendMessageData } from "./model/SendMessageData";
+// import { DataContainer } from "./model/DataContainer";
+import { SKT_EVT } from "./model/SocketEventEnum";
 
 const express = require("express");
 const http = require("http");
@@ -26,17 +26,7 @@ app.get("/", (_req: any, res: any) => {
 const dataContainer: DataContainer = new DataContainer()
 const socketController = new SocketController(dataContainer);
 
-io.on('connection', (socket: Socket) => {
-    console.log("[ CONNECT ]: ", socket.id)
-
-    const uid: string = socket.handshake.query.uid + ''
-    dataContainer.createUser(uid, socket)
-
-    socket.on('join_room', (d: JoinRoomData) => socketController.joinRoom(socket, d))
-    socket.on('send_message', (d: SendMessageData) => socketController.sendMessage(io, socket, d))
-
-    socket.on('disconnect', () => socketController.disconnect(socket))
-})
+io.on(SKT_EVT.CONNECTION, (s: Socket) => { socketController.onConnect(io, s) })
 
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
