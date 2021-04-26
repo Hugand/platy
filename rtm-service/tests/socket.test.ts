@@ -40,7 +40,7 @@ describe('Socket testing', () => {
   it("successfuly joins rooms", (done) => {
     fetchMock.mockResponseOnce(JSON.stringify({status: true}));
   
-    let data: JoinRoomData = {
+    const data: JoinRoomData = {
       token: "dasdada",
       uid: mockUserUid,
       roomIds: ["F12", "F32"]
@@ -61,7 +61,7 @@ describe('Socket testing', () => {
   it("fail to join room by invalid token", (done) => {
     fetchMock.mockResponseOnce(JSON.stringify({status: false}));
   
-    let data: JoinRoomData = {
+    const data: JoinRoomData = {
       token: "dasdada",
       uid: mockUserUid,
       roomIds: ["F12", "F32"]
@@ -78,7 +78,7 @@ describe('Socket testing', () => {
   it("fail to join room by invalid room id (null)", (done) => {
     fetchMock.mockResponseOnce(JSON.stringify({status: true}));
   
-    let data = {
+    const data = {
       token: "dasdada",
       uid: mockUserUid,
       roomIds: null
@@ -95,7 +95,7 @@ describe('Socket testing', () => {
   it("fail to join room by invalid room id (undefined)", (done) => {
     fetchMock.mockResponseOnce(JSON.stringify({status: true}));
   
-    let data = {
+    const data = {
       token: "dasdada",
       uid: mockUserUid,
     };

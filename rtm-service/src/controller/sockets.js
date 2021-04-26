@@ -26,7 +26,7 @@ class SocketController {
     joinRoom(socket, data) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("[ JOIN ROOM ]: ", socket.id);
-            const isTokenValid = yield this.validateUserToken(data);
+            const isTokenValid = yield this.validateUserToken(data.token, data.uid);
             this.leaveRoomsBySocket(socket, data.uid);
             if (!isTokenValid) {
                 socket.emit(SocketEventEnum_1.SKT_EVT.ERROR, SocketEventEnum_1.SKT_EVT.TOKEN_INVALID);
@@ -48,7 +48,7 @@ class SocketController {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("[ SEND MSG ]: ", socket.id);
             try {
-                let persistedChat = yield restServiceApi_1.persistChat(data.token, data.newChat);
+                const persistedChat = yield restServiceApi_1.persistChat(data.token, data.newChat);
                 if (!io.sockets.adapter.rooms.has(data.roomId)) {
                     socket.emit(SocketEventEnum_1.SKT_EVT.ERROR, SocketEventEnum_1.SKT_EVT.INVALID_ROOM_ID);
                     return;
@@ -72,10 +72,10 @@ class SocketController {
     /*
         Helper methods
     */
-    validateUserToken(data) {
+    validateUserToken(token, uid) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield restServiceApi_1.validateToken(data);
+                const res = yield restServiceApi_1.validateToken(token, uid);
                 return res.status;
             }
             catch (e) {

@@ -3,9 +3,10 @@ import { DataContainer } from "../model/DataContainer";
 import { JoinRoomData } from "../model/JoinRoomData";
 import { Chat } from "../model/Chat";
 import { SendMessageData } from "../model/SendMessageData";
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { SKT_EVT } from "../model/SocketEventEnum";
 import { NewMessageData } from "../model/NewMessageData";
+import { StatusBoolResponse } from "../model/StatusResponse";
 
 class SocketController {
     dc: DataContainer;
@@ -14,7 +15,7 @@ class SocketController {
         this.dc = dc;
     }
 
-    onConnect(io: any, socket: Socket) {
+    onConnect(io: Server, socket: Socket): void {
         console.log("[ CONNECT ]: ", socket.id)
     
         const uid: string = socket.handshake.query.uid + ''
@@ -26,10 +27,10 @@ class SocketController {
         socket.on('disconnect', () => this.disconnect(socket))
     }
     
-    async joinRoom(socket: any, data: JoinRoomData) {
+    async joinRoom(socket: Socket, data: JoinRoomData): Promise<void> {
         console.log("[ JOIN ROOM ]: ", socket.id)
 
-        const isTokenValid: boolean = await this.validateUserToken(data)
+        const isTokenValid: boolean = await this.validateUserToken(data.token, data.uid)
 
         this.leaveRoomsBySocket(socket, data.uid);
 
@@ -53,10 +54,10 @@ class SocketController {
         return;
     }
 
-    async sendMessage(io: any, socket: any, data: SendMessageData) {
+    async sendMessage(io: Server, socket: Socket, data: SendMessageData): Promise<void> {
         console.log("[ SEND MSG ]: ", socket.id)
         try {
-            let persistedChat: Chat = await persistChat(data.token, data.newChat)
+            const persistedChat: Chat = await persistChat(data.token, data.newChat)
             if (!io.sockets.adapter.rooms.has(data.roomId)) {
                 socket.emit(SKT_EVT.ERROR, SKT_EVT.INVALID_ROOM_ID)
                 return;
@@ -74,7 +75,7 @@ class SocketController {
         return;
     }
 
-    disconnect(socket: any) {
+    disconnect(socket: Socket): void {
         console.log("[ DISCONNECT ]: ", socket.id)
         return;
     }
@@ -82,9 +83,9 @@ class SocketController {
     /*
         Helper methods
     */
-    private async validateUserToken(data: any): Promise<boolean> {
+    private async validateUserToken(token: string, uid: string): Promise<boolean> {
         try {
-            const res: any = await validateToken(data)
+            const res: StatusBoolResponse = await validateToken(token, uid);
             return res.status
         } catch (e) {
             console.log(e)
@@ -92,7 +93,7 @@ class SocketController {
         }
     }
 
-    private leaveRoomsBySocket(socket: Socket, uid: string) {
+    private leaveRoomsBySocket(socket: Socket, uid: string): void {
         // Leave current rooms
         this.dc.users.get(uid)?.roomIds.forEach((roomId: string) => {
             socket.leave(roomId)
