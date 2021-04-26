@@ -49,5 +49,30 @@ jobs:
         run: npm install
       - name: Running eslint
         run: npm run lint
-#    - name: Build with Maven
-#      run: mvn -B package --file pom.xml
+
+  test-rtm-service:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: rtm-service
+
+    strategy:
+      matrix:
+        node-version: [15.x]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use NodeJs ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Installing packages
+        run: npm install
+      - name: Running tests
+        run: npm test
+      - name: Check linting src/
+        run: npm run lint
+      - name: Check linting tests/
+        run: npm run lint-tests
+
