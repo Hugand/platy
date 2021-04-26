@@ -10,6 +10,7 @@
     "test-v": "jest",
     "clear-js": "rm ./src/*/*.js || true && rm ./src/*.js || true",
     "lint": "eslint src/**/*.ts",
+    "lint-tests": "eslint tests/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
   },
   "author": "Hugo Gomes",

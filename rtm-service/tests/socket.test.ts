@@ -11,8 +11,8 @@ import { SKT_EVT } from "../src/model/SocketEventEnum";
 describe('Socket testing', () => {
   let io: Server;
   let clientSocket: SocketIOClient.Socket;
-  let socketController: SocketController = new SocketController(new DataContainer())
-  let mockUserUid = '123321123';
+  const socketController: SocketController = new SocketController(new DataContainer())
+  const mockUserUid = '123321123';
 
   beforeEach((done) => {
     fetchMock.resetMocks();
@@ -20,15 +20,17 @@ describe('Socket testing', () => {
     const httpServer = createServer();
     io = new Server(httpServer);
     httpServer.listen(() => {
-      const httpAddress: any = httpServer.address()
-      const port: number = httpAddress.port;
-      clientSocket = Client(`http://localhost:${port}`, { query: { uid: mockUserUid } });
-      io.on("connection", (socket) => {
-        // serverSocket = socket;
-        socketController.onConnect(io, socket)
-      });
-
-      clientSocket.on("connect", done);
+      const httpAddress = httpServer.address();
+      if (httpAddress !== null && typeof httpAddress !== 'string') {
+        const port: number = httpAddress.port;
+        clientSocket = Client(`http://localhost:${port}`, { query: { uid: mockUserUid } });
+        io.on("connection", (socket) => {
+          // serverSocket = socket;
+          socketController.onConnect(io, socket)
+        });
+  
+        clientSocket.on("connect", done);
+      }
     });
   });
 
