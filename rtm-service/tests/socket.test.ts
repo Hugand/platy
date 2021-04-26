@@ -46,7 +46,7 @@ describe('Socket testing', () => {
       roomIds: ["F12", "F32"]
     };
 
-    clientSocket.on('join_room_validate', () => {
+    clientSocket.on(SKT_EVT.JOIN_ROOM_VALIDATE, () => {
       const connectedSockets = io.sockets.sockets
       const mySocket = connectedSockets.values().next().value
 
@@ -67,8 +67,8 @@ describe('Socket testing', () => {
       roomIds: ["F12", "F32"]
     };
 
-    clientSocket.on('error', (errorType: string) => {
-      expect(errorType).toBe('token_invalid')
+    clientSocket.on(SKT_EVT.ERROR, (errorType: string) => {
+      expect(errorType).toBe(SKT_EVT.TOKEN_INVALID)
       done();
     });
 
@@ -84,8 +84,8 @@ describe('Socket testing', () => {
       roomIds: null
     };
 
-    clientSocket.on('error', (errorType: string) => {
-      expect(errorType).toBe('invalid_room_id')
+    clientSocket.on(SKT_EVT.ERROR, (errorType: string) => {
+      expect(errorType).toBe(SKT_EVT.INVALID_ROOM_ID)
       done();
     });
 
@@ -100,8 +100,8 @@ describe('Socket testing', () => {
       uid: mockUserUid,
     };
 
-    clientSocket.on('error', (errorType: string) => {
-      expect(errorType).toBe('invalid_room_id')
+    clientSocket.on(SKT_EVT.ERROR, (errorType: string) => {
+      expect(errorType).toBe(SKT_EVT.INVALID_ROOM_ID)
       done();
     });
 
@@ -123,8 +123,8 @@ describe('Socket testing', () => {
 
     fetchMock.mockResponseOnce(JSON.stringify(data.newChat));
 
-    clientSocket.on('error', (errorType: string) => {
-      expect(errorType).toBe('invalid_room_id')
+    clientSocket.on(SKT_EVT.ERROR, (errorType: string) => {
+      expect(errorType).toBe(SKT_EVT.INVALID_ROOM_ID)
       done();
     });
 
@@ -158,11 +158,11 @@ describe('Socket testing', () => {
       { status: 200 }
     ]);
 
-    clientSocket.on('join_room_validate', () => {
+    clientSocket.on(SKT_EVT.JOIN_ROOM_VALIDATE, () => {
       clientSocket.emit(SKT_EVT.SEND_MESSAGE, sendMessageData);
     });
 
-    clientSocket.on('new_message', (newMessageDataString: string) => {
+    clientSocket.on(SKT_EVT.NEW_MESSAGE, (newMessageDataString: string) => {
       const newMessageData: NewMessageData = JSON.parse(newMessageDataString);
       expect(JSON.stringify(newMessageData.message)).toBe(JSON.stringify(sendMessageData.newChat))
       expect(newMessageData.roomId).toBe(sendMessageData.roomId)
@@ -188,8 +188,8 @@ describe('Socket testing', () => {
     fetchMock.mockResponseOnce();
     fetchMock.mockReject(() => Promise.reject('Invalid token'));
 
-    clientSocket.on('error', (errorType: string) => {
-      expect(errorType).toBe('token_invalid')
+    clientSocket.on(SKT_EVT.ERROR, (errorType: string) => {
+      expect(errorType).toBe(SKT_EVT.TOKEN_INVALID)
       done();
     });
 

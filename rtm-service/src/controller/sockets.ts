@@ -34,12 +34,12 @@ class SocketController {
         this.leaveRoomsBySocket(socket, data.uid);
 
         if(!isTokenValid) {
-            socket.emit('error', 'token_invalid')
+            socket.emit(SKT_EVT.ERROR, SKT_EVT.TOKEN_INVALID)
             return;
         }
 
         if (data.roomIds === undefined || data.roomIds === null) {
-            socket.emit('error', 'invalid_room_id')
+            socket.emit(SKT_EVT.ERROR, SKT_EVT.INVALID_ROOM_ID)
             return;
         }
 
@@ -49,7 +49,7 @@ class SocketController {
 
         console.log("SENDING VALIDATION")
 
-        socket.emit('join_room_validate', true)
+        socket.emit(SKT_EVT.JOIN_ROOM_VALIDATE, true)
         return;
     }
 
@@ -58,7 +58,7 @@ class SocketController {
         try {
             let persistedChat: Chat = await persistChat(data.token, data.newChat)
             if (!io.sockets.adapter.rooms.has(data.roomId)) {
-                socket.emit('error', 'invalid_room_id')
+                socket.emit(SKT_EVT.ERROR, SKT_EVT.INVALID_ROOM_ID)
                 return;
             }
 
@@ -67,9 +67,9 @@ class SocketController {
                 roomId: data.roomId
             }
 
-            io.to(data.roomId).emit('new_message', JSON.stringify(newMessageData))
+            io.to(data.roomId).emit(SKT_EVT.NEW_MESSAGE, JSON.stringify(newMessageData))
         } catch (e) {
-            socket.emit('error', 'token_invalid')
+            socket.emit(SKT_EVT.ERROR, SKT_EVT.TOKEN_INVALID)
         }
         return;
     }
